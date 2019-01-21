@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TopCoder SRM 734 - 400: CardCounter</title>
+    
+    <link type="image/x-icon" rel="shortcut icon" href="http://www.topcoder.com/i/favicon.ico"/>
+    
+
+    
+    <style type="text/css">
+        /* font */
+body {
+    font-family: Helvetica, Arial, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.2em;
+}
+ul.constraints > li:before, ul.notes > li:before {
+    font-family: monospace;
+    font-weight: normal;
+}
+.heading {
+    font-weight: bold;
+    font-size: 175%;
+    line-height: 1.2em;
+}
+.section .section-title {
+    font-weight: bold;
+    font-size: 125%;
+}
+ol.testcases > li:before {
+    font-family: monospace;
+}
+type {
+    font-weight: bold;
+    font-family: monospace;
+}
+li.testcase .data {
+    font-family: monospace;
+    line-height: 1.5em;
+}
+
+/* layout */
+.heading {
+    margin-top: 0.1em;
+    margin-bottom:0.1em;
+    text-align: center;
+}
+.section .section-title {
+    margin-top : 1em;
+    margin-bottom: 1em;
+}
+.problem-intro, note, user-constraint {
+    padding-left: 1.25em;
+}
+
+/* Lists */
+ul.constraints, ul.notes, ul.variables, ul.problem-definition-lines {
+    list-style-type: none;
+    padding: 0px;
+}
+ul.constraints > li:before {
+    content: "-";
+    position:relative;
+    margin-left: 0px; /* optional, for multiline li element */
+    left: 0.625em;
+}
+ul.notes > li:before {
+    content: "-";
+    position:relative;
+    margin-left: 0px; /* optional, for multiline li element */
+    left: 0.625em;
+}
+
+/* Testcases */
+li.testcase {
+    line-height: 1.1em;
+    padding-top: 0.625em;
+    padding-bottom: 0.625em;
+    overflow: auto;
+}
+li.testcase > .testcase-content > div { padding-bottom: 0.5em; padding-left: 1em; }
+
+li.testcase .testcase-comment {
+    margin: 0;
+    padding-left: 1em;
+}
+.testcase-comment p:first-child { margin-top: 0; }
+.testcase-comment p:last-child { margin-bottom: 0; }
+
+li.testcase .testcase-content {
+    margin: 0.31em;
+}
+
+/* Data and variables */
+.testcase-output {
+    padding: 0.2em 1em 0.2em 0em;
+}
+.variables, .testcase-output {
+    margin-left: 0.5em;
+    display: table;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.variable {
+    display: table-row;
+}
+.variable .name {
+    padding: 0.2em 0em 0.2em 1em;
+    font-weight: bold;
+    display: table-cell;
+    text-align: right;
+}
+.testcase-output .prefix {
+    padding: 0.2em 0em 0.2em 1em;
+    display: table-cell;
+}
+.testcase-output .prefix:after {
+    content : ":";
+    padding-right: 0.5em;
+}
+.variable .name:after {
+    font-weight: bold;
+    content : ":";
+    padding-right: 0.5em;
+}
+.variable .value, .testcase-output .value {
+    padding: 0.2em 1em 0.2em 0em;
+    display: table-cell;
+}
+ol.testcases {
+    padding: 0px;
+    counter-reset: test_number -1;
+}
+ol.testcases > li {
+    list-style:none;
+}
+ol.testcases > li:before {
+    counter-increment:test_number;
+    display: block;
+    clear: both;
+    content:counter(test_number) ")";
+    color: inherit;
+    background: inherit;
+}
+
+/* Problem Definition */
+.problem-definition, .problem-limits {
+    padding-left: 1.25em;
+}
+.problem-definition-lines, .limit-lines {
+    display: table;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+}
+.definition-line, .limit-line {
+    display: table-row;
+    height: 1.5em;
+    overflow: auto;
+}
+.limit-name:after {
+    content: ":";
+    margin-right: 1em;
+}
+.definition-name, .definition-value, .limit-name, .limit-value {
+    display: table-cell;
+}
+.definition-value {
+    padding-left: 0.5em;
+}
+.definition-name:after {
+    content: ":";
+}
+#contest-division:before {
+    content: "Div ";
+}
+#problem-score:before {
+    content: "- Problem ";
+}
+#problem-name {
+    display: block;
+}
+
+/* Tags, hidden default */
+.tag {
+    visibility: hidden;
+    position: absolute;
+}
+
+        body {
+    /* font color */
+    color: #333333;
+    /* background color */
+    background-color: white;
+}
+.section .section-title {
+    /* title color */
+    color: black;
+}
+li.testcase .data {
+    /* highlight color */
+    background: #eee;
+}
+
+    </style>
+    
+    
+    
+
+</head>
+
+<body>
+    <h1 class="heading">
+        <span id='contest-name'>SRM 734</span>
+        <span id='contest-division'>1</span>
+        <span id='problem-score'>400</span>
+        <span id='problem-name'>CardCounter</span>
+    </h1>
+
+    <hr />
+
+    <!-- Problem Statement -->
+    <div class="section">
+        <h2 class="section-title">Problem Statement</h2>
+        <div class="problem-intro">
+            <intro escaped="1"><p>In the game of blackjack, the goal is to get a total as close to 21 as possible without going over, and to have a higher total than the dealer at the end of the game.  An ace is worth either 1 or 11 (whichever is more advantageous), face cards are worth 10, and all other cards are worth their shown value. Play follows the following procedure:</p>
+<ul>
+<li>Two cards each are dealt to the player and dealer. One of the dealer's cards is face-down, the other is face-up. The player can see both of his cards.</li>
+<li>The player has the option to take a &quot;hit&quot; and be dealt another card. He may continue to take hits until he reaches 21, goes bust by exceeding 21, or decides to &quot;stand&quot; with the total currently held. (Once a player goes bust, he automatically loses.)</li>
+<li>The dealer reveals his face-down card, and then takes a &quot;hit&quot; as long as his total is 16 or below.  Once the dealer reaches 17 or above (possibly going bust), he stands.  Note that the dealer stands if using an ace as 11 points gives him a total between 17 and 21.  For example, if he has an ace and a 6, he stands with 17.  A dealer holding an ace will count is as one point if counting it as 11 would cause him to exceed 21.</li>
+<li>If the player has a total higher than the dealer, and has not gone bust, he wins.  If the dealer has gone bust, but the player has not, the player wins regardless of his total.</li>
+</ul>
+
+<p>Some very savvy players will attempt to mentally keep track of what cards have already been played, to determine when the chance of winning may be more or less favorable. In our case, the player has excellent memorization skills, and knows exactly how many of each value card remain in the deck.  You are given the state of the deck, the value shown on the dealer's face-up card, and the two cards that have been dealt to the player.</p>
+
+<p>The i-th element of <b>deck</b> contains the number of (i+1)-value cards remaining in the deck. A value of 1 is an ace, and all 10-value cards are considered equivalent in this game. (The unknown face-down card held by the dealer is one of the cards remaining in the deck.)  <b>dealer</b> is the value of the face-up card shown by the dealer. <b>player</b> contains exactly two elements, and is the values of the two cards held by the player.</p>
+
+<p>Assuming the player chooses to hit or stand optimally, return the probability that the player wins the hand.</p>
+
+
+
+</intro>
+        </div>
+    </div>
+    
+    <!-- Problem definition -->
+    
+    <div class="section" id="definition">
+        <h2 class="section-title">Definition</h2>
+        <div class="problem-definition">
+            <ul class="problem-definition-lines">
+                <li class="definition-line" id='class-line'>
+                    <span class='definition-name'>Class</span>
+                    <span class='definition-value'>CardCounter</span>
+                </li>
+                <li class="definition-line" id='method-line'>
+                    <span class='definition-name'>Method</span>
+                    <span class='definition-value'>winningChance</span>
+                </li>
+                <li class="definition-line" id='parameters-line'>
+                    <span class='definition-name'>Parameters</span>
+                    <span class='definition-value'>
+                    
+                        vector&lt;int&gt;
+                    , 
+                        int
+                    , 
+                        vector&lt;int&gt;
+                    
+                    </span>
+                </li>
+                <li class="definition-line" id='returns-line'>
+                    <span class='definition-name'>Returns</span>
+                    <span class='definition-value'>
+                        double
+                    </span>
+                </li>
+                <li class="definition-line" id='signature-line'>
+                    <span class='definition-name'>Method signature</span>
+                    <span class='definition-value'>
+                        double winningChance(vector&lt;int&gt; deck, int dealer, vector&lt;int&gt; player)
+                    </span>
+                </li>
+            </ul>
+            <div class="problem-definition-public-tip">(be sure your method is public)</div>
+        </div>        
+    </div>
+    
+
+    <!-- Limits -->
+    <div class="section">
+        <h2 class="section-title">Limits</h2>
+        <div class='problem-limits'>
+            <ul class="limit-lines">
+                <li class='limit-line'>
+                    <span class='limit-name'>Time limit (s)</span>
+                    <span class='limit-value'>2.000</span>
+                </li>
+                <li class='limit-line'>
+                    <span class='limit-name'>Memory limit (MB)</span>
+                    <span class='limit-value'>256</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    
+    <!-- Notes -->
+    <div class="section">
+        <h2 class="section-title">Notes</h2>
+        <ul class="notes">
+        
+            <li><note escaped="1">In an actual casino setting, there may be other rules such as surrender, split, double-down, and dealer-peek, which don't apply for purposes of this problem. Only those rules explained in the problem here are used.</note></li>
+        
+            <li><note escaped="1">Also, specifically, a 2-card 21, also known as a blackjack, has no special meaning in this problem.</note></li>
+        
+            <li><note escaped="1">The constraints guarantee that there are enough cards left in the deck to play out the hand.</note></li>
+        
+        </ul>
+    </div>
+    
+    
+    <!-- Constraints -->
+    <div class="section">
+        <h2 class="section-title">Constraints</h2>
+        <ul class="constraints">
+        
+            <li><user-constraint escaped="1"><b>deck</b> will contain exactly 10 elements.</user-constraint></li>
+        
+            <li><user-constraint escaped="1">Each element of <b>deck</b> will be between 0 and 4, inclusive.</user-constraint></li>
+        
+            <li><user-constraint escaped="1"><b>dealer</b> will be between 1 and 10, inclusive.</user-constraint></li>
+        
+            <li><user-constraint escaped="1"><b>player</b> will contain exactly 2 elements.</user-constraint></li>
+        
+            <li><user-constraint escaped="1">Each element of <b>player</b> will be between 1 and 10, inclusive.</user-constraint></li>
+        
+            <li><user-constraint escaped="1">The total number of cards remaining in the deck will be no more than 16.</user-constraint></li>
+        
+            <li><user-constraint escaped="1">The total value of all cards showing and remaining in the deck will be at least 56.</user-constraint></li>
+        
+        </ul>
+    </div>
+
+    <!-- Test cases -->
+    <div class="section">
+        <h2 class="section-title">Test cases</h2>
+        <ol class="testcases" start='0'>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">deck</span>
+                                <span class="value data">
+                                
+                                    { 0, 0, 0, 0, 0, 0, 0, 4, 0, 4 }
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">dealer</span>
+                                <span class="value data">
+                                
+                                    9
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">player</span>
+                                <span class="value data">
+                                
+                                    { 9, 9 }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            0.5
+                        
+                        </span>
+                    </div>
+                    
+                    <div class="testcase-annotation">
+                        <div class='tag'>note</div>
+                        <div class="testcase-comment">Here, the player already has 18. Knowing that only 8s and 10s are left, there would be no reason to take a hit. Instead, we hope for the best. If the dealer's down-card is an 8, we will win (18 beats 17), but if it's a 10, we will lose (18 loses to 19).  There's an equal probability of either.</div>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">deck</span>
+                                <span class="value data">
+                                
+                                    { 0, 0, 0, 0, 0, 0, 0, 4, 0, 4 }
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">dealer</span>
+                                <span class="value data">
+                                
+                                    10
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">player</span>
+                                <span class="value data">
+                                
+                                    { 5, 5 }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            0.2857142857142857
+                        
+                        </span>
+                    </div>
+                    
+                    <div class="testcase-annotation">
+                        <div class='tag'>note</div>
+                        <div class="testcase-comment">Note that the dealer here can't possibly go bust based on the remaining cards, so you're only chance to win is to try to win by getting a good total hand.  You need to draw one of the 10s (4/8 chance), and the dealer's face-down card needs to be one of the 8s (4/7 chance).  So, your chances of winning are 4/8 * 4/7 = 2/7.</div>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">deck</span>
+                                <span class="value data">
+                                
+                                    { 0, 0, 0, 4, 0, 0, 0, 0, 0, 4 }
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">dealer</span>
+                                <span class="value data">
+                                
+                                    10
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">player</span>
+                                <span class="value data">
+                                
+                                    { 10, 7 }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            0.5
+                        
+                        </span>
+                    </div>
+                    
+                    <div class="testcase-annotation">
+                        <div class='tag'>note</div>
+                        <div class="testcase-comment">You have some choice here whether to hit or stand. If you take a hit, you have a 0.5 chance of getting a 4, leaving you with a 21 which will definitely win. If you stand, you need to have the dealer's down-card be a 4 (0.5), making a total of 14, which requires him to hit. He then needs to draw a 10 (4/7) to go bust in order for you to win, so standing only gives you a 2/7 chance of winning.  The peculiar set of cards remaining in the deck makes hitting the far better choice.</div>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">deck</span>
+                                <span class="value data">
+                                
+                                    { 0, 0, 2, 2, 2, 2, 2, 2, 2, 2 }
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">dealer</span>
+                                <span class="value data">
+                                
+                                    6
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">player</span>
+                                <span class="value data">
+                                
+                                    { 10, 10 }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            0.7348901098901098
+                        
+                        </span>
+                    </div>
+                    
+                    <div class="testcase-annotation">
+                        <div class='tag'>note</div>
+                        <div class="testcase-comment">The player has 20, and the dealer is holding a 6, which is a terrible position for the dealer.</div>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">deck</span>
+                                <span class="value data">
+                                
+                                    { 0, 0, 0, 0, 0, 0, 0, 4, 4, 4 }
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">dealer</span>
+                                <span class="value data">
+                                
+                                    6
+                                
+                                </span>
+                            </li>
+                        
+                            <li class="variable data">
+                                <span class="name data">player</span>
+                                <span class="value data">
+                                
+                                    { 10, 2 }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            1.0
+                        
+                        </span>
+                    </div>
+                    
+                    <div class="testcase-annotation">
+                        <div class='tag'>note</div>
+                        <div class="testcase-comment">The dealer will go bust no matter what happens, so just stand, even with only 12.</div>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+        </ol>
+    </div>
+    <hr />
+
+    This problem statement is the exclusive and proprietary property of TopCoder, Inc. Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited. (c)2003, TopCoder, Inc. All rights reserved.
+</body>
+</html>

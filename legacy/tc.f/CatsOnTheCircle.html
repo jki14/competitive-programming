@@ -1,0 +1,40 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><p>
+There are <b>N</b> cats sitting around a circle.
+The cats are numbered 0 through <b>N</b>-1 in clockwise order.
+Note that as they sit around a circle, cat <b>N</b>-1 is adjacent to cat 0.
+The cats are playing a game and the winner will get a prize!
+</p>
+
+<p>
+The game looks as follows:
+<ul>
+<li>There is a single ball. Initially, cat 0 holds the ball.</li>
+<li>In each round of the game, the cat who currently holds a ball flips a biased coin. The coin will come up heads with probability <b>p</b>/1,000,000,000 and tails with probability 1-(<b>p</b>/1,000,000,000).</li>
+<li>If the coin came up heads, the current cat will hand the ball to the next cat clockwise, otherwise the current cat will hand the ball to the next cat counterclockwise. Formally, if the current cat is cat j, heads means that the ball goes to cat (j+1) mod <b>N</b> and tails means that it goes to cat (j-1) mod <b>N</b>.</li>
+<li>The game is played until each cat held the ball at least once. The cat who holds the ball at the end of the game is the winner.</li>
+</ul>
+</p>
+
+<p>
+In other words, the winner is the last cat to touch the ball.
+Note that cat 0 holds the ball at the beginning, and this does count as holding the ball.
+Hence, if there is more than one cat, cat 0 can never win the game.
+</p>
+
+<p>
+Cat <b>K</b> wonders what is the probability that she will win the prize.
+You are given the ints <b>N</b>, <b>K</b>, and <b>p</b>.
+Return the probability that cat <b>K</b> wins.
+</p></td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>CatsOnTheCircle</td></tr><tr><td>Method:</td><td>getProb</td></tr><tr><td>Parameters:</td><td>int, int, int</td></tr><tr><td>Returns:</td><td>double</td></tr><tr><td>Method signature:</td><td>double getProb(int N, int K, int p)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>2.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Notes</h3></td></tr><tr><td align="center" valign="top">-</td><td>Your return value must have an absolute or relative error smaller than or equal to 1e-6</td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>N</b> will be between 3 and 1,000,000,000, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>K</b> will be between 1 and <b>N</b>-1, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>p</b> will be between 1 and 999,999,999, inclusive.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>3</pre></td></tr><tr><td><pre>1</pre></td></tr><tr><td><pre>300000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.6999999999999985</pre></td></tr><tr><td><table><tr><td colspan="2">This game has <b>N</b>=3 cats, labeled 0, 1, 2.
+We have <b>p</b>=30,000,000, hence the coin will come up heads with probability 30,000,000/1,000,000,000 = 0.3 and tails with probability 0.7.
+The game can look as follows:
+<ol>
+<li>Cat 0 is given the ball.</li>
+<li>Cat 0 flips the coin. The coin comes up tails.</li>
+<li>Cat 0 hands the ball to cat (0-1) mod 3 = cat 2.</li>
+<li>Cat 2 flips the coin. The comes up tails again. </li>
+<li>Cat 2 hands the ball to cat (2-1) mod 3 = cat 1.</li>
+<li>At this moment, each cat has held the ball. The game ends and cat 1 gets the prize.</li>
+</ol>
+This particular sequence of events has probability 0.7*0.7 of occuring.
+It can be shown that the probability that cat 1 wins the game is 0.7.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>6</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>500000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.2</pre></td></tr><tr><td><table><tr><td colspan="2">The coin that is flipped will come up heads with probability 1/2, and tails with probability 1/2. </td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>6</pre></td></tr><tr><td><pre>5</pre></td></tr><tr><td><pre>500000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.2</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>10</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>666666666</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.00391389439551009</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>999999999</pre></td></tr><tr><td><pre>999999996</pre></td></tr><tr><td><pre>777777777</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.05830903870125612</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">5)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>1000000000</pre></td></tr><tr><td><pre>4</pre></td></tr><tr><td><pre>300000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0.044981259448371</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">6)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>534428790</pre></td></tr><tr><td><pre>459947197</pre></td></tr><tr><td><pre>500000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 1.871156682766205E-9</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

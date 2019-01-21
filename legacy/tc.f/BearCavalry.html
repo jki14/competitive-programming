@@ -1,0 +1,51 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><p>Would you want to fight against bears who ride horses?
+Me neither.</p>
+<br></br>
+<p>Limak is a grizzly bear.
+He is a general of the dreadful army of Bearland.
+The most important part of the army is, of course, the cavalry.</p>
+<br></br>
+<p>The cavalry of Bearland consists of the same number of warriors and horses.
+Limak knows the strength of each warrior and also the strength of each horse.
+These are given in vector &lt;int&gt;s <b>warriors</b> and <b>horses</b>, respectively.</p>
+<br></br>
+<p>General Limak must assign exactly one horse to each warrior.
+Obviously, different warriors must be given different horses.</p>
+<br></br>
+<p>A warrior together with his assigned horse is called a unit.
+The strength of a unit is equal to the product of the strengths of the warrior and the horse that form the unit.</p>
+<br></br>
+<p>The warrior that corresponds to element 0 in <b>warriors</b> is called Bravebeart.
+He is always the first to charge the enemy.
+Limak decided that Bravebeart deserves some respect.
+Thus, his unit must be strictly stronger than any other unit.
+(Ties are not allowed.)</p>
+<br></br>
+<p>Given this constraint, let X be the number of valid ways in which Limak can create the units.
+A general must know everything about his army.
+Help Limak count the valid assignments.
+Compute and return the value (X modulo 1,000,000,007).</p></td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>BearCavalry</td></tr><tr><td>Method:</td><td>countAssignments</td></tr><tr><td>Parameters:</td><td>vector &lt;int&gt;, vector &lt;int&gt;</td></tr><tr><td>Returns:</td><td>int</td></tr><tr><td>Method signature:</td><td>int countAssignments(vector &lt;int&gt; warriors, vector &lt;int&gt; horses)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>2.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>warriors</b> will contain between 2 and 50 elements, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>warriors</b> and <b>horses</b> will contain the same number of elements.</td></tr><tr><td align="center" valign="top">-</td><td>Each element in <b>warriors</b> and in <b>horses</b> will be between 1 and 1000, inclusive.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{5,8,4,8}</pre></td></tr><tr><td><pre>{19,40,25,20}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 2</pre></td></tr><tr><td><table><tr><td colspan="2"><p>There are four warriors and four horses for them.
+Bravebeart's strength is <b>warriors</b>[0] = 5.</p>
+<br></br>
+<p>There are two valid ways to pair the warriors and horses into units.
+Below, each unit is presented as an ordered pair (warrior's strength, horse's strength).
+The warriors are presented in the same order as in <b>warriors</b>.</p>
+<br></br>
+<p>Valid assignment #1: (5,40), (8,19), (4,25), (8,20).</p>
+<br></br>
+<p>Valid assignment #2: (5,40), (8,20), (4,25), (8,19).</p>
+<br></br>
+<p>In assignment #1, the strength of Bravebeart's unit is 5*40 = 200.
+The other three units have strengths 8*19 = 152, 4*25 = 100, and 8*20 = 160.
+This is a valid assignment because the number 200 is strictly greater than each of the numbers 152, 100, and 160.</p></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1,1}</pre></td></tr><tr><td><pre>{1,1}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{10,2,10}</pre></td></tr><tr><td><pre>{100,150,200}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 3</pre></td></tr><tr><td><table><tr><td colspan="2">There are three valid assignments.
+<ul>
+<li>(10,200), (2,150), (10,100)</li>
+<li>(10,200), (2,100), (10,150)</li>
+<li>(10,150), (2,200), (10,100)</li>
+</ul>
+(Again, the warriors are printed in the same order as in <b>warriors</b>. Hence, in each assignment Bravebeart's unit is the first one printed.)</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{10,20}</pre></td></tr><tr><td><pre>{1,3}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 1</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{20,20,25,23,24,24,21}</pre></td></tr><tr><td><pre>{20,25,25,20,25,23,20}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">5)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{970,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,
+800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800}</pre></td></tr><tr><td><pre>{1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,
+1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,
+1000,1000,1000,1000,1000,1000,1000,1000,1000,1000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 318608048</pre></td></tr><tr><td><table><tr><td colspan="2">In all 50! assignments Bravebeart's unit is the strongest one.
+Thus, you should return 50! modulo 1,000,000,007.
+Note that even if different warriors/horses have the same strength, they are still considered distinct.</td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

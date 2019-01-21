@@ -1,0 +1,36 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td>The following story takes place on Endor, during a battle between the imperial forces and Ewoks.<br></br>
+The Ewoks are currently hiding in a forest.<br></br>
+The Empire is going to send a scout on a flying bike into the forest for reconnaisance.<br></br>
+<br></br>
+The Ewoks are preparing a series of traps for the scout.<br></br>
+Each trap has two parameters: <b>p</b>[i] and <b>x</b>[i].<br></br>
+The value (<b>p</b>[i]/100,000) is the probability that a scout who enters the trap survives it.<br></br>
+If the scout does survive, he immediately gains information that is worth <b>x</b>[i] credits.<br></br>
+<br></br>
+Ewoks know that the scout will use the following strategy, for some value of K:
+<ol>
+<li>The scout will attempt to fly through the first K traps, one after another.</li>
+<li>If any of the K traps kills the scout, his mission fails and the Empire gets no information. (That is, the value of the information retrieved by the scout in this case is 0 credits.)</li>
+<li>If the scout survives the first K traps, he will turn back, safely leave the forest and bring the collected information to the Empire's headquarters.</li>
+</ol>
+
+You are given the parameters of the Ewoks' N traps: the vector &lt;int&gt;s <b>p</b> and <b>x</b> with N elements each.<br></br>
+The traps can be placed into the forest in any order.<br></br>
+For each K between 1 and N, inclusive, solve the following problem:<br></br>
+<br></br>
+We know that the scout will follow the above strategy, and we know the value K the scout will use.<br></br>
+There are N! possible orders of traps in the forest.<br></br>
+For each of these orders we can calculate the expected value of information that will be obtained by the scout.<br></br>
+Compute the minimum of all those expected values. (In other words, find the order of traps that minimizes the expected value of the scout's information, and compute that expected value.)<br></br>
+<br></br>
+Return a vector &lt;double&gt; with N elements.<br></br>
+For each i between 0 and N-1, inclusive, element i (0-based index) of the return value should be the solution to the above problem for K = i+1.</td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>ReturnOfTheJedi</td></tr><tr><td>Method:</td><td>minimalExpectation</td></tr><tr><td>Parameters:</td><td>vector &lt;int&gt;, vector &lt;int&gt;</td></tr><tr><td>Returns:</td><td>vector &lt;double&gt;</td></tr><tr><td>Method signature:</td><td>vector &lt;double&gt; minimalExpectation(vector &lt;int&gt; x, vector &lt;int&gt; p)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>2.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Notes</h3></td></tr><tr><td align="center" valign="top">-</td><td>Each element of your return value must have a relative or absolute error less than 1e-9.</td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>x</b> will contain between 1 and 400 elements, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>x</b> and <b>prob</b> will contain the same number of elements.</td></tr><tr><td align="center" valign="top">-</td><td>Each element in <b>x</b> will be between 1 and 1,000,000,000, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td>Each element in <b>p</b> will be between 1 and 100,000, inclusive.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{100,200,300}</pre></td></tr><tr><td><pre>{50000, 20000, 20000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: {40.0, 20.000000000000004, 12.000000000000002 }</pre></td></tr><tr><td><table><tr><td colspan="2">For k = 1:<br></br>
+If we use the 0-th trap first, then the expectation will be 100 * 0.5 = 50<br></br>
+If we use the 1-th trap first, then the expectation will be 200 * 0.2 = 40<br></br>
+If we use the 2-th trap first, then the expectation will be 300 * 0.2 = 60<br></br>
+For k = 2:<br></br>
+One possible order is {1,2,0}. Expectation is (200 + 300) * 0.2 * 0.2 = 20.
+</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{200,100,500,300,400}</pre></td></tr><tr><td><pre>{100000, 100000, 100000, 100000, 100000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: {100.0, 300.0, 600.0, 1000.0, 1500.0 }</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{2,2,100,100}</pre></td></tr><tr><td><pre>{100000,100000,10000,10000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: {2.0, 2.0000000000000004, 2.0200000000000005, 2.0400000000000005 }</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1,1,200,200}</pre></td></tr><tr><td><pre>{100000,100000,10000,10000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: {1.0, 2.0, 4.010000000000001, 4.0200000000000005 }</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000}</pre></td></tr><tr><td><pre>{90000,90000,90000,90000,90000,90000,90000,90000,90000,90000}</pre></td></tr></table></td></tr><tr><td><pre>Returns: 
+{9.0E8, 1.62E9, 2.1870000000000005E9, 2.6244000000000005E9, 2.952450000000001E9,
+ 3.188646000000001E9, 3.348078300000001E9, 3.4437376800000014E9, 3.4867844010000014E9,
+ 3.4867844010000014E9 }</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

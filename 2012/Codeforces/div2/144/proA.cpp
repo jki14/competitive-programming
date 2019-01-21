@@ -1,0 +1,33 @@
+#include<iostream>
+#include<sstream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<cmath>
+#include<ctime>
+#include<climits>
+#include<algorithm>
+#include<vector>
+#include<string>
+#include<queue>
+#include<list>
+#include<bitset>
+#include<set>
+#include<map>
+#include<functional>
+#include<numeric>
+#include<utility>
+#include<iomanip>
+using namespace std;
+
+int n;
+
+int main(){
+	while(scanf("%d",&n)!=EOF){
+		if(n&1){ printf("-1\n");continue; }
+		printf("2");
+		for(int i=2;i<=n;i++)printf(" %d",(i&1)?i+1:i-1);
+		printf("\n");
+	}
+	return 0;
+}

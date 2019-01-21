@@ -1,0 +1,50 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><p>Bear Limak loves algorithms and tolerates data structures.
+Today he learned about the Cartesian tree.
+You can find a detailed description of this tree at https://en.wikipedia.org/wiki/Cartesian_tree.
+Below we give a shorter description that is sufficient to solve this problem.</p>
+<br></br>
+<p>Let A be a sequence of distinct numbers.
+Each such sequence defines a unique Cartesian tree.
+The Cartesian tree is determined by the following rules:
+<ol>
+<li>The Cartesian tree is a rooted binary tree.</li>
+<li>The nodes of the tree correspond to the elements of A.</li>
+<li>An in-order traversal of the tree prints the sequence A.</li>
+<li>The tree is a heap.</li>
+</ol></p>
+<br></br>
+<p>A more detailed explanation of the third rule:
+Consider any node in the tree, and let x be the number in this node.
+All numbers in the left subtree must appear in A before x, and all numbers in the right subtree must appear in A after x.</p>
+<br></br>
+<p>A more detailed explanation of the fourth rule:
+For each node, the number in the node must be strictly smaller than each of the numbers in the children of this node.</p>
+<br></br>
+<p>Below is a figure that shows the Cartesian tree determined by the sequence A = {9,3,7,1,8,12,10,20,15,18,5}.</p>
+<br></br>
+<p><img src="http://www.topcoder.com/contest/problem/BearPermutations/Image.jpg"></img></p>
+<br></br>
+<p>We will now define the score of a Cartesian tree.
+Let T be the Cartesian tree determined by the sequence A.
+In the tree T there are some nodes that have two children.
+For each such node, look at the numbers in those two children, find the indices of those two numbers in A, and compute their (positive) difference.
+The score of the tree T is the sum of all these differences.</p>
+<br></br>
+<p>For example, in the above tree we have four nodes that have two children each: the nodes with numbers 1, 3, 10, and 15.
+The children of node 1 are the nodes 3 and 5.
+In the original sequence A, the values 3 and 5 have (0-based) indices 1 and 10.
+The difference between these indices is 10 - 1 = 9.
+For the other three nodes with two children, the differences between their indices are 2, 3, and 2.
+Hence, the score of this tree is 9 + 2 + 3 + 2 = 16.</p>
+<br></br>
+<p>You are given the ints <b>N</b>, <b>S</b>, and <b>MOD</b>.
+There are <b>N</b>! permutations of the numbers 1 through <b>N</b>.
+Each of these permutations determines a Cartesian tree.
+Limak only likes trees that have a score that is less than or equal to <b>S</b>.
+Let X be the number of permutations of order <b>N</b> that produce such Cartesian trees.
+Compute and return the value (X modulo <b>MOD</b>).</p></td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>BearPermutations</td></tr><tr><td>Method:</td><td>countPermutations</td></tr><tr><td>Parameters:</td><td>int, int, int</td></tr><tr><td>Returns:</td><td>int</td></tr><tr><td>Method signature:</td><td>int countPermutations(int N, int S, int MOD)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>4.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Notes</h3></td></tr><tr><td align="center" valign="top">-</td><td>Pay attention to the unusual time limit.</td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>N</b> will be between 1 and 100, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>S</b> will be between 0 and 100, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>MOD</b> will be between 3 and 10^9, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>MOD</b> will be prime.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>3</pre></td></tr><tr><td><pre>1</pre></td></tr><tr><td><pre>71876209</pre></td></tr></table></td></tr><tr><td><pre>Returns: 4</pre></td></tr><tr><td><table><tr><td colspan="2">For <b>N</b>=3 there are 3! = 6 distinct permutations.
+Four of these produce Cartesian trees with score 0.
+The remaining two are the permutations (2,1,3) and (3,1,2).
+Each of these produces a Cartesian tree with score 2.
+As we are only interested in trees with score at most 1, there are 4 good permutations.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>4</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>1000003</pre></td></tr></table></td></tr><tr><td><pre>Returns: 8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>4</pre></td></tr><tr><td><pre>1</pre></td></tr><tr><td><pre>483128897</pre></td></tr></table></td></tr><tr><td><pre>Returns: 8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>5</pre></td></tr><tr><td><pre>3</pre></td></tr><tr><td><pre>907283243</pre></td></tr></table></td></tr><tr><td><pre>Returns: 82</pre></td></tr><tr><td><table><tr><td colspan="2">Two of the 82 permutations that produce valid trees are the permutations (1,3,4,2,5) and (5,4,1,3,2).
+Each of these permutations produces a tree with score 3.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>5</pre></td></tr><tr><td><pre>100</pre></td></tr><tr><td><pre>101</pre></td></tr></table></td></tr><tr><td><pre>Returns: 19</pre></td></tr><tr><td><table><tr><td colspan="2">All 5! permutations produce valid trees. The answer is (5! modulo 101).</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">5)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>20</pre></td></tr><tr><td><pre>30</pre></td></tr><tr><td><pre>3</pre></td></tr></table></td></tr><tr><td><pre>Returns: 2</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

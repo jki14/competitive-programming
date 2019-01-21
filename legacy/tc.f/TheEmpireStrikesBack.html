@@ -1,0 +1,50 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td>Darth Vader wants to destroy an entire galaxy that consists of <b>N</b> planets.
+Quite surprisingly, the entire galaxy lies in a single plane, so we can consider it to be two-dimensional.
+The planets are numbered 0 through <b>N</b>-1.
+For each i, planet i is located at the coordinates (P[i].x, P[i].y).
+All coordinates are nonnegative integers.
+They are given in a format that is specified below.
+<br></br><br></br>
+Darth Vader has a Death Star.
+The Death Star is almost complete.
+The only missing thing is a booster that will increase its range by some amount T.
+T must be a nonnegative integer.
+<br></br><br></br>
+Once the booster is installed, Darth Vader will be able to fire <b>M</b> missiles from the Death Star.
+All missiles will be fired at the same time.
+Each of those <b>M</b> missiles must target one of the <b>N</b> planets.
+(It is not possible to target coordinates that do not contain a planet.)
+<br></br><br></br>
+Each missile will destroy all planets in some specific rectangular area.
+More precisely, suppose that one of the missiles targeted a planet located at (X,Y).
+Consider the rectangle that has sides parallel to coordinate axes, one corner at (0,0), and the opposite corner at (X+T,Y+T).
+The missile will destroy all planets that lie in this rectangle, including its boundary.
+Above, T is the contribution of the booster.
+<br></br><br></br>
+You are given the following ints:
+<ul>
+<li><b>AX</b>, <b>BX</b>, <b>CX</b>: these determine the x-coordinates of all planets</li>
+<li><b>AY</b>, <b>BY</b>, <b>CY</b>: these determine the y-coordinates of all planets</li>
+<li><b>N</b> and <b>M</b>: the number of planets and the number of missiles, as defined above</li>
+</ul>
+
+Use the following pseudocode to generate the coordinates of all planets.
+Watch out for integer overflow.
+<pre>
+P[0].x = AX
+for i = 1 to N-1:
+    P[i].x = ((P[i-1].x * BX) + CX) mod 1,000,000,007
+
+P[0].y = AY
+for i = 1 to N-1:
+    P[i].y = ((P[i-1].y * BY) + CY) mod 1,000,000,007
+</pre>
+
+Given this information, your task is to find the weakest booster that still allows Darth Vader to destroy the entire galaxy.
+Formally, compute and return the smallest nonnegative integer T for which Darth Vader can destroy all <b>N</b> planets.</td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>TheEmpireStrikesBack</td></tr><tr><td>Method:</td><td>find</td></tr><tr><td>Parameters:</td><td>int, int, int, int, int, int, int, int</td></tr><tr><td>Returns:</td><td>int</td></tr><tr><td>Method signature:</td><td>int find(int AX, int BX, int CX, int AY, int BY, int CY, int N, int M)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>2.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Notes</h3></td></tr><tr><td align="center" valign="top">-</td><td>There may be two or more planets on the same exact position.</td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td>AX, BX, CX, AY, BY and CY will be between 0 and 10^9 inclusive.</td></tr><tr><td align="center" valign="top">-</td><td>N will be between 1 and 10^5 inclusive.</td></tr><tr><td align="center" valign="top">-</td><td>M will be between 1 and N inclusive.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>1</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0</pre></td></tr><tr><td><table><tr><td colspan="2">There are two planets, located at (2,2) and (6,6).<br></br>
+The Death Star has one missile.<br></br>
+If Darth Vader fires it at the planet located at (6,6), the missile will destroy both planets.<br></br>
+This happens regardless of the value of T, so we can choose T = 0.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>4</pre></td></tr><tr><td><pre>1000000000</pre></td></tr><tr><td><pre>2</pre></td></tr><tr><td><pre>1</pre></td></tr></table></td></tr><tr><td><pre>Returns: 1</pre></td></tr><tr><td><table><tr><td colspan="2">Now we have planets at (2,2) and (6,1).<br></br>
+Again, the Death Star has only one missile.<br></br>
+This time the optimal strategy is to use a booster with T = 1.<br></br>
+Then we can fire the missile at the planet at (6,1), which will destroy all planets in the rectangle between (0,0) and (7,2), inclusive.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>1</pre></td></tr><tr><td><pre>3</pre></td></tr><tr><td><pre>8</pre></td></tr><tr><td><pre>10000</pre></td></tr><tr><td><pre>10</pre></td></tr><tr><td><pre>999910000</pre></td></tr><tr><td><pre>3</pre></td></tr><tr><td><pre>1</pre></td></tr></table></td></tr><tr><td><pre>Returns: 30</pre></td></tr><tr><td><table><tr><td colspan="2">In this case planets are located at positions (1,10000), (11,9993) and (41,9923).</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>0</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>0</pre></td></tr><tr><td><pre>100000</pre></td></tr><tr><td><pre>1000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 0</pre></td></tr><tr><td><table><tr><td colspan="2">All 10^5 planets are in the same position, that is (0,0).</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>10</pre></td></tr><tr><td><pre>20</pre></td></tr><tr><td><pre>30</pre></td></tr><tr><td><pre>40</pre></td></tr><tr><td><pre>50</pre></td></tr><tr><td><pre>60</pre></td></tr><tr><td><pre>100000</pre></td></tr><tr><td><pre>10</pre></td></tr></table></td></tr><tr><td><pre>Returns: 15720</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

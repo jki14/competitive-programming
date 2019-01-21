@@ -1,0 +1,148 @@
+\documentclass[a4paper,10pt]{article}
+
+%A Few Useful Packages
+\usepackage{marvosym}
+\usepackage{fontspec} 					%for loading fonts
+\usepackage{xunicode,xltxtra,url,parskip} 	%other packages for formatting
+\RequirePackage{color,graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[big]{layaureo} 				%better formatting of the A4 page
+% an alternative to Layaureo can be ** \usepackage{fullpage} **
+\usepackage{supertabular} 				%for Grades
+\usepackage{titlesec}					%custom \section
+
+%Setup hyperref package, and colours for links
+\usepackage{hyperref}
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour, linkcolor=linkcolour}
+
+%FONTS
+\defaultfontfeatures{Mapping=tex-text}
+%\setmainfont[SmallCapsFont = Fontin SmallCaps]{Fontin}
+%%% modified for Karol Kozioł for ShareLaTeX use
+\setmainfont[
+SmallCapsFont = Fontin-SmallCaps.otf,
+BoldFont = Fontin-Bold.otf,
+ItalicFont = Fontin-Italic.otf
+]
+{Fontin.otf}
+%%%
+
+%CV Sections inspired by: 
+%http://stefano.italians.nl/archives/26
+\titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{3pt}{3pt}
+%Tweak a bit the top margin
+%\addtolength{\voffset}{-1.3cm}
+
+%Italian hyphenation for the word: ''corporations''
+\hyphenation{im-pre-se}
+
+%-------------WATERMARK TEST [**not part of a CV**]---------------
+\usepackage[absolute]{textpos}
+
+\setlength{\TPHorizModule}{30mm}
+\setlength{\TPVertModule}{\TPHorizModule}
+\textblockorigin{2mm}{0.65\paperheight}
+\setlength{\parindent}{0pt}
+
+%--------------------BEGIN DOCUMENT----------------------
+\begin{document}
+
+%WATERMARK TEST [**not part of a CV**]---------------
+%\font\wm=''Baskerville:color=787878'' at 8pt
+%\font\wmweb=''Baskerville:color=FF1493'' at 8pt
+%{\wm 
+%	\begin{textblock}{1}(0,0)
+%		\rotatebox{-90}{\parbox{500mm}{
+%			Typeset by Alessandro Plasmati with \XeTeX\  \today\ for 
+%			{\wmweb \href{http://www.aleplasmati.comuv.com}{aleplasmati.comuv.com}}
+%		}
+%	}
+%	\end{textblock}
+%}
+
+\pagestyle{empty} % non-numbered pages
+
+\font\fb=''[cmr10]'' %for use with \LaTeX command
+
+%--------------------TITLE-------------
+\par{\centering{\Huge Zhe \textsc{Wang}}\bigskip\par}
+
+%--------------------SECTIONS-----------------------------------
+
+%Section: Personal Data
+\section{Personal Data}
+
+\begin{tabular}{rl}
+    \textsc{Place and Date of Birth:} & Chongqing, China  | 22 Feb. 1991 \\
+    \textsc{Address:} & Hangzhou, Zhejiang, China \\
+    \textsc{Phone:} & +86 159 2395 5770\\
+    \textsc{email:} & \href{mailto:jki14wz@gmail.com}{jki14wz@gmail.com}
+\end{tabular}
+
+%Section: Recent Work Experience
+\section{Recent Work Experience}
+
+\begin{tabular}{r|p{11cm}}
+
+    \emph{Current} & Team Leader of \textsc{Algorithm Implementation Team}, Wonder\\
+    \textsc{Jan 2017} & \emph{Augmented Reality Entertainment Platform on Mobile}\\
+    &\textbf{[C Programming Language, Gprof, Pthread, Socket]}\\
+    &\footnotesize{Focus on reducing the computing resources of the computer vision relative algorithm at the code implementation level with data structure optimization, computational geometry algorithm optimization, profiling, code optimization, multithreading and clustering.}\\
+    
+    \multicolumn{2}{c}{}\\
+
+    \textsc{Aug-Dec 2016} & Team Leader of \textsc{Backend Team}, Wonder\\
+    \textsc & \emph{Augmented Reality Entertainment Platform on Mobile}\\
+    &\textbf{[JAVA Programming Language, Spring Boot, Servlet, Mysql]}\\
+    &\footnotesize{Responsible for RESTful Web Service Server Framework design and implementing, high-performance database structure develop, RESTful Web Service API standard drafting, team coordination, progress control, risk management and code review.}\\
+
+    \multicolumn{2}{c}{}\\
+
+    \textsc{Jul 2016} & Software engineer of \textsc{Backend Team}, Wonderland\\
+    \textsc{Jun 2014} & \emph{Augmented Reality Game Platform on Mobile}\\
+    &\textbf{[C Programming Language, Pthread, Socket, LIBSVM, PHP, Mysql]}\\
+    &\footnotesize{Prepare and implement the distributed high-dimensional vector archiving and k-Nearest Neighbors searching system working for computer vision computing. Research and perform the superficial image scene indexing algorithm. Create the complex braching game logic engine for the platform. Developed the business logic and data access RESTful Web Service on the server for the mobile clients.}\\
+
+\end{tabular}
+
+%Section: Selected Accomplishments
+\section{Selected Accomplishments}
+
+\begin{tabular}{rl}
+    
+    \textsc{July} 2016 & Ranking 231st in \textsc{Distributed Round 2}, \textbf{Google Code Jam 2016}\\
+    
+    &\\
+    
+    \textsc{June} 2012 & Ranking 273rd in \textsc{Round 3}, \textbf{Google Code Jam 2012}\\
+    
+    &\\
+    
+    \textsc{October} 2011 & Win Silver Medal in \textsc{Asia Regional Beijing Site}, \textbf{ACM/ICPC}\\
+
+\end{tabular}
+
+%Section: Highlights
+\section{Highlights}
+
+\begin{tabular}{rl}
+
+    \textsc{Solid Background}: & \textsc{Fundamental algorithms and data structures}\\
+    \textsc{Excellent}: & \textsc{C Programming Language}\\
+    \textsc{Familiar}: & \textsc{High Performance Programming Technique}\\
+
+\end{tabular}
+
+%Section: Education
+\section{Education}
+
+\begin{tabular}{rl}
+
+    \textsc{June} 2017 & Bachelor of Engineering in \textsc{Computer Science}, \textbf{Chongqing University}\\
+    &\footnotesize{(Left campus in 2014.06, expected graduate in 2017.06)}\\
+
+\end{tabular}
+
+\end{document}

@@ -1,0 +1,66 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><p>
+Limak and John are little polar bears.
+John is cute and thus there are N bear girls who are interested in dating him.
+</p>
+<br></br>
+<p>
+Limak has decided to help John, so he went ahead and interviewed all N candidates.
+Limak is an excellent judge of bear girl beauty, so he was able to determine the exact beauty of each candidate.
+The beauties of the candidates turned out to be N distinct positive integers.
+(Larger values represent more beautiful girls.)
+</p>
+<br></br>
+<p>
+John has now planned a sequence of N dates: a single date with each of the girls.
+The order in which he is going to meet the girls was chosen at random, with each of the N! permutations being equally likely.
+</p>
+<br></br>
+<p>
+Before going on any of the dates, John has two sources of information.
+First, Limak gave him vector &lt;int&gt;s <b>A</b> and <b>T</b> that encode the information about the exact beauty of all candidates.
+(The encoding is specified below.)
+Additionally, John knows the int <b>cost</b>: a fixed cost he has to pay for each date he actually goes to.
+</p>
+<br></br>
+<p>
+As soon as John starts going on the dates, he will be on his own and Limak will not be able to assist him in any way.
+Immediately after each date John will have to make a choice: either he rejects the current girl, or he accepts her.
+As soon as he accepts a girl, the dating is over: John will cancel all the remaining dates (and he will not pay the cost for those).
+</p>
+<br></br>
+<p>
+John's problem is that he is not such a good judge of beauty as Limak.
+John can only compare <i>relative</i> beauty.
+More precisely, whenever he goes on a date with a girl, he will be able to (always correctly) tell which of the previously dated girls were more beautiful and which ones were less beautiful than the current one.
+</p>
+<br></br>
+<p>
+John's primary goal is to accept exactly one girl.
+John's secondary goal is to maximize the expected value of B-C, where B is the beauty of the chosen girl and C is the total cost of the dates he went on.
+(That is, C is <b>cost</b> times the number of dates.)
+Find the optimal strategy for John and return the largest possible expected value of B-C.
+</p>
+<br></br>
+<p>
+The information about the girls is encoded in the following way:
+For each valid i, there are <b>T</b>[i] girls with the following values of beauty: <b>A</b>[i], <b>A</b>[i]+1, ..., <b>A</b>[i]+<b>T</b>[i]-1.
+The encoding is chosen in such a way that different values of i describe disjoint groups of girls.
+Hence, the value N mentioned above is equal to the sum of <b>T</b>.
+</p></td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>BearGirls</td></tr><tr><td>Method:</td><td>expectedValue</td></tr><tr><td>Parameters:</td><td>vector &lt;int&gt;, vector &lt;int&gt;, int</td></tr><tr><td>Returns:</td><td>double</td></tr><tr><td>Method signature:</td><td>double expectedValue(vector &lt;int&gt; A, vector &lt;int&gt; T, int cost)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>3.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Notes</h3></td></tr><tr><td align="center" valign="top">-</td><td>Pay attention to the unusual time limit.</td></tr><tr><td align="center" valign="top">-</td><td>John can only accept a girl immediately after a date with her. In particular, if only one girl remains, he still has to go on a date with her, pay the cost for the date, and only then can he accept her.</td></tr><tr><td align="center" valign="top">-</td><td>Your return value must have absolute or relative error smaller than 1e-7.</td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>T</b> will contain between 1 and 100 elements, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td><b>A</b> and <b>T</b> will contain the same number of elements.</td></tr><tr><td align="center" valign="top">-</td><td>Each element in <b>T</b> will be positive.</td></tr><tr><td align="center" valign="top">-</td><td>The sum of all elements in <b>T</b> will be between 1 and 10,000, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td>The values in <b>A</b> and <b>T</b> will be such that the beauty values generated according to the problem statement will all be distinct.</td></tr><tr><td align="center" valign="top">-</td><td>For each valid i, <b>A</b>[i] will be at least 1.</td></tr><tr><td align="center" valign="top">-</td><td>For each valid i, <b>A</b>[i]+<b>T</b>[i]-1 will be at most 10^9.</td></tr><tr><td align="center" valign="top">-</td><td><b>cost</b> will be between 0 and 10^9, inclusive.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{10, 1, 100}</pre></td></tr><tr><td><pre>{1, 1, 1}</pre></td></tr><tr><td><pre>5</pre></td></tr></table></td></tr><tr><td><pre>Returns: 40.99999999999999</pre></td></tr><tr><td><table><tr><td colspan="2"><p>There are multiple strategies John can use.
+For example, he could simply accept the first girl he dates.
+In this case, the total cost C would be 5, and the expected beauty would be B = (10+1+100) = 37.
+Hence, with this strategy the expected value of B-C would be 32.</p>
+<br></br>
+<p>The above strategy is not optimal.
+In this case there is a better strategy that leads to the expected value 41.</p>
+<br></br>
+<p>The strategy looks as follows:
+First, John rejects the first girl he dates.
+If the second girl is more beautiful than the first one, he accepts her.
+Otherwise, he rejects her and accepts the third girl (regardless of her beauty).</p>
+<br></br>
+<p>The expected cost for the above strategy can be computed as follows:
+There are 3! = 6 different orders in which he can meet the girls.
+For each order we can simulate what happens and compute the corresponding values B and C.
+If we do so, we'll get the following six values of B-C: 0, 90, 85, 90, (-5), and (-14).
+The expected value of B-C is simply the average of these six values.</p></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{10, 1, 100}</pre></td></tr><tr><td><pre>{1, 1, 1}</pre></td></tr><tr><td><pre>1000</pre></td></tr></table></td></tr><tr><td><pre>Returns: -963.0</pre></td></tr><tr><td><table><tr><td colspan="2">Here the dates are so expensive that the best strategy is to simply accept the first girl he dates.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{10000}</pre></td></tr><tr><td><pre>{10000}</pre></td></tr><tr><td><pre>100</pre></td></tr></table></td></tr><tr><td><pre>Returns: 17706.37475360699</pre></td></tr><tr><td><table><tr><td colspan="2">There are 10000 girls and their values of beauty are: 10000, 10001, ..., 19999.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000, 1}</pre></td></tr><tr><td><pre>{1, 9999}</pre></td></tr><tr><td><pre>0</pre></td></tr></table></td></tr><tr><td><pre>Returns: 3.679155284022922E8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000, 1}</pre></td></tr><tr><td><pre>{1, 9999}</pre></td></tr><tr><td><pre>50</pre></td></tr></table></td></tr><tr><td><pre>Returns: 3.675476907000374E8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">5)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000, 1}</pre></td></tr><tr><td><pre>{1, 9999}</pre></td></tr><tr><td><pre>5000</pre></td></tr></table></td></tr><tr><td><pre>Returns: 3.316026716357059E8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">6)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000, 1}</pre></td></tr><tr><td><pre>{1, 9999}</pre></td></tr><tr><td><pre>500000</pre></td></tr></table></td></tr><tr><td><pre>Returns: -395000.50000000035</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">7)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>{1000000000, 1}</pre></td></tr><tr><td><pre>{1, 9999}</pre></td></tr><tr><td><pre>1000000000</pre></td></tr></table></td></tr><tr><td><pre>Returns: -9.998950005E8</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>

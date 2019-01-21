@@ -1,0 +1,48 @@
+-- Example 0
+xy
+2
+1
+
+2079
+-- Example 1
+q
+2
+1
+
+1926
+-- Example 2
+ababab
+5
+4
+
+527166180
+-- Example 3
+fgcdx
+500
+10
+
+942389748
+-- Example 4
+ghjhhhgjhjhgjhghghjhjg
+8
+10000000
+
+618639712
+-- Example 5
+pdpfrpfdfdpfdpfdpfpdfldfpfldpfdlfpdlfdpflepflfldpflofpwpldlfpde
+999
+500000000
+
+852730493
+-- Example 6
+a
+100
+0
+
+990669582
+-- Example 7
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+1000
+1000000000
+
+286425258

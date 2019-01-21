@@ -1,0 +1,43 @@
+<html><body bgcolor="#000000" text="#ffffff"><table><tr><td colspan="2"><h3>Problem Statement</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td>Correct parentheses sequences can be defined recursively as follows:
+<ul>
+<li>The empty string "" is a correct sequence.</li>
+<li>If "X" and "Y" are correct sequences, then "XY" (the concatenation of X and Y) is a correct sequence.</li>
+<li>If "X" is a correct sequence, then "(X)" is a correct sequence.</li>
+<li>Each correct parentheses sequence can be derived using the above rules.</li>
+</ul>
+Examples of correct parentheses sequences include "", "()", "()()()", "(()())", and "(((())))".<br></br>
+<br></br>
+<br></br>
+You have a string <b>s</b>.
+You want to change it into a correct parentheses sequence.
+<br></br>
+<br></br>
+<br></br>
+You can only change the string using magic flips.
+In order to do a magic flip, you specify two 0-based indices L and R such that L &lt;= R.
+The operation modifies the characters on indices from L to R, inclusive.
+First, the order of these characters is reversed.
+Then, each character is toggled to the opposite one.
+That is, each '(' in the specified range changes to a ')' and vice versa.
+<br></br>
+<br></br>
+<br></br>
+For example, suppose you have the string "((()".
+If you do a magic flip on the entire string (i.e., choosing L=0 and R=3), it first gets reversed to ")(((" and then all parentheses are toggled. Thus, flipping the string "((()" produces the string "()))".
+<br></br>
+<br></br>
+<br></br>
+Given <b>s</b>, find and report any sequence of at most 10 magic flips that changes <b>s</b> into a correct parentheses sequence.
+If there is no such sequence of magic flips, return the vector &lt;int&gt; {-1}.
+If there are multiple such sequences, you may return any of them.
+In particular, you are not required to find the shortest possible sequence of flips.
+The returned vector &lt;int&gt; should contain 2*F elements, where F is the number of flips you want to perform: 
+for each flip, in order, first its L and then its R.</td></tr><tr><td colspan="2"><h3>Definition</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Class:</td><td>ParenthesesDiv1Easy</td></tr><tr><td>Method:</td><td>correct</td></tr><tr><td>Parameters:</td><td>string</td></tr><tr><td>Returns:</td><td>vector &lt;int&gt;</td></tr><tr><td>Method signature:</td><td>vector &lt;int&gt; correct(string s)</td></tr><tr><td colspan="2">(be sure your method is public)</td></tr></table></td></tr><tr><td colspan="2"><h3>Limits</h3></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td>Time limit (s):</td><td>2.000</td></tr><tr><td>Memory limit (MB):</td><td>256</td></tr><tr><td>Stack limit (MB):</td><td>256</td></tr></table></td></tr><tr><td colspan="2"><h3>Constraints</h3></td></tr><tr><td align="center" valign="top">-</td><td><b>s</b> will contain between 1 and 1,000 characters, inclusive.</td></tr><tr><td align="center" valign="top">-</td><td>Each character in <b>s</b> will be '(' or ')'.</td></tr><tr><td colspan="2"><h3>Examples</h3></td></tr><tr><td align="center" nowrap="true">0)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>&quot;)(&quot;</pre></td></tr></table></td></tr><tr><td><pre>Returns: {0, 0, 1, 1 }</pre></td></tr><tr><td><table><tr><td colspan="2">The first flip has L=R=0.
+It changes the string to "((".
+The second flip has L=R=1.
+It changes that string to "()", which is a correct parentheses sequence.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">1)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>&quot;))))))((((((&quot;</pre></td></tr></table></td></tr><tr><td><pre>Returns: {0, 5, 6, 11 }</pre></td></tr><tr><td><table><tr><td colspan="2">Here, the first flip changes the string to "((((((((((((" and then the second flip changes it to "(((((())))))".<br></br>
+<br></br>
+Note that {0,0,1,1,2,2,...,11,11} is not a valid solution.
+This sequence of flips produces a correct parentheses sequence (by flipping each character separately).
+However, this sequence consists of 12 flips and we are only allowed to perform at most 10 flips.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">2)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>&quot;))()())()&quot;</pre></td></tr></table></td></tr><tr><td><pre>Returns: {-1 }</pre></td></tr><tr><td><table><tr><td colspan="2">This <b>s</b> has length 9.
+There is no correct parentheses sequence of length 9, so there can be no good sequence of flips.</td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">3)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>&quot;)()(((&quot;</pre></td></tr></table></td></tr><tr><td><pre>Returns: {0, 0, 3, 3, 5, 5 }</pre></td></tr><tr><td><table><tr><td colspan="2"></td></tr></table></td></tr></table></td></tr><tr><td align="center" nowrap="true">4)</td><td></td></tr><tr><td>&#160;&#160;&#160;&#160;</td><td><table><tr><td><table><tr><td><pre>&quot;()&quot;</pre></td></tr></table></td></tr><tr><td><pre>Returns: { }</pre></td></tr><tr><td><table><tr><td colspan="2">This time we don't need to do anything.</td></tr></table></td></tr></table></td></tr></table><p>This problem statement is the exclusive and proprietary property of TopCoder, Inc.  Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited.  (c)2003, TopCoder, Inc.  All rights reserved.  </p></body></html>
