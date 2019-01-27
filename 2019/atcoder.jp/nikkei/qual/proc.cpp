@@ -886,13 +886,29 @@ static const double eps=1e-8;
 
 //]TAIL_OF_JKI'S_HEADER
 
-class ${ClassName} {
-  public:
-  ${Method.ReturnType} ${Method.Name}(${Method.Params}) {
-    return ${Method.ReturnType;zeroval};
+struct dish_t {
+  int x, y;
+  bool operator < (const dish_t &rhs) const{
+    return this->x + this->y > rhs.x + rhs.y;
   }
-};
+} a[110000];
 
-${CutBegin}
-${<TestCode}
-${CutEnd}
+int main() {
+  int n;
+  while(scanf("%d", &n)!=EOF){
+    for (int i = 0; i < n; ++i) {
+      scanf("%d%d", &a[i].x, &a[i].y);
+    }
+    sort(a, a + n);
+    lld lef = 0LL, rig = 0LL;
+    for (int i = 0; i < n; ++i) {
+      if (i & 1) {
+        rig += a[i].y * 1LL;
+      } else {
+        lef += a[i].x * 1LL;
+      }
+    }
+    printf("%lld\n", lef - rig);
+  }
+  return 0;
+}

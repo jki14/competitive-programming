@@ -886,13 +886,52 @@ static const double eps=1e-8;
 
 //]TAIL_OF_JKI'S_HEADER
 
-class ${ClassName} {
-  public:
-  ${Method.ReturnType} ${Method.Name}(${Method.Params}) {
-    return ${Method.ReturnType;zeroval};
-  }
-};
+int n, m;
+int nbs[110000], dst[110000], nxt[110000], eid;
+int que[110000], lef, rig;
+int din[110000], root;
+int foo[110000];
 
-${CutBegin}
-${<TestCode}
-${CutEnd}
+inline void add_edge(const int u, const int v) {
+  nxt[eid] = nbs[u];
+  dst[eid] = v;
+  nbs[u] = eid++;
+}
+
+int main() {
+  while(scanf("%d%d", &n, &m)!=EOF){
+    for (int i = 0; i < n; ++i) nbs[i] = -1;
+    eid = 0;
+    for (int i = 0; i < n; ++i) din[i] = 0;
+    for (int i = 0; i < n - 1 + m; ++i) {
+      int u, v;
+      scanf("%d%d", &u, &v);
+      add_edge(u - 1, v - 1);
+      din[v - 1]++;
+    }
+    for (int i = 0; i < n; ++i) {
+      if (!din[i]) {
+        root = i;
+        foo[i] = -1;
+        break;
+      }
+    }
+    lef = rig = 0;
+    que[rig++] = root;
+    for (; lef < rig; ++lef) {
+      const int u = que[lef];
+      for (int i = nbs[u]; ~i; i = nxt[i]) {
+        const int v = dst[i];
+        din[v]--;
+        if (din[v] == 0) {
+          foo[v] = u;
+          que[rig++] = v;
+        }
+      }
+    }
+    for (int i = 0; i < n; ++i) {
+      printf("%d\n", foo[i] + 1);
+    }
+  }
+  return 0;
+}

@@ -886,13 +886,101 @@ static const double eps=1e-8;
 
 //]TAIL_OF_JKI'S_HEADER
 
-class ${ClassName} {
-  public:
-  ${Method.ReturnType} ${Method.Name}(${Method.Params}) {
-    return ${Method.ReturnType;zeroval};
+struct edge_t {
+  int src, dst;
+  lld wht;
+  int key;
+  bool operator < (const edge_t &rhs) const {
+    return this->wht < rhs.wht;
   }
-};
+} pool[110000];
 
-${CutBegin}
-${<TestCode}
-${CutEnd}
+int top[110000];
+int lhk[110000], rhk[110000];
+lld lhp[110000], rhp[110000];
+
+int n, m, foo;
+lld prf[110000];
+lld sum[110000];
+int f[110000];
+
+inline int find(const int u) {
+  if (f[u] != u) {
+    f[u] = find(f[u]);
+  }
+  return f[u];
+}
+
+void process(const int eid) {
+  if (eid >= 0 && pool[eid].wht > lhp[eid] + rhp[eid]) {
+    pool[eid].key = 2;
+    foo++;
+    process(lhk[eid]);
+    process(rhk[eid]);
+  }
+}
+
+int main() {
+  while (scanf("%d%d", &n, &m)!=EOF){
+    for (int i = 0; i < n; ++i) {
+      scanf("%lld", &prf[i]);
+    }
+    for (int i = 0; i < m; ++i) {
+      scanf("%d%d%lld", &pool[i].src, &pool[i].dst, &pool[i].wht);
+      pool[i].src--;
+      pool[i].dst--;
+      pool[i].key = 0;
+    }
+    sort(pool, pool + m);
+    for (int i = 0; i < n; ++i) {
+      f[i] = i;
+      sum[i] = prf[i];
+      top[i] = -1;
+    }
+    for (int i = 0; i < m; ++i) {
+      int lhs = find(pool[i].src);
+      int rhs = find(pool[i].dst);
+      if (lhs != rhs) {
+        //set key
+        pool[i].key = 1;
+        //record
+        lhk[i] = top[lhs]; 
+        rhk[i] = top[rhs];
+        lhp[i] = sum[lhs];
+        rhp[i] = sum[rhs];
+        //union
+        f[lhs] = rhs;
+        sum[rhs] += sum[lhs];
+        sum[lhs] = 0LL;
+        top[rhs] = i;
+      }
+    }
+    foo = 0;
+    process(top[find(0)]);
+    for (int i = 0; i < n; ++i) {
+      f[i] = i;
+      sum[i] = 0LL;
+    }
+    for (int i = 0; i < m; ++i) {
+      if (pool[i].key == 1) {
+        const int lhs = find(pool[i].src);
+        const int rhs = find(pool[i].dst);
+        f[lhs] = rhs;
+      }
+    }
+    for (int i = 0; i < n; ++i) {
+      sum[find(i)] += prf[i];
+    }
+    for (int i = 0; i < m; ++i) {
+      if (pool[i].key == 0) {
+        const int lhs = find(pool[i].src);
+        const int rhs = find(pool[i].dst);
+        if (lhs != rhs || pool[i].wht > sum[lhs]) {
+          foo++;
+        }
+      }
+    }
+    printf("%d\n", foo);
+  }
+  return 0;
+}
