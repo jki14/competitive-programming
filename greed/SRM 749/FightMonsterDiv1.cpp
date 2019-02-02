@@ -25,9 +25,9 @@ const lld inf = 0x3f3f3f3f3f3f3f3fLL;
 
 class FightMonsterDiv1 {
   private:
-    lld bs0(lld lef, lld rig, const lld goal, const lld base, const lld delta) {
+    lld bs0(lld lef, lld rig, const __int128 goal, const __int128 base, const __int128 delta) {
       auto calc = [=](const lld x) {
-        return (base + base + delta * x) * x / 2LL;
+        return (base + base + delta * (x - 1)) * x / 2;
       };
       while (lef <= rig) {
         const lld mid = (lef + rig) >> 1;
@@ -38,14 +38,15 @@ class FightMonsterDiv1 {
           lef = mid + 1LL;
         }
       }
+      assert(0);
       return inf;
     }
-    lld bs1(lld lef, lld rig, const lld goal, const lld base, const lld delta, const lld enhance) {
+    lld bs1(lld lef, lld rig, const __int128 goal, const __int128 base, const __int128 delta, const __int128 enhance) {
       auto calc = [=](const lld x) {
-        lld normal = MAX(x - enhance, 0LL);
-        lld base2 = base + normal * delta;
-        lld x2 = x - normal;
-        return (base + base + delta * normal) * normal / 2LL + (base2 + base2 + delta * x2) * x2 / 2LL * 5LL;
+        __int128 normal = MAX(x - enhance, (__int128)0);
+        __int128 base2 = base + normal * delta;
+        __int128 x2 = x - normal;
+        return (base + base + delta * (normal - 1)) * normal / 2 + (base2 + base2 + delta * (x2 - 1)) * x2 / 2 * 5;
       };
       while (lef <= rig) {
         const lld mid = (lef + rig) >> 1;
@@ -56,11 +57,12 @@ class FightMonsterDiv1 {
           lef = mid + 1LL;
         }
       }
+      assert(0);
       return inf;
     }
   public:
     long long fightTime(long long hp, long long attack, int level, long long duration) {
-      lld delta = attack * level / 100L;
+      lld delta = attack * level / 100LL;
       lld brute = bs0(1LL, (hp + attack - 1LL) / attack, hp, attack, delta);
       lld magic = bs1(1LL, brute, hp, attack, delta, duration);
       return MIN(brute, magic);
