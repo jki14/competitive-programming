@@ -26,7 +26,7 @@ class IdenticalBags {
   }
   public:
   long long makeBags(vector<long long> candy, long long bagSize) {
-    return process(0LL, *max_element(candy.begin(), candy.end()), candy, bagSize);
+    return process(1LL, *max_element(candy.begin(), candy.end()), candy, bagSize);
   }
 };
 
