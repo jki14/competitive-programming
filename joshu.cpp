@@ -16,6 +16,12 @@ struct add_safe {
     = std::numeric_limits<INT>::max() - (token - 1) >= (token - 1);
 };
 
+template<int64_t token, typename INT>
+struct mul_safe {
+  constexpr static bool value
+    = std::numeric_limits<INT>::max() / (token - 1) >= (token - 1);
+};
+
 template<int64_t token>
 class imod_t {
   using foo_t = int64_t;
@@ -30,12 +36,12 @@ public:
   imod_t(const foo_t rhs) {
     foo_ = rhs % token;
   }
+
   imod_t operator+(imod_t const& rhs) const {
     imod_t bar(*this);
     bar += rhs;
     return bar;
   }
-
   template<int64_t token2>
   typename std::enable_if<
     token_compatible<token, token2>::value
@@ -45,7 +51,6 @@ public:
     foo_ = (foo_ + rhs.foo_) % token;
     return *this;
   }
-
   template<int64_t token2>
   typename std::enable_if<
     token_compatible<token, token2>::value
@@ -53,6 +58,30 @@ public:
     , imod_t<token>&>::type
   operator+=(imod_t<token2> const& rhs) {
     foo_ = ((sup_t)foo_ + (sup_t)rhs.foo_) % token;
+    return *this;
+  }
+
+  imod_t operator*(imod_t const& rhs) const {
+    imod_t bar(*this);
+    bar *= rhs;
+    return bar;
+  }
+  template<int64_t token2>
+  typename std::enable_if<
+    token_compatible<token, token2>::value
+    && mul_safe<token2, foo_t>::value
+    , imod_t<token>&>::type
+  operator*=(imod_t<token2> const& rhs) {
+    foo_ = (foo_ * rhs.foo_) % token;
+    return *this;
+  }
+  template<int64_t token2>
+  typename std::enable_if<
+    token_compatible<token, token2>::value
+    && !mul_safe<token2, foo_t>::value
+    , imod_t<token>&>::type
+  operator*=(imod_t<token2> const& rhs) {
+    foo_ = ((sup_t)foo_ * (sup_t)rhs.foo_) % token;
     return *this;
   }
 
@@ -77,6 +106,10 @@ int main() {
   joshu::imod_t<4> mit = -2;
   joshu::imod_t<8> mit2 = -2;
   mit += mit2;
+  mit *= mit2;
   std::cout << mit.lld() << std::endl;
+  joshu::imod_t<9223372036854775807LL> mit3 = -2;
+  mit3 += mit3;
+  mit3 *= mit3;
   return 0;
 }
