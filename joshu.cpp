@@ -3,16 +3,16 @@
 namespace joshu {
 
 inline namespace {
-template<int64_t token, int64_t token2>
-struct token_compatible {
-  constexpr static bool value
-    = token2 % token == 0;
-};
-
 template<int64_t token, typename integral>
 struct add_safe {
   constexpr static bool value
     = std::numeric_limits<integral>::max() - (token - 1) >= (token - 1);
+};
+
+template<int64_t token, typename integral>
+struct sub_safe {
+  constexpr static bool value
+    = std::numeric_limits<integral>::min() - (1 - token) <= (1 - token);
 };
 
 template<int64_t token, typename integral>
@@ -27,66 +27,88 @@ class imod_t {
   using sup_t = __int128;
   static_assert(token > 0, "");
   static_assert(std::is_integral<foo_t>::value, "");
+  static_assert(std::is_signed<foo_t>::value, "");
+  static_assert(std::numeric_limits<foo_t>::max() > token, "");
 public:
   imod_t() = default;
   imod_t(imod_t const&) = default;
   imod_t(imod_t &&) = default;
 
-  imod_t(const foo_t rhs) {
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t(const integral rhs) {
     foo_ = rhs % token;
   }
 
-  template<int64_t token2>
-  typename std::enable_if<
-    token_compatible<token, token2>::value
-    && add_safe<token2, foo_t>::value
-    , imod_t<token>&>::type
-  imod_t<token> operator+(imod_t<token2> const& rhs) const {
+  imod_t& operator=(imod_t const&) = default;
+  imod_t& operator=(imod_t &&) = default;
+
+  imod_t operator+(imod_t const& rhs) const {
     imod_t bar(*this);
     bar += rhs;
     return bar;
   }
-  template<int64_t token2>
-  typename std::enable_if<
-    token_compatible<token, token2>::value
-    && add_safe<token2, foo_t>::value
-    , imod_t<token>&>::type
-  operator+=(imod_t<token2> const& rhs) {
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && add_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator+=(rtype const& rhs) {
     foo_ = (foo_ + rhs.foo_) % token;
     return *this;
   }
-  template<int64_t token2>
-  typename std::enable_if<
-    token_compatible<token, token2>::value
-    && !add_safe<token2, foo_t>::value
-    , imod_t<token>&>::type
-  operator+=(imod_t<token2> const& rhs) {
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && !add_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator+=(rtype const& rhs) {
     foo_ = ((sup_t)foo_ + (sup_t)rhs.foo_) % token;
     return *this;
   }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t operator+(const integral rhs) const {
+    return *this + imod_t(rhs);
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t& operator+=(const integral rhs) {
+    return *this += imod_t(rhs);
+  }
 
-  imod_t operator*(imod_t const& rhs) const {
+  imod_t operator-(imod_t const& rhs) const {
     imod_t bar(*this);
-    bar *= rhs;
+    bar -= rhs;
     return bar;
   }
-  template<int64_t token2>
-  typename std::enable_if<
-    token_compatible<token, token2>::value
-    && mul_safe<token2, foo_t>::value
-    , imod_t<token>&>::type
-  operator*=(imod_t<token2> const& rhs) {
-    foo_ = (foo_ * rhs.foo_) % token;
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && sub_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator-=(rtype const& rhs) {
+    foo_ = (foo_ - rhs.foo_) % token;
     return *this;
   }
-  template<int64_t token2>
-  typename std::enable_if<
-    token_compatible<token, token2>::value
-    && !mul_safe<token2, foo_t>::value
-    , imod_t<token>&>::type
-  operator*=(imod_t<token2> const& rhs) {
-    foo_ = ((sup_t)foo_ * (sup_t)rhs.foo_) % token;
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && !sub_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator-=(rtype const& rhs) {
+    foo_ = ((sup_t)foo_ - (sup_t)rhs.foo_) % token;
     return *this;
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t operator-(const integral rhs) const {
+    return *this - imod_t(rhs);
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t& operator-=(const integral rhs) {
+    return *this -= imod_t(rhs);
   }
 
   long long lld() const {
@@ -94,8 +116,6 @@ public:
   }
     
 private:
-  template<int64_t token2>
-  friend class imod_t;
   foo_t foo_ = 0;
 };
 }
@@ -104,15 +124,14 @@ private:
 
 }
 
+typedef joshu::imod_t<1000000007> imod_t;
+
 int main() {
-  joshu::imod_t<4> mit = -2;
-  joshu::imod_t<8> mit2 = -2;
-  mit += mit2;
-  mit *= mit2;
-  std::cout << mit.lld() << std::endl;
-  joshu::imod_t<9223372036854775807LL> mit3 = -2;
-  mit3 += mit3;
-  mit3 *= mit3;
-  mit += 3;
+  imod_t foo = 1;
+  foo = foo + 1;
+  foo = foo + foo;
+  foo += 1;
+  foo += foo;
+  std::cout << foo.lld() << std::endl;
   return 0;
 }
