@@ -2,6 +2,7 @@
 
 namespace joshu {
 
+/* Class imod_t */
 inline namespace {
 template<int64_t token, typename integral>
 struct add_safe {
@@ -111,6 +112,40 @@ public:
     return *this -= imod_t(rhs);
   }
 
+  imod_t operator*(imod_t const& rhs) const {
+    imod_t bar(*this);
+    bar *= rhs;
+    return bar;
+  }
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && mul_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator*=(rtype const& rhs) {
+    foo_ = (foo_ * rhs.foo_) % token;
+    return *this;
+  }
+  template<typename rtype
+    , typename std::enable_if<
+      std::is_same<imod_t, rtype>::value
+      && !mul_safe<token, foo_t>::value
+    >::type* = nullptr>
+  imod_t& operator*=(rtype const& rhs) {
+    foo_ = ((sup_t)foo_ * (sup_t)rhs.foo_) % token;
+    return *this;
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t operator*(const integral rhs) const {
+    return *this * imod_t(rhs);
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t& operator*=(const integral rhs) {
+    return *this *= imod_t(rhs);
+  }
+
   long long lld() const {
     return (foo_ + token) % token;
   }
@@ -120,18 +155,15 @@ private:
 };
 }
 
-//TODO
-
 }
 
+inline namespace newtype {
 typedef joshu::imod_t<1000000007> imod_t;
+}
 
 int main() {
-  imod_t foo = 1;
-  foo = foo + 1;
-  foo = foo + foo;
-  foo += 1;
-  foo += foo;
+  imod_t foo = 65535;
+  foo += foo * foo + foo - (foo + foo) * foo;
   std::cout << foo.lld() << std::endl;
   return 0;
 }
