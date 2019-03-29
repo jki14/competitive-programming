@@ -1,53 +1,54 @@
 #include "bits/stdc++.h"
 
 namespace joshu {
-
 /* Number Theory */
 inline namespace {
-class extended_euclidean_t {
-public:
-  template<typename integral
-    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
-  static integral execute(const integral a, const integral b, integral &x, integral &y) {
-    if (a < 0) {
-      integral foo = execute(-a, b, x, y);
-      x = -x;
-      return foo;
-    }
-    if (b < 0) {
-      integral foo = execute(a, -b, x, y);
-      y = -y;
-      return foo;
-    }
-    return recursive(a, b, x, y);
-  }
-private:
-  template<typename integral
-    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
-  static integral recursive(const integral a, const integral b, integral &x, integral &y) {
+template<typename lhs, typename rhs
+  , typename std::enable_if<std::is_integral<lhs>::value
+    && std::is_signed<lhs>::value
+    && std::is_integral<rhs>::value
+    && std::is_signed<rhs>::value>::type* = nullptr>
+struct super_integral_t {
+  using type = typename std::conditional<
+    std::numeric_limits<lhs>::max() >= std::numeric_limits<rhs>::max()
+    , lhs, rhs>::type;
+};
+
+template<typename integral_a, typename integral_b>
+std::tuple<typename super_integral_t<integral_a, integral_b>::type
+  , typename super_integral_t<integral_a, integral_b>::type
+  , typename super_integral_t<integral_a, integral_b>::type>
+extended_euclidean(const integral_a a, const integral_b b) {
+  using element_t = typename super_integral_t<integral_a, integral_b>::type;
+  static const std::function<element_t(const element_t, const element_t, element_t&, element_t&)>
+  recursive = [](const element_t a, const element_t b, element_t &x, element_t &y) {
     if (b == 0) {
       x = 1;
       y = 0;
       return a;
     }
-    integral foo = recursive(b, a % b, x, y);
-    integral tmp = x;
+    auto foo = recursive(b, a % b, x, y);
+    auto tmp = x;
     x = y;
     y = tmp - (a / b) * y;
     return foo;
+  };
+  element_t g = 0, x = 0, y = 0;
+  if (a < 0) {
+    std::tie(g, x, y) = extended_euclidean(-a, b);
+    return std::make_tuple(g, -x, y);
   }
-};
-template<typename integral
-  , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
-integral extended_euclidean(const integral a, const integral b, integral &x, integral &y) {
-  return extended_euclidean_t::execute(a, b, x, y);
+  if (b < 0) {
+    std::tie(g, x, y) = extended_euclidean(a, -b);
+    return std::make_tuple(g, x, -y);
+  }
+  g = recursive(a, b, x, y);
+  return std::make_tuple(g, x, y);
 }
-template<typename integral
-  , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
-integral inverse(const integral a, const integral b) {
-  integral x, y;
-  extended_euclidean_t::execute(a, b, x, y);
-  return x;
+
+template<typename integral_a, typename integral_b>
+auto inverse(const integral_a a, const integral_b b) {
+  return std::get<1>(extended_euclidean(a, b));
 }
 }
 
@@ -214,7 +215,6 @@ private:
   foo_t foo_ = 0;
 };
 }
-
 }
 
 inline namespace newtype {
@@ -224,7 +224,7 @@ typedef joshu::imod_t<1000000007> imod_t;
 int main() {
   imod_t foo = 65535;
   foo += foo * foo + foo - (foo + foo) * foo;
-  foo /= (int64_t)65535;
+  foo /= 65535;
   std::cout << foo.lld() << std::endl;
   return 0;
 }
