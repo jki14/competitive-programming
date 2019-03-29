@@ -2,6 +2,55 @@
 
 namespace joshu {
 
+/* Number Theory */
+inline namespace {
+class extended_euclidean_t {
+public:
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  static integral execute(const integral a, const integral b, integral &x, integral &y) {
+    if (a < 0) {
+      integral foo = execute(-a, b, x, y);
+      x = -x;
+      return foo;
+    }
+    if (b < 0) {
+      integral foo = execute(a, -b, x, y);
+      y = -y;
+      return foo;
+    }
+    return recursive(a, b, x, y);
+  }
+private:
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  static integral recursive(const integral a, const integral b, integral &x, integral &y) {
+    if (b == 0) {
+      x = 1;
+      y = 0;
+      return a;
+    }
+    integral foo = recursive(b, a % b, x, y);
+    integral tmp = x;
+    x = y;
+    y = tmp - (a / b) * y;
+    return foo;
+  }
+};
+template<typename integral
+  , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+integral extended_euclidean(const integral a, const integral b, integral &x, integral &y) {
+  return extended_euclidean_t::execute(a, b, x, y);
+}
+template<typename integral
+  , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+integral inverse(const integral a, const integral b) {
+  integral x, y;
+  extended_euclidean_t::execute(a, b, x, y);
+  return x;
+}
+}
+
 /* Class imod_t */
 inline namespace {
 template<int64_t token, typename integral>
@@ -146,6 +195,17 @@ public:
     return *this *= imod_t(rhs);
   }
 
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t operator/(const integral rhs) const {
+    return *this * inverse(rhs, token);
+  }
+  template<typename integral
+    , typename std::enable_if<std::is_integral<integral>::value>::type* = nullptr>
+  imod_t& operator/=(const integral rhs) {
+    return *this *= imod_t(inverse(rhs, token));
+  }
+
   long long lld() const {
     return (foo_ + token) % token;
   }
@@ -164,6 +224,7 @@ typedef joshu::imod_t<1000000007> imod_t;
 int main() {
   imod_t foo = 65535;
   foo += foo * foo + foo - (foo + foo) * foo;
+  foo /= (int64_t)65535;
   std::cout << foo.lld() << std::endl;
   return 0;
 }
