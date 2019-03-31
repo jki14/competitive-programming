@@ -50,7 +50,8 @@ extended_euclidean(const integral_a a, const integral_b b) {
 }
 
 template<typename integral_a, typename integral_b>
-auto inverse(const integral_a a, const integral_b b) {
+typename super_integral_t<integral_a, integral_b>::type
+inverse(const integral_a a, const integral_b b) {
   return std::get<1>(extended_euclidean(a, b));
 }
 }
