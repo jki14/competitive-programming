@@ -60,19 +60,19 @@ inverse(const integral_a a, const integral_b b) {
 inline namespace {
 template<int64_t token, typename integral>
 struct add_safe {
-  constexpr static bool value =
+  static constexpr bool value =
       std::numeric_limits<integral>::max() - (token - 1) >= (token - 1);
 };
 
 template<int64_t token, typename integral>
 struct sub_safe {
-  constexpr static bool value =
+  static constexpr bool value =
       std::numeric_limits<integral>::min() - (1 - token) <= (1 - token);
 };
 
 template<int64_t token, typename integral>
 struct mul_safe {
-  constexpr static bool value =
+  static constexpr bool value =
       std::numeric_limits<integral>::max() / (token - 1) >= (token - 1);
 };
 
@@ -199,12 +199,50 @@ public:
     return *this *= imod_t(inverse(rhs, token));
   }
 
+  imod_t pow(uint64_t rhs) const {
+    imod_t foo = identity();
+    imod_t bar(*this);
+    for (; rhs > 0; rhs >>= 1) {
+      if (rhs & 1) {
+        foo *= bar * (rhs & 1);
+      }
+      if (rhs > 1) {
+        bar *= bar;
+      }
+    }
+    return foo;
+  }
+
+  imod_t& operator++() {
+    *this += identity();
+    return *this;
+  }
+  imod_t operator++(int) {
+    imod_t foo(*this);
+    operator++();
+    return foo;
+  }
+
+  imod_t& operator--() {
+    *this -= identity();
+    return *this;
+  }
+  imod_t operator--(int) {
+    imod_t foo(*this);
+    operator--();
+    return foo;
+  }
+
   long long lld() const {
     return (foo_ + token) % token;
   }
     
 private:
   foo_t foo_ = 0;
+  static imod_t const& identity() {
+    static const imod_t foo(1);
+    return foo;
+  }
 };
 }
 }
@@ -219,6 +257,15 @@ inline imod_t operator ""_im(const unsigned long long i) {
 int main() {
   auto foo = 65535_im + 65535_im * 65535 + 65535 - (65535_im + 65535) * 65535;
   foo /= 65535;
-  std::cout << foo.lld() << std::endl;
+  foo = foo.pow(7);
+  std::cout << "foo = " << foo.lld() << std::endl;
+  std::cout << "foo++ = " << (foo++).lld() << std::endl;
+  std::cout << "foo = " << foo.lld() << std::endl;
+  std::cout << "++foo = " << (++foo).lld() << std::endl;
+  std::cout << "foo = " << foo.lld() << std::endl;
+  std::cout << "foo-- = " << (foo--).lld() << std::endl;
+  std::cout << "foo = " << foo.lld() << std::endl;
+  std::cout << "--foo = " << (--foo).lld() << std::endl;
+  std::cout << "foo = " << foo.lld() << std::endl;
   return 0;
 }
