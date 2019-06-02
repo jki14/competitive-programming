@@ -8,7 +8,7 @@ template<class T> inline T GCD(const T x, const T y){
   return (!y)?x:GCD(y, x%y);
 }
 
-constexpr int64_t inf = 0x3f3f3f3f3f3f3f3fLL;
+constexpr int64_t inf = 0x3f3f3f3fLL;
 
 struct foo_t {
   int c, j, p;
@@ -75,23 +75,23 @@ int main() {
     gt.update();
     lt.update();
     if (err == 0 && gt < lt && lt.x * lt.y > 0) {
-      if (gt.x == 1 && gt.y == inf) {
-        printf("Case #%d: 1 %lld\n", case_id, lt.y / lt.x + 1);
-      } else if (lt.x == inf && lt.y == 1) {
-        printf("Case #%d: %lld 1\n", case_id, gt.x / gt.y + 1);
-      } else {
-        for (int64_t wc = 1; wc <= 10000; ++wc) {
-          bool comp = false;
-          for (int64_t wj = 1; wj <= 10000; ++wj) {
-            bar_t cur(wc, wj);
-            if (gt < cur && cur < lt) {
-              printf("Case #%d: \n", case_id);
-              comp = true;
-              break;
-            }
+      /*fprintf(stderr, "%lld/%lld < ? < %lld/%lld",
+              static_cast<long long>(gt.x), static_cast<long long>(gt.y),
+              static_cast<long long>(lt.x), static_cast<long long>(lt.y));*/
+      for (int64_t wc = 1; wc <= 10000; ++wc) {
+        bool comp = false;
+        for (int64_t wj = 1; wj <= 10000; ++wj) {
+          bar_t cur(wc, wj);
+          if (gt < cur && cur < lt) {
+            printf("Case #%d: %lld %lld\n",
+                   case_id,
+                   static_cast<long long>(wc),
+                   static_cast<long long>(wj));
+            comp = true;
+            break;
           }
-          if (comp) break;
         }
+        if (comp) break;
       }
     } else {
       printf("Case #%d: IMPOSSIBLE\n", case_id);

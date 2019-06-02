@@ -1,86 +1,65 @@
 #include "bits/stdc++.h"
 using namespace std;
 
+//NUMBERIC
+template<class T> inline T GCD(const T x, const T y){
+  if(x<0)return GCD(-x, y);
+  if(y<0)return GCD(x, -y);
+  return (!y)?x:GCD(y, x%y);
+}
+
 struct foo_t {
-  int c, j, p;
+  int c, j;
 } a[512];
 
+struct plsh {
+  size_t operator() (pair<int64_t, int64_t> const& obj) const {
+    return (obj.first << 30) + obj.second;
+  }
+};
+
 int n;
-unordered_set<string> bar;
+unordered_set<pair<int64_t, int64_t>, plsh> bar, che;
 
 int main() {
   int case_num;
   scanf("%d", &case_num);
   for (int case_id = 1; case_id <= case_num; ++case_id) {
-    bar.clear();
     scanf("%d", &n);
     for (int i = 0; i < n; ++i) {
       scanf("%d%d", &a[i].c, &a[i].j);
-      a[i].p = i;
     }
+    bar.clear();
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (i == j) continue;
-        sort(a, a + n,
-             [](foo_t const& lhs, foo_t const& rhs) {
-                 return lhs.p < rhs.p;
-             });
+      for (int j = i + 1; j < n; ++j) {
         int64_t dx = a[i].c - a[j].c;
         int64_t dy = a[i].j - a[j].j;
-        //fprintf(stderr, "(%d, %d) < (%d, %d)\n", a[i].c, a[i].j, a[j].c, a[j].j);
-        int err = 0;
-        auto const lambda = [dx, dy, &err](foo_t const& lhs, foo_t const& rhs) {
-          int64_t x = lhs.c - rhs.c;
-          int64_t y = lhs.j - rhs.j;
-          if (x == 0) return y < 0;
-          if (y == 0) return x < 0;
-          if (x * y > 0) {
-            return x < 0;
-          }
-          if (dx * -dy <= 0) {
-            /* fprintf(stderr,
-                    "(%d, %d, %d) ? (%d, %d, %d)\n",
-                    lhs.c, lhs.j, lhs.p,
-                    rhs.c, rhs.j, rhs.p); */
-            ++err;
-            return lhs.p < rhs.p;
-          }
-          if (x * dy == y * dx) {
-            return x * dy > 0;
-          }
-          //return x * -dy <= -y * dx;
-          if (dx > 0) {
-            return x * -dy < -y * dx;
-          } else {
-            return x * -dy > -y * dx;
-          }
-        };
-        sort(a, a + n, lambda);
-        for (int k = 0; k + 1 < n; ++k) {
-          if (!lambda(a[k], a[k + 1])) {
-            /* if (true) {
-              fprintf(stderr,
-                      "? (%d, %d) (%d, %d) based on dx = %lld, dy = %lld\n",
-                      a[k].c, a[k].j, a[k + 1].c, a[k + 1].j,
-                      dx, dy);
-            } */
-            ++err;
-          }
-        }
-        if (err == 0) {
-          stringstream ss;
-          for (int k = 0; k < n; ++k) {
-            //fprintf(stderr, " (%d, %d)", a[k].c, a[k].j);
-            ss << '&' << a[k].p;
-          }
-          //fprintf(stderr, " based on dx = %lld, dy = %lld\n", dx, dy);
-          bar.insert(ss.str());
-        } else {
-          // fprintf(stderr, "err = %d\n", err);
-        }
+        if (dx * dy >= 0) continue;
+        dx = abs(dx);
+        dy = abs(dy);
+        auto const gv = GCD(dx, dy);
+        bar.insert(make_pair(dx / gv, dy / gv));
       }
     }
-    printf("Case #%d: %zu\n", case_id, bar.size());
+    int ans = 0;
+    for (auto const& el : bar) {
+      /*fprintf(stderr, "====%lld, %lld====\n",
+          static_cast<long long>(el.first),
+          static_cast<long long>(el.second));*/
+      che.clear();
+      for (int i = 0; i < n; ++i) {
+        /*fprintf(stderr, "+ (%d, %d) => (%lld, %lld)\n",
+            a[i].c, a[i].j,
+            static_cast<long long>(a[i].c * el.first + a[i].j * el.second),
+            static_cast<long long>(a[i].c - a[i].j));*/
+        che.insert(make_pair(a[i].c * el.first + a[i].j * el.second, a[i].c - a[i].j));
+      }
+      if (che.size() == static_cast<size_t>(n)) {
+        ans += (ans != 0) ? 1 : 2;
+      }
+    }
+    if (bar.empty()) ans = 1;
+    printf("Case #%d: %d\n", case_id, ans);
   }
   return 0;
 }
