@@ -888,17 +888,24 @@ static const double eps=1e-8;
 class SubsetXor {
   public:
   lld computeSmallest(vector<lld> s) {
-    if (s.size() == 1) {
-      return (s[0] == 1) ? 2 : 1;
+    vector<lld> f(63, 0);
+    for (lld l : s) {
+      for (int i = 62; i >= 0; --i) {
+        if (!((l >> i) & 1)) continue;
+        if (f[i]) {
+          l ^= f[i];
+        } else {
+          f[i] = l;
+          break;
+        }
+      }
     }
-    lld msk0 = s[0];
-    lld msk1 = ~s[0];
-    for (lld const e : s) {
-      msk0 &= e;
-      msk1 &= ~e;
+    for (int i = 0; i < 63; ++i) {
+      if (!f[i]) {
+        return 1LL << i;
+      }
     }
-    lld msk = msk0 | msk1;
-    return LOWBIT(msk);
+    return 0;
   }
 };
 
