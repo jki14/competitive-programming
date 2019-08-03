@@ -1,0 +1,40 @@
+-- Example 0
+2
+4
+8
+
+2
+WBWB
+BWBW
+-- Example 1
+5
+5
+9
+
+5
+W.B.W
+.....
+B.W.B
+.....
+W.B.W
+-- Example 2
+4
+7
+3
+
+4
+.......
+.W...BW
+.......
+.......
+-- Example 3
+5
+6
+27
+
+5
+..WBWB
+.WBWBW
+WBWBWB
+BWBWBW
+WBWBWB
