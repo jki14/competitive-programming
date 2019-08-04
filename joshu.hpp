@@ -104,12 +104,16 @@ public:
 
   template<typename integral, typename std::enable_if<
       std::is_integral<integral>::value>::type* = nullptr>
-  imod_t(integral const rhs) {
-    foo_ = rhs % token;
-  }
+  imod_t(integral const rhs) : foo_(rhs % token) { }
 
   imod_t& operator=(imod_t const&) = default;
   imod_t& operator=(imod_t &&) = default;
+
+  template<typename integral, typename std::enable_if<
+      std::is_integral<integral>::value>::type* = nullptr>
+  imod_t& operator=(integral const rhs) {
+    foo_ = rhs % token;
+  }
 
   explicit operator bool() const noexcept {
     return foo_ != 0;
