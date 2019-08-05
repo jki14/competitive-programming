@@ -113,6 +113,7 @@ public:
       std::is_integral<integral>::value>::type* = nullptr>
   imod_t& operator=(integral const rhs) {
     foo_ = rhs % token;
+    return *this;
   }
 
   explicit operator bool() const noexcept {

@@ -33,9 +33,10 @@ protected:
     CPPUNIT_ASSERT(foo);
     foo -= 71832005;
     CPPUNIT_ASSERT(!foo);
+    foo = -1;
     imod_t bar = 65535;
     foo += bar;
-    CPPUNIT_ASSERT_EQUAL(65535LL, foo.lld());
+    CPPUNIT_ASSERT_EQUAL(65534LL, foo.lld());
   }
 
 public:
