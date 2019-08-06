@@ -3,26 +3,26 @@
 namespace joshu {
 /* Utils */
 inline namespace {
-template<typename lhs, typename rhs,
+template<typename Lhs, typename Rhs,
          typename std::enable_if<
-             std::is_integral<lhs>::value && std::is_signed<lhs>::value &&
-             std::is_integral<rhs>::value && std::is_signed<rhs>::value
+             std::is_integral<Lhs>::value && std::is_signed<Lhs>::value &&
+             std::is_integral<Rhs>::value && std::is_signed<Rhs>::value
          >::type* = nullptr>
 struct super_integral_t {
   typedef typename std::conditional<
-      std::numeric_limits<lhs>::max() >= std::numeric_limits<rhs>::max(),
-      lhs, rhs>::type type;
+      std::numeric_limits<Lhs>::max() >=
+      std::numeric_limits<Rhs>::max(), Lhs, Rhs
+  >::type type;
 };
 }
 
 /* Number Theory */
 inline namespace {
-template<typename integral_a, typename integral_b, typename superint_t =
-    typename super_integral_t<integral_a, integral_b>::type>
-superint_t gcd(integral_a const a, integral_b const b) {
-  static std::function<superint_t(superint_t const,
-                                  superint_t const)> const recursive =
-      [](superint_t const a, superint_t const b) {
+template<typename Lhs, typename Rhs, typename Int =
+    typename super_integral_t<Lhs, Rhs>::type>
+Int gcd(Lhs const a, Rhs const b) {
+  static std::function<Int(Int const, Int const)> const recursive =
+      [](Int const a, Int const b) {
     if (b == 0) {
       return a;
     }
@@ -31,14 +31,11 @@ superint_t gcd(integral_a const a, integral_b const b) {
   return recursive(std::abs(a), std::abs(b));
 }
 
-template<typename integral_a, typename integral_b, typename superint_t =
-    typename super_integral_t<integral_a, integral_b>::type>
-std::tuple<superint_t, superint_t, superint_t>
-extended_euclidean(integral_a const a, integral_b const b) {
-  static std::function<superint_t(
-      superint_t const, superint_t const, superint_t&, superint_t&
-  )> const recursive =
-      [](superint_t const a, superint_t const b, superint_t &x, superint_t &y) {
+template<typename Lhs, typename Rhs, typename Int =
+    typename super_integral_t<Lhs, Rhs>::type>
+std::tuple<Int, Int, Int> extended_euclidean(Lhs const a, Rhs const b) {
+  static std::function<Int(Int const, Int const, Int&, Int&)> const recursive =
+      [](Int const a, Int const b, Int &x, Int &y) {
     if (b == 0) {
       x = 1;
       y = 0;
@@ -50,7 +47,7 @@ extended_euclidean(integral_a const a, integral_b const b) {
     y = tmp - (a / b) * y;
     return foo;
   };
-  superint_t g = 0, x = 0, y = 0;
+  Int g = 0, x = 0, y = 0;
   if (a < 0) {
     std::tie(g, x, y) = extended_euclidean(-a, b);
     return std::make_tuple(g, -x, y);
@@ -63,36 +60,36 @@ extended_euclidean(integral_a const a, integral_b const b) {
   return std::make_tuple(g, x, y);
 }
 
-template<typename integral_a, typename integral_b>
-typename super_integral_t<integral_a, integral_b>::type
-inverse(integral_a const a, integral_b const b) {
+template<typename Lhs, typename Rhs>
+typename super_integral_t<Lhs, Rhs>::type
+inverse(Lhs const a, Rhs const b) {
   return std::get<1>(extended_euclidean(a, b));
 }
 }
 
 /* Class imod_t */
 inline namespace {
-template<int64_t token, typename integral>
+template<int64_t token, typename Int>
 struct add_safe {
   static constexpr bool value =
-      std::numeric_limits<integral>::max() - (token - 1) >= (token - 1);
+      std::numeric_limits<Int>::max() - (token - 1) >= (token - 1);
 };
 
-template<int64_t token, typename integral>
+template<int64_t token, typename Int>
 struct sub_safe {
   static constexpr bool value =
-      std::numeric_limits<integral>::min() - (1 - token) <= (1 - token);
+      std::numeric_limits<Int>::min() - (1 - token) <= (1 - token);
 };
 
-template<int64_t token, typename integral>
+template<int64_t token, typename Int>
 struct mul_safe {
   static constexpr bool value =
-      std::numeric_limits<integral>::max() / (token - 1) >= (token - 1);
+      std::numeric_limits<Int>::max() / (token - 1) >= (token - 1);
 };
 
 template<int64_t token>
 class imod_t {
-  typedef int64_t foo_t;
+  using foo_t = int64_t;
   static_assert(token > 0, "");
   static_assert(std::is_integral<foo_t>::value, "");
   static_assert(std::is_signed<foo_t>::value, "");
@@ -102,16 +99,16 @@ public:
   imod_t(imod_t const&) = default;
   imod_t(imod_t &&) = default;
 
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t(integral const rhs) : foo_(rhs % token) { }
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t(Int const rhs) : foo_(rhs % token) { }
 
   imod_t& operator=(imod_t const&) = default;
   imod_t& operator=(imod_t &&) = default;
 
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t& operator=(integral const rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t& operator=(Int const rhs) {
     foo_ = rhs % token;
     return *this;
   }
@@ -131,19 +128,19 @@ public:
     foo_ = (foo_ + rhs.foo_) % token;
     return *this;
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t operator+(integral const rhs) const {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t operator+(Int const rhs) const {
     return *this + imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t& operator+=(integral const rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t& operator+=(Int const rhs) {
     return *this += imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  friend imod_t operator+(integral const lhs, imod_t const& rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator+(Int const lhs, imod_t const& rhs) {
     return rhs + lhs;
   }
 
@@ -158,19 +155,19 @@ public:
     foo_ = (foo_ - rhs.foo_) % token;
     return *this;
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t operator-(integral const rhs) const {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t operator-(Int const rhs) const {
     return *this - imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t& operator-=(integral const rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t& operator-=(Int const rhs) {
     return *this -= imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  friend imod_t operator-(integral const lhs, imod_t const& rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator-(Int const lhs, imod_t const& rhs) {
     return imod_t(lhs) - rhs;
   }
 
@@ -185,30 +182,30 @@ public:
     foo_ = (foo_ * rhs.foo_) % token;
     return *this;
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t operator*(integral const rhs) const {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t operator*(Int const rhs) const {
     return *this * imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t& operator*=(integral const rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t& operator*=(Int const rhs) {
     return *this *= imod_t(rhs);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  friend imod_t operator*(integral const lhs, imod_t const& rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator*(Int const lhs, imod_t const& rhs) {
     return rhs * lhs;
   }
 
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t operator/(integral const rhs) const {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t operator/(Int const rhs) const {
     return *this * inverse(rhs, token);
   }
-  template<typename integral, typename std::enable_if<
-      std::is_integral<integral>::value>::type* = nullptr>
-  imod_t& operator/=(integral const rhs) {
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  imod_t& operator/=(Int const rhs) {
     return *this *= imod_t(inverse(rhs, token));
   }
 
@@ -261,5 +258,6 @@ private:
 }
 
 inline namespace {
-typedef joshu::imod_t<1000000007> imod_t;
+// typedefs
+using imod_t = joshu::imod_t<1000000007>;
 }
