@@ -1,5 +1,10 @@
 #include "bits/stdc++.h"
 
+#ifdef UNITTEST
+#include "cppunit/extensions/HelperMacros.h"
+#include "cppunit/ui/text/TestRunner.h"
+#endif
+
 namespace joshu {
 /* Utils */
 inline namespace {
@@ -14,6 +19,71 @@ struct super_integral_t {
       std::numeric_limits<Rhs>::max(), Lhs, Rhs
   >::type type;
 };
+template<typename Int>
+struct is_unsigned_int {
+  static constexpr bool value =
+    std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
+    std::numeric_limits<Int>::max() <=
+    std::numeric_limits<unsigned int>::max();
+};
+template<typename Int>
+struct is_unsigned_long {
+  static constexpr bool value =
+    !is_unsigned_int<Int>::value &&
+    std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
+    std::numeric_limits<Int>::max() <=
+    std::numeric_limits<unsigned long>::max();
+};
+template<typename Int>
+struct is_unsigned_long_long {
+  static constexpr bool value =
+    !is_unsigned_int<Int>::value && !is_unsigned_long<Int>::value &&
+    std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
+    std::numeric_limits<Int>::max() <=
+    std::numeric_limits<unsigned long long>::max();
+};
+}
+
+/* Binary */
+inline namespace {
+template<typename Int, typename std::enable_if<
+    is_unsigned_int<Int>::value>::type* = nullptr>
+size_t popcount(Int const i) {
+  return __builtin_popcount(i);
+}
+template<typename Int, typename std::enable_if<
+    is_unsigned_long<Int>::value>::type* = nullptr>
+size_t popcount(Int const i) {
+  return __builtin_popcountl(i);
+}
+template<typename Int, typename std::enable_if<
+    is_unsigned_long_long<Int>::value>::type* = nullptr>
+size_t popcount(Int const i) {
+  return __builtin_popcountll(i);
+}
+template<typename Int, typename std::enable_if<
+    std::is_signed<Int>::value>::type* = nullptr>
+size_t popcount(Int const i) {
+  auto const u = static_cast<typename std::make_unsigned<Int>::type>(i);
+  return popcount(u);
+}
+
+template<typename Int, typename std::enable_if<
+    std::is_integral<Int>::value>::type* = nullptr>
+Int lowbit(Int const i) {
+  return i & (-i);
+}
+}
+
+/* Random */
+inline namespace {
+template<typename Initializer = std::random_device,
+         typename Generator = std::mt19937_64>
+typename Generator::result_type randint() {
+  static Initializer init;
+  static Generator gen(init());
+  return gen();
+}
 }
 
 /* Number Theory */
@@ -65,31 +135,86 @@ typename super_integral_t<Lhs, Rhs>::type
 inverse(Lhs const a, Rhs const b) {
   return std::get<1>(extended_euclidean(a, b));
 }
+
+template<typename Int = int>
+std::vector<Int> primetable(Int const maximum) {
+  std::vector<Int> table(maximum + 1, 0);
+  size_t cnt = 0;
+  for (Int i = 2; i <= maximum; ++i) {
+    if (table[i] == 0) table[cnt++] = i;
+    for (size_t p = 0; p < cnt && table[p] <= maximum / i; ++p) {
+#ifdef UNITTEST
+      CPPUNIT_ASSERT_EQUAL(0, table[table[p] * i]);
+#endif
+      table[table[p] * i] = 1;
+      if (i % table[p] == 0) break;
+    }
+  }
+  table.resize(cnt);
+  return table;
+}
+template<typename Int = int>
+std::vector<Int> const& primes(Int const maximum) {
+  static std::vector<Int> lsprime;
+  static std::list<std::pair<Int, size_t>> cursors;
+  static Int start = 2;
+  if (maximum >= start) {
+    std::vector<bool> isprime(maximum - start + 1, true);
+    for (Int i = start; i <= maximum; ++i) {
+      cursors.emplace_back(i, 0);
+    }
+    for (auto iter = cursors.begin(); iter != cursors.end(); ) {
+      Int const i = iter->first;
+      if (i >= start && isprime[i - start]) lsprime.push_back(i);
+      for (size_t& p = iter->second; ; ++p) {
+        if (p >= lsprime.size() || lsprime[p] > i) {
+          iter = cursors.erase(iter);
+          break;
+        }
+        if (lsprime[p] > maximum / i) {
+          ++iter;
+          break;
+        }
+#ifdef UNITTEST
+        CPPUNIT_ASSERT(lsprime[p] * i >= start);
+        CPPUNIT_ASSERT(isprime[lsprime[p] * i - start]);
+#endif
+        isprime[lsprime[p] * i - start] = false;
+        if (i % lsprime[p] == 0) {
+          iter = cursors.erase(iter);
+          break;
+        }
+      }
+    }
+    start = maximum + 1;
+  }
+  return lsprime;
+}
 }
 
 /* Class imod_t */
 inline namespace {
-template<int64_t token, typename Int>
+template<int_fast64_t token, typename Int>
 struct add_safe {
   static constexpr bool value =
       std::numeric_limits<Int>::max() - (token - 1) >= (token - 1);
 };
 
-template<int64_t token, typename Int>
+template<int_fast64_t token, typename Int>
 struct sub_safe {
   static constexpr bool value =
       std::numeric_limits<Int>::min() - (1 - token) <= (1 - token);
 };
 
-template<int64_t token, typename Int>
+template<int_fast64_t token, typename Int>
 struct mul_safe {
   static constexpr bool value =
       std::numeric_limits<Int>::max() / (token - 1) >= (token - 1);
 };
 
-template<int64_t token>
+template<int_fast64_t token>
 class imod_t {
-  using foo_t = int64_t;
+  using foo_t = int_fast64_t;
   static_assert(token > 0, "");
   static_assert(std::is_integral<foo_t>::value, "");
   static_assert(std::is_signed<foo_t>::value, "");
@@ -209,7 +334,7 @@ public:
     return *this *= imod_t(inverse(rhs, token));
   }
 
-  imod_t pow(uint64_t rhs) const {
+  imod_t pow(uint_fast64_t rhs) const {
     imod_t foo = identity();
     imod_t bar(*this);
     for (; rhs > 0; rhs >>= 1) {

@@ -1,3 +1,5 @@
+#define UNITTEST
+
 #include "joshu.hpp"
 
 #include "cppunit/extensions/HelperMacros.h"
@@ -5,18 +7,158 @@
 
 class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
+  CPPUNIT_TEST(TestPopcount);
+  CPPUNIT_TEST(TestLowbit);
   CPPUNIT_TEST(TestGcd);
+  CPPUNIT_TEST(TestPrimetable);
+  CPPUNIT_TEST(TestPrimes);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST_SUITE_END();
 
+private:
+  template<typename Int, typename std::enable_if<
+    std::is_unsigned<Int>::value>::type* = nullptr>
+  size_t linear_count(Int const i) const {
+    return (i == 0) ? 0 : (1 + linear_count(i & (i - 1)));
+  }
+  template<typename Int, typename std::enable_if<
+    std::is_signed<Int>::value>::type* = nullptr>
+  size_t linear_count(Int const i) const {
+    auto const u = static_cast<typename std::make_unsigned<Int>::type>(i);
+    return linear_count(u);
+  }
+
 protected:
+  void TestPopcount() {
+    CPPUNIT_ASSERT_EQUAL(3lu, linear_count(42));
+    CPPUNIT_ASSERT_EQUAL(3lu, joshu::popcount(42));
+
+    CPPUNIT_ASSERT_EQUAL(0lu, linear_count(0));
+    CPPUNIT_ASSERT_EQUAL(0lu, joshu::popcount(0));
+
+    CPPUNIT_ASSERT_EQUAL(8lu, linear_count(int8_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(8lu, linear_count(uint8_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(16lu, linear_count(int16_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(16lu, linear_count(uint16_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(32lu, linear_count(int32_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(32lu, linear_count(uint32_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(64lu, linear_count(int64_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(64lu, linear_count(uint64_t(-1)));
+
+    CPPUNIT_ASSERT_EQUAL(8lu, joshu::popcount(int8_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(8lu, joshu::popcount(uint8_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(16lu, joshu::popcount(int16_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(16lu, joshu::popcount(uint16_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(32lu, joshu::popcount(int32_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(32lu, joshu::popcount(uint32_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(64lu, joshu::popcount(int64_t(-1)));
+    CPPUNIT_ASSERT_EQUAL(64lu, joshu::popcount(uint64_t(-1)));
+
+    for (int i = 0; i < 65536; ++i) {
+      int8_t const foo8 = static_cast<int8_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo8), joshu::popcount(foo8));
+      auto const foo8u = static_cast<uint8_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo8u), joshu::popcount(foo8u));
+      auto const foo16 = static_cast<int16_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo16), joshu::popcount(foo16));
+      auto const foo16u = static_cast<uint16_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo16u), joshu::popcount(foo16u));
+      auto const foo32 = static_cast<int32_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo32), joshu::popcount(foo32));
+      auto const foo32u = static_cast<uint32_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo32u), joshu::popcount(foo32u));
+      auto const foo64 = static_cast<int64_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo64), joshu::popcount(foo64));
+      auto const foo64u = static_cast<uint64_t>(joshu::randint());
+      CPPUNIT_ASSERT_EQUAL(linear_count(foo64u), joshu::popcount(foo64u));
+    }
+  }
+
+  void TestLowbit() {
+    CPPUNIT_ASSERT_EQUAL(0, joshu::lowbit(0));
+    CPPUNIT_ASSERT_EQUAL(1, joshu::lowbit(1));
+    CPPUNIT_ASSERT_EQUAL(2, joshu::lowbit(2));
+    CPPUNIT_ASSERT_EQUAL(2147483648u, joshu::lowbit(2147483648u));
+    for (int i = 0; i < 65536; ++i) {
+      auto const foo = joshu::randint();
+      auto const bar = joshu::lowbit(foo);
+      CPPUNIT_ASSERT_EQUAL(1lu, joshu::popcount(bar));
+      CPPUNIT_ASSERT_EQUAL(bar, foo & bar);
+      for (auto k = bar >> 1; k > 0; k >>= 1) {
+        CPPUNIT_ASSERT_EQUAL(static_cast<decltype(k)>(0), foo & k);
+      }
+    }
+  }
+
   void TestGcd() {
+    CPPUNIT_ASSERT_EQUAL(0, joshu::gcd(0, 0));
+    CPPUNIT_ASSERT_EQUAL(42, joshu::gcd(42, 0));
+    CPPUNIT_ASSERT_EQUAL(42, joshu::gcd(0, 42));
+
     CPPUNIT_ASSERT_EQUAL(1, joshu::gcd(4, 7));
     CPPUNIT_ASSERT_EQUAL(2, joshu::gcd(4, 2));
     CPPUNIT_ASSERT_EQUAL(6, joshu::gcd(12, 66));
     CPPUNIT_ASSERT_EQUAL(2, joshu::gcd(-2, 4));
     CPPUNIT_ASSERT_EQUAL(4, joshu::gcd(12, -44));
     CPPUNIT_ASSERT_EQUAL(4, joshu::gcd(-444, -44));
+  }
+
+  void TestPrimetable() {
+    auto const pure_prime_check = [](int const x) -> bool {
+      if (x < 2) return false;
+      for (int i = 2; i <= x / i; ++i) {
+        if (x % i == 0) return false;
+      }
+      return true;
+    };
+    CPPUNIT_ASSERT(!pure_prime_check(0));
+    CPPUNIT_ASSERT(!pure_prime_check(1));
+    CPPUNIT_ASSERT(pure_prime_check(2));
+
+    auto const table = joshu::primetable(65536);
+    CPPUNIT_ASSERT_EQUAL(2, table.front());
+
+    for (auto iter = table.begin(); iter != table.end(); ++iter) {
+      CPPUNIT_ASSERT(pure_prime_check(*iter));
+      auto next = std::next(iter);
+      if (next == table.end()) break;
+      CPPUNIT_ASSERT(*iter < *next);
+      for (int i = *iter + 1; i < *next; ++i) {
+        CPPUNIT_ASSERT(!pure_prime_check(i));
+      }
+    }
+  }
+
+  void TestPrimes() {
+    auto const pure_prime_check = [](int const x) -> bool {
+      if (x < 2) return false;
+      for (int i = 2; i <= x / i; ++i) {
+        if (x % i == 0) return false;
+      }
+      return true;
+    };
+    CPPUNIT_ASSERT(!pure_prime_check(0));
+    CPPUNIT_ASSERT(!pure_prime_check(1));
+    CPPUNIT_ASSERT(pure_prime_check(2));
+
+    joshu::primes(256);
+    for (int i = 256; i < 512; ++i) {
+      joshu::primes(i);
+    }
+    joshu::primes(1024);
+    joshu::primes(512);
+    auto const& table = joshu::primes(65536);
+    CPPUNIT_ASSERT_EQUAL(2, table.front());
+
+    for (auto iter = table.begin(); iter != table.end(); ++iter) {
+      CPPUNIT_ASSERT(pure_prime_check(*iter));
+      auto next = std::next(iter);
+      if (next == table.end()) break;
+      CPPUNIT_ASSERT(*iter < *next);
+      for (int i = *iter + 1; i < *next; ++i) {
+        CPPUNIT_ASSERT(!pure_prime_check(i));
+      }
+    }
   }
 
   void TestImodT() {
