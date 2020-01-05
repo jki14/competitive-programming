@@ -399,7 +399,8 @@ int c[N];
 lld foo;
 char s[N];
 
-unordered_map<int, int> eq;
+int eq[99000000] = {0};
+queue<int> que;
 
 int main() {
   s[0] = '1';
@@ -410,7 +411,7 @@ int main() {
     n = strlen(s) - 1;
     s[n + 1] = '1';
     r[n + 1] = 0;
-    m = min(int(round(sqrt(n * 1.0))), 300);
+    m =int(round(sqrt(n * 1.0)));
     for (int i = 1; i <= n; ++i) {
       p[i] = p[i - 1] + (s[i] - '0');
       if (s[i - 1] == '1') {
@@ -427,14 +428,18 @@ int main() {
       }
     }
     for (int k = 1; k < m; ++k) {
-      eq.clear();
       for (int i = 0; i <= n; ++i) {
         int const bar = p[i] * k - i + n;
         ++eq[bar];
+        if (eq[bar] == 1) {
+          que.push(bar);
+        }
       }
       lld bar = 0LL;
-      for (auto const entry : eq) {
-        bar += entry.second * 1LL * (entry.second - 1);
+      for (; !que.empty(); que.pop()) {
+        int& w = eq[que.front()];
+        bar += w * 1LL * (w - 1);
+        w = 0;
       }
       foo += bar >> 1;
     }
