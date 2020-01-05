@@ -389,7 +389,7 @@ using imod_t = joshu::imod_t<1000000007>;
 
 using namespace std;
 
-static constexpr int magic = 44;
+static constexpr int magic = 88;
 
 typedef bitset<100352> mask_t;
 
@@ -398,7 +398,7 @@ struct point_t {
 } a[110000], b[110000];
 
 struct slave_t {
-  mask_t snapshotx[2600], snapshoty[2600];
+  mask_t snapshotx[1300], snapshoty[1300];
   vector<pair<int, int>> put, out;
   mask_t curx, cury;
   map<int, int> dict;
@@ -426,7 +426,7 @@ struct slave_t {
     sort(out.begin(), out.end());
     for (int i = n - 1; i >= 0; --i) {
       a[i].x = lower_bound(out.begin(), out.end(),
-                           pair<int, int>(a[i].x, -1)) - put.begin() - 1;
+                           pair<int, int>(a[i].x, -1)) - out.begin() - 1;
       a[i].y = lower_bound(put.begin(), put.end(),
                            pair<int, int>(a[i].y + 1, -1)) - put.begin() - 1;
     }
@@ -436,8 +436,9 @@ struct slave_t {
       curx.set(put[i].second);
       cury.set(out[i].second);
       if (i % magic == 0) {
-        snapshotx[i / magic] = curx;
-        snapshoty[i / magic] = cury;
+        int const pos = i / magic;
+        snapshotx[pos] = curx;
+        snapshoty[pos] = cury;
       }
     }
   }
@@ -454,7 +455,7 @@ struct slave_t {
     int pos = p / magic;
     curx = snapshot[pos];
     pos *= magic;
-    for (int i = pos + 1; i < p; ++i) {
+    for (int i = pos + 1; i <= p; ++i) {
       curx.set(change[i].second);
     }
     return curx;
