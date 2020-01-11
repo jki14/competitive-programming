@@ -17,14 +17,25 @@ class LandSplitter:
     if r < 0:
         return -1
     foo = (n * (n - 1)) >> 1
-    bar = []
+    '''
+    #bar = []
     for i in xrange(m):
         k = min(b - a, r)
         r -= k
         k += a
         foo -= (k * (k - 1)) >> 1
-        bar.append(k)
-    sys.stdout.write(str(bar) + '\n')
+        #bar.append(k)
+    #sys.stdout.write(str(bar) + '\n')
+    '''
+    if a < b:
+        x = b - a
+        foo -= ((b * (b - 1)) >> 1) * (r // x)
+        if r % x != 0:
+            k = a + r % x
+            foo -= (k * (k - 1)) >> 1
+        foo -= ((a * (a - 1)) >> 1) * (m - ((r + x - 1) // x))
+    else:
+        foo -= ((a * (a - 1)) >> 1) * m
     return foo
 
 # CUT begin
