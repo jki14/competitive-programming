@@ -1,0 +1,345 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deedy - One Page Two Column Resume
+% LaTeX Template
+% Version 1.1 (30/4/2014)
+%
+% Original author:
+% Debarghya Das (http://debarghyadas.com)
+%
+% Original repository:
+% https://github.com/deedydas/Deedy-Resume
+%
+% IMPORTANT: THIS TEMPLATE NEEDS TO BE COMPILED WITH XeLaTeX
+%
+% This template uses several fonts not included with Windows/Linux by
+% default. If you get compilation errors saying a font is missing, find the line
+% on which the font is used and either change it to a font included with your
+% operating system or comment the line out to use the default font.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% TODO:
+% 1. Integrate biber/bibtex for article citation under publications.
+% 2. Figure out a smoother way for the document to flow onto the next page.
+% 3. Add styling information for a "Projects/Hacks" section.
+% 4. Add location/address information
+% 5. Merge OpenFont and MacFonts as a single sty with options.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CHANGELOG:
+% v1.1:
+% 1. Fixed several compilation bugs with \renewcommand
+% 2. Got Open-source fonts (Windows/Linux support)
+% 3. Added Last Updated
+% 4. Move Title styling into .sty
+% 5. Commented .sty file.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Known Issues:
+% 1. Overflows onto second page if any column's contents are more than the
+% vertical limit
+% 2. Hacky space on the first bullet point on the second column.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[]{deedy-resume-openfont}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     LAST UPDATED DATE
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lastupdated
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     TITLE NAME
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\namesection{Zhe}{Wang}{ %\urlstyle{same}\url{http://debarghyadas.com} \\
+\href{mailto:jki14wz@gmail.com}{jki14wz@gmail.com} | +86 159 2395 5770
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     COLUMN ONE
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{minipage}[t]{0.33\textwidth} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     LINKS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Links} 
+%Github:// \href{https://github.com/deedydas}{\custombold{deedydas}} \\
+%LinkedIn://  \href{https://www.linkedin.com/in/debarghyadas}{\custombold{debarghyadas}} \\
+%YouTube://  \href{https://www.youtube.com/user/DeedyDash007}{\custombold{DeedyDash007}} \\
+%Twitter://  \href{https://twitter.com/debarghya_das}{\custombold{@debarghya\_das}} \\
+%Quora://  \href{https://www.quora.com/Debarghya-Das}{\custombold{Debarghya-Das}}
+%\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     COURSEWORK
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Coursework}
+%\subsection{Graduate}
+%Advanced Machine Learning \\
+%Open Source Software Engineering \\
+%Advanced Interactive Graphics \\
+%Compilers + Practicum \\
+%Cloud Computing \\
+%\sectionsep
+
+%\subsection{Undergraduate}
+%Information Retrieval \\
+%Operating Systems \\
+%Artificial Intelligence + Practicum \\
+%Functional Programming \\
+%Computer Graphics + Practicum \\
+%{\footnotesize \textit{\textbf{(Research Asst. \& Teaching Asst) }}} \\
+%Unix Tools and Scripting \\
+%\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     SKILLS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Skills}
+%\subsection{Programming}
+%\location{Over 5000 lines:}
+%Java \textbullet{}   Shell \textbullet{} JavaScript \textbullet{} Matlab \\
+%OCaml \textbullet{} Python \textbullet{} Rails \textbullet{} \LaTeX\ \\ 
+%\location{Over 1000 lines:}
+%C \textbullet{} C++ \textbullet{} CSS \textbullet{} PHP \textbullet{} Assembly \\
+%\location{Familiar:}
+%AS3 \textbullet{} iOS \textbullet{} Android \textbullet{} MySQL
+%\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     HIGHLIGHTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Highlights}
+
+\subsection{Software Engineering}
+\descript{Outstanding}
+\location{
+    Fundamental Algorithms \\
+    Fundamental Data Structures \\
+    Advanced Data Structures \\
+    Modern C++ Programming
+}
+\descript{Solid Background}
+\location{
+    High-Performance Programming \\
+    Multithreading \\
+    Distributed Computing \\
+    High-Performance Database
+}
+\descript{Well Executed}
+\location{
+    Distributed System Optimization \\
+    Machine Learning \\
+    JAVA Programming Language \\
+    Python Programming Language \\
+    PHP Programming Language \\
+    RESTful Web Service
+}
+\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     AWARDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Selected Awards}
+
+\subsection{Programming}
+\descript{
+    Ranking 16\textsuperscript{th}
+}
+\location{
+    TCO 2019 Japan \\
+    TopCoder Open 2019 \\
+    2019.08 | Tokyo
+}
+\descript{
+    Ranking 1\textsuperscript{st}
+}
+\location{
+    TCO 2017 India \\
+    TopCoder Open 2017 \\
+    2017.08 | Bangalore
+}
+\descript{
+    Ranking 35\textsuperscript{th}
+}
+\location{
+    Distributed Round 2 \\
+    Google Code Jam 2017 \\
+    2017.06
+}
+\descript{
+    Ranking 36\textsuperscript{th}
+}
+\location{
+    TCO 2016 Russia \\
+    TopCoder Open 2016 \\
+    2016.09 | St. Petersburg
+}
+\descript{
+    Ranking 9\textsuperscript{th}
+}
+\location{
+    Round C \\
+    Google APAC 2015 \\
+    2014.10
+}
+\descript{
+    Ranking 3\textsuperscript{rd}
+}
+\location{
+    Onsite Final \\
+    Tencent Hackathon 2013 \\
+    2013.04 | Chengdu
+}
+%\descript{
+%    Silver Medal
+%}
+%\location{
+%    Asia Regional Beijing Site \\
+%    ACM-ICPC \\
+%    2011.10 | Beijing
+%}
+\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     EDUCATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Education}
+
+\subsection{Chongqing University}
+\descript{BE in Computer Science}
+\location{
+    Left campus in 2014.06 \\
+    Graduate in 2017.06
+}
+\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     COLUMN TWO
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{minipage} 
+\hfill
+\begin{minipage}[t]{0.66\textwidth} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     EXPERIENCE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Selected Technical Experience}
+
+\runsubsection{Wonder}
+\descript{| Tech Lead of Algorithm Implementation Team}
+\descript{Augmented Reality Entertainment Platform on Mobile}
+\location{Hangzhou Tomorning Technology Co., Ltd.}
+\location{Jan 2017 – Oct 2017 | Hangzhou, Zhejiang Province, China}
+\location{[C Programming Language, Gprof, Pthread, Socket]}
+\location{Focus on improving the computing efficiency of the computer vision relative algorithm at the code implementation level with data structure optimization, computational geometry algorithm optimization, profiling, code optimization, multithreading, and clustering.}
+\vspace{\topsep} % Hacky fix for awkward extra vertical space
+\begin{tightemize}
+\item Accelerate normalized 2048-dimension 32-bit float vector nearest neighbor searching by 50 times though converting the problem to cosine similarity with linear algebra optimization and automatic vectorization.
+\item Improve the efficiency of a set of the geometric request in the computer visual computing processes significantly with some computational geometry techniques.
+\end{tightemize}
+\sectionsep
+
+\runsubsection{Wonder}
+\descript{| Tech Lead of Backend Team}
+\descript{Augmented Reality Entertainment Platform on Mobile}
+\location{Hangzhou Tomorning Technology Co., Ltd.}
+\location{Aug 2016 – Dec 2016 | Hangzhou, Zhejiang Province, China}
+\location{[JAVA Programming Language, Spring Boot, Servlet, Mysql]}
+\location{Responsible for RESTful Web Service Server Framework design and implementing, high-performance database structure develop, RESTful Web Service API standard drafting, team coordination, progress control, risk management and code review.}
+\begin{tightemize}
+\item Wrapping \textbf{\href{https://projects.spring.io/spring-boot/}{Spring Boot}} for working with a higher-efficiency on the server and making it easier to develop for the product with the development team.
+\item Independently optimize Mysql databases performance, make each business service request can complete in 10 milliseconds.
+\end{tightemize}
+\sectionsep
+
+\runsubsection{Wonderland}
+\descript{| Software engineer of Backend Team}
+\descript{Augmented Reality Game Platform on Mobile}
+\location{Hangzhou Tomorning Technology Co., Ltd.}
+\location{Jun 2014 – Jul 2016 | Hangzhou, Zhejiang Province, China}
+\location{[C Programming Language, Pthread, Socket, LIBSVM, PHP, Mysql]}
+\location{Prepare and implement the distributed high-dimensional vector archiving and approximate k-Nearest Neighbors searching system working for computer vision computing. Research and perform the superficial image scene indexing algorithm with Machine Learning techniques. Create the complex branching game logic engine for the platform. Develop the RESTful Web Service for the mobile applications.}
+\begin{tightemize}
+\item Independently prepare and implement WLANN (Wonderland Library for Approximate Nearest Neighbors). It works more than 30\% faster than \textbf{\href{http://www.cs.ubc.ca/research/flann}{FLANN (Fast Library for Approximate Nearest Neighbors)}} with 128-dimensional 8-bit unsigned integer vectors. On the other hand, WLANN is further optimized for parallel query and provides distributed computing support.
+\item Independently research and perform a superficial image scene indexing algorithm based on \textbf{\href{https://people.eecs.berkeley.edu/~efros/courses/AP06/Papers/csurka-eccv-04.pdf}{Visual Categorization with Bags of Keypoints}} technique. It provides an accuracy of up to 93\% of the landmark scene superficial indexing for the product.
+\item Both two modules described above has remarkable stability, these modules had been working for more than one year continuously with no accident and visible memory leaks.
+\end{tightemize}
+\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     RESEARCH
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Research}
+%\runsubsection{Cornell Robot Learning Lab}
+%\descript{| Head Undergrad Research}
+%\location{Jan 2014 – Present | Ithaca, NY}
+%Worked with \textbf{\href{http://www.cs.cornell.edu/~ashesh/}{Ashesh Jain}} and \textbf{\href{http://www.cs.cornell.edu/~asaxena/}{Prof Ashutosh Saxena}} to create \textbf{PlanIt}, a tool which  learns from large scale user preference feedback to plan robot trajectories in human environments.  Publication submitted.
+%\sectionsep
+
+%\runsubsection{Cornell Phonetics Lab}
+%\descript{| Head Undergraduate Researcher}
+%\location{Mar 2012 – May 2013 | Ithaca, NY}
+%Lead the development of \textbf{QuickTongue}, the first ever breakthrough tongue-controlled game with %\textbf{\href{http://conf.ling.cornell.edu/~tilsen/}{Prof Sam Tilsen}} to aid in Linguistics research. Publication submitted.
+%\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     AWARDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Awards} 
+%\begin{tabular}{rll}
+%2014	     & top 52/2500  & KPCB Engineering Fellow\\
+%2014	     & 2\textsuperscript{nd} most points  & Google Code Jam, Qualification Round\\
+%2014	     & 1\textsuperscript{st}/50  & Microsoft Coding Competition, Cornell\\
+%2013	     & National  & Jump Trading Challenge Finalist\\
+%2013     & 7\textsuperscript{th}/120 & CS 3410 Cache Race Bot Tournament  \\
+%2012     & 2\textsuperscript{nd}/150 & CS 3110 Biannual Intra-Class Bot Tournament \\
+%2011     & National & Indian National Mathematics Olympiad (INMO) Finalist \\
+%2010     & National & Comp. Soc. of India's National Programming Contest\\
+%\end{tabular}
+%\sectionsep
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     SOCIETIES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Societies} 
+
+%\begin{tabular}{rll}
+%2014 	& top 12\%ile    & Tau Beta Pi Engineering Honor Society\\
+%2014   & National   & The Global Leadership and Education Forum (tGELF)\\
+%2012   &  National  & Golden Key International Honor Society\\
+%2012   &  National   & National Society of Collegiate Scholars\\
+%\end{tabular}
+%\sectionsep
+
+\end{minipage} 
+\end{document}
