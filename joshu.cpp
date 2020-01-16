@@ -12,6 +12,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestGcd);
   CPPUNIT_TEST(TestPrimetable);
   CPPUNIT_TEST(TestPrimes);
+  CPPUNIT_TEST(TestHeapT);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST_SUITE_END();
 
@@ -159,6 +160,42 @@ protected:
         CPPUNIT_ASSERT(!pure_prime_check(i));
       }
     }
+  }
+
+  void TestHeapT() {
+    joshu::heap_t<int> foo;
+    std::vector<int> bar = {3, 1, 4, 1, 5, 9};
+    auto entries = foo.load(bar);
+    CPPUNIT_ASSERT_EQUAL(9, foo.top());
+    (*entries[2])->set(6);
+    CPPUNIT_ASSERT_EQUAL(6, (*entries[2])->get());
+    (*entries[0])->set(4);
+    CPPUNIT_ASSERT_EQUAL(4, (*entries[0])->get());
+    (*entries[0])->set(5);
+    CPPUNIT_ASSERT_EQUAL(5, (*entries[0])->get());
+    (*entries[0])->set(6);
+    CPPUNIT_ASSERT_EQUAL(6, (*entries[0])->get());
+    (*entries[0])->set(7);
+    CPPUNIT_ASSERT_EQUAL(7, (*entries[0])->get());
+    (*entries[0])->set(8);
+    CPPUNIT_ASSERT_EQUAL(8, (*entries[0])->get());
+    foo.pop();
+    CPPUNIT_ASSERT_EQUAL(8, foo.top());
+    (*entries[0])->set(9);
+    CPPUNIT_ASSERT_EQUAL(9, (*entries[0])->get());
+    CPPUNIT_ASSERT_EQUAL(9, foo.top());
+    (*entries[1])->set(11);
+    CPPUNIT_ASSERT_EQUAL(11, (*entries[1])->get());
+    CPPUNIT_ASSERT_EQUAL(11, foo.top());
+    foo.pop();
+    CPPUNIT_ASSERT_EQUAL(9, foo.top());
+    foo.pop();
+    CPPUNIT_ASSERT_EQUAL(6, foo.top());
+    foo.pop();
+    CPPUNIT_ASSERT_EQUAL(5, foo.top());
+    foo.pop();
+    CPPUNIT_ASSERT_EQUAL(1, foo.top());
+    foo.pop();
   }
 
   void TestImodT() {
