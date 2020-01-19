@@ -419,19 +419,18 @@ class IterateOverACube {
     while (f[3][s3] <= m) {
       m -= f[3][s3++];
     }
-    int s2 = 0;
-    while (s2 + n - 1 < s3) ++s2;
+    int s2 = s3;
     while (f[2][s2] <= m) {
-      m -= f[2][s2++];
+      m -= f[2][s2--];
     }
     int s1 = 0;
     while (s1 + n - 1 < s2) ++s1;
     while (f[1][s1] <= m) {
       m -= f[1][s1++];
     }
-    foo[0] = s1;
-    foo[1] = s2 - s1;
-    foo[2] = s3 - s2;
+    foo[0] = s3 - s2;
+    foo[1] = s1;
+    foo[2] = s2 - s1;
     return foo;
   }
 };
