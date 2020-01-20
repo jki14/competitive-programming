@@ -225,8 +225,8 @@ public:
       return value_ >= rhs.value_;
     }
 
-    entry_t(T const& value, iter_t const& iter, heap_t& heap)
-      : value_(value)
+    entry_t(T value, iter_t const& iter, heap_t& heap)
+      : value_(std::move(value))
       , self_(iter)
       , meta_(iter)
       , iter_(&meta_)
@@ -249,13 +249,18 @@ public:
       return value_;
     }
 
-    void set(T&& new_value) {
+    void set(T new_value) {
       if (new_value == value_) return;
       if (new_value > value_) {
         value_ = std::move(new_value);
         std::push_heap(heap_->foo_.begin(), std::next(*iter_));
       } else {
-        //TODO
+        value_ = std::move(new_value);
+        static __gnu_cxx::__ops::_Iter_less_iter __comp;
+        auto __first = heap_->foo_.begin();
+        auto const __pos = *iter_ - __first;
+        auto const __len = heap_->foo_.end() - __first;
+        std::__adjust_heap(__first, __pos, __len, std::move(**iter_), __comp);
       }
     }
 
@@ -278,26 +283,46 @@ public:
   heap_t(heap_t&&) = default;
 
   heap_t& operator=(heap_t const&) = delete;
-  heap_t& operator=(heap_t&&) = default;
+  heap_t& operator=(heap_t&&) = delete;
 
   std::vector<iter_t*>
-  load(std::vector<T> const& values) {
-    size_t inc = values.size();
+  load(std::vector<T> values) {
+    size_t const inc = values.size();
     if (foo_.size() + inc > foo_.capacity()) {
-      //TODO
+      return { };
     }
     std::vector<iter_t*> bar;
     bar.reserve(inc);
     if (foo_.empty()) {
-      for (auto const& el : values) {
-        foo_.emplace_back(el, foo_.end(), *this);
+      for (auto&& val : values) {
+        foo_.emplace_back(std::move(val), foo_.end(), *this);
         bar.emplace_back(foo_.back().iter_pointer());
       }
       std::make_heap(foo_.begin(), foo_.end());
     } else {
-      //TODO
+      for (auto&& val : values) {
+        bar.emplace_back(push(std::move(val)));
+      }
     }
     return bar;
+  }
+
+  iter_t* push(T value) {
+    if (foo_.size() + 1 > foo_.capacity()) {
+      return nullptr;
+    }
+    foo_.emplace_back(std::move(value), foo_.end(), *this);
+    auto const bar = foo_.back().iter_pointer();
+    std::push_heap(foo_.begin(), foo_.end());
+    return bar;
+  }
+
+  size_t size() const {
+    return foo_.size();
+  }
+
+  bool empty() const {
+    return foo_.empty();
   }
 
   T const& top() const{
