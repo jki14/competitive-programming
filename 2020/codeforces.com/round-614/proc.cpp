@@ -391,9 +391,22 @@ using namespace std;
 
 using lld = long long;
 
+struct chain_t {
+  int r, u, p, q;
+  chain_t(int const _r, int const _u, int const _p, int const _q) {
+    r = _r;
+    u = _u;
+    p = _p;
+    q = _q;
+  }
+};
+
 int n;
 int nbs[3100], nxt[6200], dst[6200], eid;
-lld c[3100], foo;
+lld c[3100][3100], tot;
+lld f[3100][3100], foo;
+
+queue<chain_t> que;
 
 void add_edge(int const u, int const v) {
   nxt[eid] = nbs[u];
@@ -402,52 +415,13 @@ void add_edge(int const u, int const v) {
 }
 
 lld count(int const u, int const p) {
-  c[u] = 1LL;
+  lld bar = 1LL;
   for (int i = nbs[u]; ~i; i = nxt[i]) {
     int const v = dst[i];
     if (v == p) continue;
-    c[u] += count(v, u);
-  }
-  return c[u];
-}
-
-lld single(int const u, int const p) {
-  lld bar = 0LL;
-  for (int i = nbs[u]; ~i; i = nxt[i]) {
-    int const v = dst[i];
-    if (v == p) continue;
-    bar = max(single(v, u), bar);
-  }
-  return bar + c[u];
-}
-
-lld core(int const u, int const p, lld const cnt, lld const sin) {
-  lld bar = c[u] * (sin + cnt);
-  for (int i = nbs[u]; ~i; i = nxt[i]) {
-    int const v = dst[i];
-    if (v == p) continue;
-    bar = max(core(v, u, cnt, sin) + c[u] * cnt, bar);
+    bar += count(v, u);
   }
   return bar;
-}
-
-void solution(int const p, int const q) {
-  lld cnt, sin;
-  cnt = count(p, q);
-  sin = single(p, q) - cnt;
-  foo = max(foo, core(q, p, cnt, sin));
-  cnt = count(q, p);
-  sin = single(q, p) - cnt;
-  foo = max(foo, core(p, q, cnt, sin));
-}
-
-void traverse(int const u, int const p) {
-  for (int i = nbs[u]; ~i; i = nxt[i]) {
-    int const v = dst[i];
-    if (v == p) continue;
-    solution(u, v);
-    traverse(v, u);
-  }
 }
 
 int main() {
@@ -462,8 +436,42 @@ int main() {
       add_edge(u, v);
       add_edge(v, u);
     }
+    tot = n;
     foo = 0LL;
-    traverse(0, -1);
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        f[i][j] = 0LL;
+      }
+    }
+    for (int u = 0; u < n; ++u) {
+      for (int i = nbs[u]; ~i; i = nxt[i]) {
+        int const v = dst[i];
+        c[u][v] = count(v, u);
+      }
+    }
+    for (int u = 0; u < n; ++u) {
+      for (int i = nbs[u]; ~i; i = nxt[i]) {
+        int const v = dst[i];
+        f[u][v] = (tot - c[u][v]) * c[u][v];
+        foo = max(f[u][v], foo);
+        que.emplace(u, v, u, v);
+      }
+    }
+    for (; !que.empty(); que.pop()) {
+      int const r = que.front().r;
+      int const u = que.front().u;
+      int const p = que.front().p;
+      int const q = que.front().q;
+      // fprintf(stderr, "f[%d][%d] = %lld\n", r + 1, u + 1, f[r][u]);
+      for (int i = nbs[u]; ~i; i = nxt[i]) {
+        int const v = dst[i];
+        if (v == p) continue;
+        f[r][v] = max(f[r][u] + (tot - c[r][q]) * (tot - c[v][u]), f[r][v]);
+        f[v][r] = max(f[r][v], f[v][r]);
+        foo = max(f[r][v], foo);
+        que.emplace(r, v, u, q);
+      }
+    }
     printf("%lld\n", foo);
   }
   return 0;
