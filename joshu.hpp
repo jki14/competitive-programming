@@ -369,14 +369,14 @@ class imod_t {
 public:
   imod_t() = default;
   imod_t(imod_t const&) = default;
-  imod_t(imod_t &&) = default;
+  imod_t(imod_t&&) = default;
 
   template<typename Int, typename std::enable_if<
       std::is_integral<Int>::value>::type* = nullptr>
   imod_t(Int const rhs) : foo_(rhs % token) { }
 
   imod_t& operator=(imod_t const&) = default;
-  imod_t& operator=(imod_t &&) = default;
+  imod_t& operator=(imod_t&&) = default;
 
   template<typename Int, typename std::enable_if<
       std::is_integral<Int>::value>::type* = nullptr>
