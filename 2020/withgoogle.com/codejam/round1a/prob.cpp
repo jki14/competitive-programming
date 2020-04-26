@@ -558,20 +558,23 @@ void process(int const case_id) {
   for (int k = 0; k <= 30; ++k) {
     int const len = bitlen(n - k);
     int const cnt = popcount(n - k);
-    if (len - cnt <= k && k <= 30 - cnt) {
+    if (len - cnt <= k && k <= 40 - cnt) {
+      int check = 0;
       int j = 0;
       for (int i = 0; i < k + cnt; ++i) {
+        ++check;
         printf("%d %d\n", i + 1, j + 1);
-        if (((n - k) >> i) & 1) {
+        if (((n * 1LL - k) >> i) & 1) {
+          check += (1 << i) - 1;
           if (j == 0) {
             while (j < i) {
               ++j;
               printf("%d %d\n", i + 1, j + 1);
             }
           } else {
-            for (--j; ; --j) {
+            while (j > 0) {
+              --j;
               printf("%d %d\n", i + 1, j + 1);
-              if (j == 0) break;
             }
           }
         }
@@ -579,6 +582,7 @@ void process(int const case_id) {
           ++j;
         }
       }
+      assert(check == n);
       return;
     }
   }
