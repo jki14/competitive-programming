@@ -73,6 +73,16 @@ template<typename Int, typename std::enable_if<
 Int lowbit(Int const i) {
   return i & (-i);
 }
+
+template<typename Int, typename std::enable_if<
+    std::is_integral<Int>::value>::type* = nullptr>
+Int bitlen(Int bar) {
+  Int foo = 0;
+  for (; bar != 0; bar >>= 1) {
+    ++foo;
+  }
+  return foo;
+}
 }
 
 /* Random */
