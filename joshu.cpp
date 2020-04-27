@@ -9,6 +9,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
   CPPUNIT_TEST(TestPopcount);
   CPPUNIT_TEST(TestLowbit);
+  CPPUNIT_TEST(TestBitlen);
   CPPUNIT_TEST(TestGcd);
   CPPUNIT_TEST(TestPrimetable);
   CPPUNIT_TEST(TestPrimes);
@@ -88,6 +89,20 @@ protected:
       for (auto k = bar >> 1; k > 0; k >>= 1) {
         CPPUNIT_ASSERT_EQUAL(static_cast<decltype(k)>(0), foo & k);
       }
+    }
+  }
+
+  void TestBitlen() {
+    CPPUNIT_ASSERT_EQUAL(0, joshu::bitlen(0));
+    CPPUNIT_ASSERT_EQUAL(1, joshu::bitlen(1));
+    CPPUNIT_ASSERT_EQUAL(2, joshu::bitlen(2));
+    CPPUNIT_ASSERT_EQUAL(32u, joshu::bitlen(2147483648u));
+    for (int i = 0; i < 65536; ++i) {
+      auto const bar = joshu::randint();
+      auto const foo = joshu::bitlen(bar);
+      auto const low = static_cast<__int128>(1) << foo >> 1;
+      auto const hig = static_cast<__int128>(1) << foo;
+      CPPUNIT_ASSERT(low <= bar && bar < hig);
     }
   }
 
