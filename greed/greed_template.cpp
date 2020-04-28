@@ -73,6 +73,16 @@ template<typename Int, typename std::enable_if<
 Int lowbit(Int const i) {
   return i & (-i);
 }
+
+template<typename Int, typename std::enable_if<
+    std::is_integral<Int>::value>::type* = nullptr>
+Int bitlen(Int bar) {
+  Int foo = 0;
+  for (; bar != 0; bar >>= 1) {
+    ++foo;
+  }
+  return foo;
+}
 }
 
 /* Random */
@@ -192,6 +202,153 @@ std::vector<Int> const& primes(Int const maximum) {
 }
 }
 
+/* Data Structures */
+inline namespace {
+template<typename T, size_t C = 1048576>
+class heap_t {
+public:
+  class entry_t;
+  using iter_t = typename std::vector<entry_t>::iterator;
+  class entry_t {
+  public:
+    entry_t() = delete;
+    entry_t(entry_t const&) = delete;
+
+    entry_t& operator=(entry_t const&) = delete;
+
+    bool operator==(entry_t const& rhs) const {
+      return value_ == rhs.value_;
+    }
+    bool operator!=(entry_t const& rhs) const {
+      return value_ != rhs.value_;
+    }
+    bool operator<(entry_t const& rhs) const {
+      return value_ < rhs.value_;
+    }
+    bool operator>(entry_t const& rhs) const {
+      return value_ > rhs.value_;
+    }
+    bool operator<=(entry_t const& rhs) const {
+      return value_ <= rhs.value_;
+    }
+    bool operator>=(entry_t const& rhs) const {
+      return value_ >= rhs.value_;
+    }
+
+    entry_t(T value, iter_t const& iter, heap_t& heap)
+      : value_(std::move(value))
+      , self_(iter)
+      , meta_(iter)
+      , iter_(&meta_)
+      , heap_(&heap) { }
+
+    entry_t(entry_t&& rhs)
+      : value_(std::move(rhs.value_))
+      , self_()
+      , meta_()
+      , iter_(rhs.iter_) { }
+
+    entry_t& operator=(entry_t&& rhs) {
+      value_ = std::move(rhs.value_);
+      iter_ = rhs.iter_;
+      *iter_ = self_;
+      return *this;
+    }
+
+    T const& get() const {
+      return value_;
+    }
+
+    void set(T new_value) {
+      if (new_value == value_) return;
+      if (new_value > value_) {
+        value_ = std::move(new_value);
+        std::push_heap(heap_->foo_.begin(), std::next(*iter_));
+      } else {
+        value_ = std::move(new_value);
+        static __gnu_cxx::__ops::_Iter_less_iter __comp;
+        auto __first = heap_->foo_.begin();
+        auto const __pos = *iter_ - __first;
+        auto const __len = heap_->foo_.end() - __first;
+        std::__adjust_heap(__first, __pos, __len, std::move(**iter_), __comp);
+      }
+    }
+
+    iter_t* iter_pointer() {
+      return iter_;
+    }
+
+  private:
+    T value_;
+    iter_t const self_;
+    iter_t meta_;
+    iter_t* iter_;
+    heap_t* heap_ = nullptr;
+  };
+
+  heap_t() {
+    foo_.reserve(C);
+  }
+  heap_t(heap_t const&) = delete;
+  heap_t(heap_t&&) = default;
+
+  heap_t& operator=(heap_t const&) = delete;
+  heap_t& operator=(heap_t&&) = delete;
+
+  std::vector<iter_t*>
+  load(std::vector<T> values) {
+    size_t const inc = values.size();
+    if (foo_.size() + inc > foo_.capacity()) {
+      return { };
+    }
+    std::vector<iter_t*> bar;
+    bar.reserve(inc);
+    if (foo_.empty()) {
+      for (auto&& val : values) {
+        foo_.emplace_back(std::move(val), foo_.end(), *this);
+        bar.emplace_back(foo_.back().iter_pointer());
+      }
+      std::make_heap(foo_.begin(), foo_.end());
+    } else {
+      for (auto&& val : values) {
+        bar.emplace_back(push(std::move(val)));
+      }
+    }
+    return bar;
+  }
+
+  iter_t* push(T value) {
+    if (foo_.size() + 1 > foo_.capacity()) {
+      return nullptr;
+    }
+    foo_.emplace_back(std::move(value), foo_.end(), *this);
+    auto const bar = foo_.back().iter_pointer();
+    std::push_heap(foo_.begin(), foo_.end());
+    return bar;
+  }
+
+  size_t size() const {
+    return foo_.size();
+  }
+
+  bool empty() const {
+    return foo_.empty();
+  }
+
+  T const& top() const{
+    return foo_.front().get();
+  }
+
+  void pop() {
+    std::pop_heap(foo_.begin(), foo_.end());
+    foo_.pop_back();
+  }
+
+private:
+  std::vector<entry_t> foo_;
+};
+}
+
 /* Class imod_t */
 inline namespace {
 template<int_fast64_t token, typename Int>
@@ -222,14 +379,14 @@ class imod_t {
 public:
   imod_t() = default;
   imod_t(imod_t const&) = default;
-  imod_t(imod_t &&) = default;
+  imod_t(imod_t&&) = default;
 
   template<typename Int, typename std::enable_if<
       std::is_integral<Int>::value>::type* = nullptr>
   imod_t(Int const rhs) : foo_(rhs % token) { }
 
   imod_t& operator=(imod_t const&) = default;
-  imod_t& operator=(imod_t &&) = default;
+  imod_t& operator=(imod_t&&) = default;
 
   template<typename Int, typename std::enable_if<
       std::is_integral<Int>::value>::type* = nullptr>
