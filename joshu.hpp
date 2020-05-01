@@ -202,6 +202,24 @@ std::vector<Int> const& primes(Int const maximum) {
 }
 }
 
+/* Algorithms */
+inline namespace {
+template<typename Int, typename Lambda, typename std::enable_if<
+    std::is_signed<Int>::value>::type* = nullptr>
+Int binary_search(Int lef, Int rig, Lambda check) {
+  if (!check(rig)) return -1;
+  while (lef < rig) {
+    Int const mid = (lef + rig) >> 1;
+    if (check(mid)) {
+      rig = mid;
+    } else {
+      lef = mid + 1;
+    }
+  }
+  return rig;
+}
+}
+
 /* Data Structures */
 inline namespace {
 template<typename T, size_t C = 1048576>

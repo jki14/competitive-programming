@@ -13,6 +13,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestGcd);
   CPPUNIT_TEST(TestPrimetable);
   CPPUNIT_TEST(TestPrimes);
+  CPPUNIT_TEST(TestBinarySearch);
   CPPUNIT_TEST(TestHeapT);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST_SUITE_END();
@@ -175,6 +176,38 @@ protected:
         CPPUNIT_ASSERT(!pure_prime_check(i));
       }
     }
+  }
+
+  void TestBinarySearch() {
+    for (int i = 0; i < 65536; ++i) {
+      int64_t const bar = joshu::randint() % 4611686014132420608LL + 1LL;
+      auto const square_gt = [bar](int64_t const i) {
+        return i * i > bar;
+      };
+      auto const foo = joshu::binary_search(1LL, 2147483647LL, square_gt);
+      CPPUNIT_ASSERT(foo * foo > bar);
+      CPPUNIT_ASSERT((foo - 1) * (foo - 1) <= bar);
+    }
+    auto const gt_zero = [](int64_t const i) {
+      return i * i > 0;
+    };
+    CPPUNIT_ASSERT_EQUAL(1LL, joshu::binary_search(1LL, 65535LL, gt_zero));
+    auto const gt_maxi32_sequare_minus_one = [](int64_t const i) {
+      return i * i >  4611686014132420608LL;
+    };
+    CPPUNIT_ASSERT_EQUAL(2147483647LL,
+                         joshu::binary_search(1LL,
+                                              2147483647LL,
+                                              gt_maxi32_sequare_minus_one)
+    );
+    auto const gt_maxi32_sequare = [](int64_t const i) {
+      return i * i >  4611686014132420609LL;
+    };
+    CPPUNIT_ASSERT_EQUAL(-1LL,
+                         joshu::binary_search(1LL,
+                                              2147483647LL,
+                                              gt_maxi32_sequare)
+    );
   }
 
   void TestHeapT() {
