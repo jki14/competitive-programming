@@ -554,6 +554,8 @@ char bar[16];
 int notfree[16];
 int nonzero[16];
 
+int great;
+
 void fullfill(char* str) {
   for (char* chr = str; *chr; ++chr) {
     if (fward.count(*chr) != 0) continue;
@@ -562,6 +564,7 @@ void fullfill(char* str) {
 }
 
 int okay() {
+  if (great) return 1;
   for (int i = 0; i < s; ++i) {
     if (strlen(b[i]) < strlen(a[i])) continue;
     for (int j = 0; b[i][j]; ++j) {
@@ -600,6 +603,7 @@ int cook(int const k) {
 }
 
 void process(int const case_id) {
+  great = 0;
   scanf("%d", &m);
   c = 0;
   fward.clear();
@@ -611,6 +615,7 @@ void process(int const case_id) {
       do {
         sprintf(a[i], "%lld", joshu::randint() % 9999999999999999LL + 1LL);
       } while(strlen(a[i]) < strlen(b[i]));
+      great = 1;
     }
     fullfill(b[i]);
     if (strlen(b[i]) == strlen(a[i])) {
