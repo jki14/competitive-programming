@@ -18,7 +18,7 @@ find . -name '*.java' -not -path './.git/*' -exec git add {} \;
 #add *.py files
 find . -name '*.py' -not -path './.git/*' -exec git add {} \;
 
-#add *.htmp files
+#add *.html files
 find . -name '*.html' -not -path './.git/*' -exec git add {} \;
 
 #add *.conf files
