@@ -4,13 +4,13 @@ object Main extends App {
 
     while (stdin.hasNext()) {
         val foo = stdin.nextInt()
-        var bar : scala.math.BigInt = 0
+        var bar : Long = 0
         for (i <- 1 to foo) {
-            val x : scala.math.BigInt = i
-            val k : scala.math.BigInt = foo / x
+            val x : Long = i
+            val k : Long = foo / x
             bar += (x + x * k) * k / 2
         }
-        stdout.printf("%s\n", bar.toString)
+        stdout.printf("%d\n", bar.asInstanceOf[java.lang.Long])
     }
 
     stdin.close()
