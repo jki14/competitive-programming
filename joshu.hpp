@@ -5,6 +5,34 @@
 #include "cppunit/ui/text/TestRunner.h"
 #endif
 
+/**            Workaround for TopCoder C++ Compliler (gcc@3.1)             **/
+#ifndef _GLIBCXX14_CONSTEXPR
+# if __cplusplus >= 201402L
+#  define _GLIBCXX14_CONSTEXPR constexpr
+# else
+#  define _GLIBCXX14_CONSTEXPR
+# endif
+#endif
+
+#ifndef _GLIBCXX_PREDEFINED_OPS_H
+#define _GLIBCXX_PREDEFINED_OPS_H	1
+namespace __gnu_cxx
+{
+namespace __ops
+{
+  struct _Iter_less_iter
+  {
+    template<typename _Iterator1, typename _Iterator2>
+      _GLIBCXX14_CONSTEXPR
+      bool
+      operator()(_Iterator1 __it1, _Iterator2 __it2) const
+      { return *__it1 < *__it2; }
+  };
+} // namespace __ops
+} // namespace __gnu_cxx
+#endif
+/****************************************************************************/
+
 namespace joshu {
 /* Utils */
 inline namespace {
