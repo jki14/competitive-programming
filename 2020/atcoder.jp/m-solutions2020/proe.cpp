@@ -897,8 +897,7 @@ struct node_t {
 int n;
 vector<pii> xalias, yalias;
 vector<pii> lhs, rhs;
-lld f[32][32], g[32][32];
-lld ps[32], pc[32];
+lld f[32][32];
 lld f1[32], g1[32];
 lld f2[32], g2[32];
 lld bar[32];
@@ -906,44 +905,70 @@ lld bar[32];
 void solve(vector<pii>& a, lld *foo) {
   int const m = a.size();
   sort(a.begin(), a.end());
+  /*
+  fprintf(stderr, "a = ");
+  for (int i = 0; i < m; ++i) {
+    fprintf(stderr, " (%d, %d)", a[i].first, a[i].second);
+  }
+  fprintf(stderr, "\n");
+  */
   lld sum = 0LL;
   for (auto const& node : a) {
     sum += node.second * 1LL * node.first;
   }
-  ps[0] = 0LL;
-  for (int i = 0; i < m; ++i) {
-    ps[i + 1] = ps[m] + a[i].second;
-  }
-  pc[m] = 0LL;
-  for (int i = m - 1; i > 0; --i) {
-    pc[i] = pc[i + 1] + ps[i] * (a[i].first - a[i - 1].first);
-  }
-  pc[0] = pc[1];
-  f[0][0] = g[0][0] = 0;
+  f[0][0] = 0LL;
   for (int i = 1; i <= m; ++i) {
     f[i][0] = f[i - 1][0] + a[i - 1].second * 1LL * a[i - 1].first;
   }
   for (int i = 1; i <= m; ++i) {
-    for (int j = 0; j <= i; ++j) {
-      f[i][j] = g[i][j] = sum;
-      if (j > 0) {
-        for (int k = 0; k < i; ++k) {
-          g[i][j] = min(f[k][j - 1] + (pc[k + 1] - pc[i]), g[i][j]);
+    for (int j = 1; j <= i; ++j) {
+      f[i][j] = sum;
+      int pos = i;
+      lld lef = 0LL, rig = 0LL;
+      lld cst = 0LL, dis = 0LL;
+      for (int k = i - 1; k >= 0; --k) {
+        while (lef > 0LL &&
+               lef * (a[pos - 1].first - a[pos - 2].first) >=
+               (rig + a[pos - 1].second ) *
+               (a[pos - 1].first - a[pos - 2].first)) {
+          cst -= lef * (a[pos - 1].first - a[pos - 2].first);
+          lef -= a[pos - 2].second;
+          rig += a[pos - 1].second;
+          cst += rig * (a[pos - 1].first - a[pos - 2].first);
+          dis -= a[pos - 1].first - a[pos - 2].first;
+          --pos;
+        }
+        /*
+        fprintf(stderr, "b = ");
+        for (int p = k; p < i; ++p) {
+          if (p + 1 == pos) {
+            fprintf(stderr, " [%d, %d]", a[p].first, a[p].second);
+          } else {
+            fprintf(stderr, " (%d, %d)", a[p].first, a[p].second);
+          }
+        }
+        fprintf(stderr, "\n");
+        fprintf(stderr, "cost = %lld\n", cst);
+        */
+        f[i][j] = min(f[k][j - 1] + cst, f[i][j]);
+        if (k > 0) {
+          dis += a[k].first - a[k - 1].first;
+          cst += a[k - 1].second * dis;
+          lef += a[k - 1].second;
         }
       }
-      for (int k = 0; k <= i; ++k) {
-        f[i][j] = min(g[k][j] + (f[i][0] - f[k][0]), f[i][j]);
-      }
-      g[i][j] = min(f[i][j], g[i][j]);
     }
   }
+  // fprintf(stderr, "f = ");
   for (int j = 0; j <= n; ++j) {
     if (j < m) {
       foo[j] = f[m][j];
     } else {
       foo[j] = 0LL;
     }
+    // fprintf(stderr, " %lld", foo[j]);
   }
+  // fprintf(stderr, "\n");
 }
 
 void process(vector<pii> const& a, lld *foo) {
@@ -985,7 +1010,7 @@ int main() {
       xalias.clear();
       yalias.clear();
       for (int i = 0; i < n; ++i) {
-        if ((sn >> i) & 1) {
+        if ((k >> i) & 1) {
           xalias.emplace_back(make_pair(a[i].x, a[i].p));
         } else {
           yalias.emplace_back(make_pair(a[i].y, a[i].p));
@@ -1002,7 +1027,6 @@ int main() {
     for (int i = 0; i <= n; ++i) {
       printf("%lld\n", bar[i]);
     }
-    break;
   }
   return 0;
 }
