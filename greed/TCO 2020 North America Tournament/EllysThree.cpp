@@ -595,7 +595,8 @@ using namespace std;
 static constexpr int inf = 0x3f3f3f3f;
 
 int a[64][64];
-int f[64][64][3];
+int c[128][3];
+int f[128][3];
 
 class EllysThree {
   public:
@@ -605,39 +606,37 @@ class EllysThree {
         a[i][j] = b[i][j] - '0';
       }
     }
-    static auto const key = [=](int const r, int const c) -> int {
-      return a[r][c] % 3;
-    };
-    static auto const nxt = [](int const x, int const d) -> int {
-      return (x + d) % 3;
-    };
-    f[0][0][key(0, 0)] = 0;
-    f[0][0][nxt(key(0, 0), 1)] = 1;
-    f[0][0][nxt(key(0, 0), 2)] = 1;
+    for (int i = 0; i < n + m - 1; ++i) {
+      for (int k = 0; k < 3; ++k) {
+        c[i][k] = 0;
+      }
+    }
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
-        if (i == 0 && j == 0) continue;
-        int lowest = (i + 1) * (j + 1) - 1;
-        for (int k = 0; k < 3; ++k) {
-          int &foo = f[i][j][nxt(k, a[i][j])];
-          if (i == 0) {
-            foo = f[i][j - 1][k];
-          } else if (j == 0) {
-            foo = f[i - 1][j][k];
-          } else {
-            foo = max(f[i][j - 1][k], f[i - 1][j][k]);
-          }
-          if (lowest > foo)
-            lowest = foo;
-        }
-        for (int k = 0; k < 3; ++k) {
-          if (f[i][j][k] > lowest + 1)
-            f[i][j][k] = lowest + 1;
-           fprintf(stderr, "f[%d][%d][%d] = %d\n", i, j, k, f[i][j][k]);
+        ++c[i + j][(a[i][j] + 1) % 3];
+        ++c[i + j][(a[i][j] + 2) % 3];
+        if (a[i][j] == 0) 
+          ++c[i + j][(a[i][j] + 2) % 3];
+        if (a[i][j] == 9)
+          ++c[i + j][(a[i][j] + 1) % 3];
+      }
+    }
+    for (int k = 0; k < 3; ++k)
+      f[0][k] = c[0][k];
+    for (int i = 1; i < n + m - 1; ++i) {
+      for (int k = 0; k < 3; ++k) {
+        f[i][k] = inf;
+      }
+    }
+    for (int i = 0; i < n + m - 2; ++i) {
+      for (int x = 0; x < 3; ++x) {
+        for (int y = 0; y < 3; ++y) {
+          int &foo = f[i + 1][(x + y) % 3];
+          foo = min(foo, f[i][x] + c[i + 1][y]);
         }
       }
     }
-    return f[n - 1][m - 1][0];
+    return f[n + m - 2][0];
   }
 };
 
