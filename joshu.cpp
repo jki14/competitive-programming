@@ -15,6 +15,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestPrimes);
   CPPUNIT_TEST(TestBinarySearch);
   CPPUNIT_TEST(TestHeapT);
+  CPPUNIT_TEST(TestBTNCtxT);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST_SUITE_END();
 
@@ -317,6 +318,64 @@ protected:
     foo.pop();
     CPPUNIT_ASSERT_EQUAL(0lu, foo.size());
     CPPUNIT_ASSERT_EQUAL(true, foo.empty());
+  }
+
+  class segsum_t : public joshu::btnctx_t {
+  public:
+    segsum_t() = delete;
+    segsum_t(int const len) : length_(len), modify_(0), sum_(0) { }
+
+    void aggregate(joshu::btnctx_t const* const lhs,
+                   joshu::btnctx_t const* const rhs) override {
+      segsum_t const* const lhc = static_cast<segsum_t const* const>(lhs);
+      segsum_t const* const rhc = static_cast<segsum_t const* const>(rhs);
+      sum_ = lhc->calc() + rhc->calc();
+    }
+    void flush(joshu::btnctx_t* lhs, joshu::btnctx_t* rhs) override {
+      segsum_t* lhc = static_cast<segsum_t*>(lhs);
+      segsum_t* rhc = static_cast<segsum_t*>(rhs);
+      lhc->modify_ += modify_;
+      rhc->modify_ += modify_;
+      sum_ += modify_ * length_;
+      modify_ = 0;
+    }
+
+    int calc() const {
+      return sum_ + modify_ * length_;
+    }
+
+    int const length_;
+    int modify_, sum_;
+  };
+
+  void TestBTNCtxT() {
+    segsum_t pnt(3), lhs(2), rhs(1);
+    lhs.sum_ = 3;
+    rhs.sum_ = 5;
+
+    joshu::btnctx_t* pntctx = static_cast<joshu::btnctx_t*>(&pnt);
+    joshu::btnctx_t* lhsctx = static_cast<joshu::btnctx_t*>(&lhs);
+    joshu::btnctx_t* rhsctx = static_cast<joshu::btnctx_t*>(&rhs);
+
+    CPPUNIT_ASSERT_EQUAL(0, pnt.calc());
+    CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
+    CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
+
+    pntctx->aggregate(lhsctx, rhsctx);
+    CPPUNIT_ASSERT_EQUAL(8, pnt.calc());
+
+    pnt.modify_ = 1;
+    CPPUNIT_ASSERT_EQUAL(11, pnt.calc());
+    CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
+    CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
+
+    pntctx->flush(lhsctx, rhsctx);
+    CPPUNIT_ASSERT_EQUAL(11, pnt.calc());
+    CPPUNIT_ASSERT_EQUAL(5, lhs.calc());
+    CPPUNIT_ASSERT_EQUAL(6, rhs.calc());
+    CPPUNIT_ASSERT_EQUAL(0, pnt.modify_);
+    CPPUNIT_ASSERT_EQUAL(1, lhs.modify_);
+    CPPUNIT_ASSERT_EQUAL(1, rhs.modify_);
   }
 
   void TestImodT() {

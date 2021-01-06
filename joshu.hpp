@@ -393,6 +393,12 @@ public:
 private:
   std::vector<entry_t> foo_;
 };
+
+class btnctx_t {
+public:
+  virtual void aggregate(btnctx_t const* const lhs, btnctx_t const* const rhs) = 0;
+  virtual void flush(btnctx_t* lhs, btnctx_t* rhs) = 0;
+};
 }
 
 /* Class imod_t */
