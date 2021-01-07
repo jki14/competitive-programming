@@ -325,6 +325,12 @@ protected:
     segsum_t() = delete;
     segsum_t(int const len) : length_(len), modify_(0), sum_(0) { }
 
+    segsum_t(segsum_t const&) = delete;
+    segsum_t(segsum_t&&) = delete;
+
+    segsum_t& operator=(segsum_t const&) = delete;
+    segsum_t& operator=(segsum_t&&) = delete;
+
     void aggregate(joshu::btnctx_t const* const lhs,
                    joshu::btnctx_t const* const rhs) override {
       segsum_t const* const lhc = static_cast<segsum_t const* const>(lhs);
