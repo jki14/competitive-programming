@@ -320,10 +320,12 @@ protected:
     CPPUNIT_ASSERT_EQUAL(true, foo.empty());
   }
 
-  class segsum_t : public joshu::btnctx_t {
+  class segsum_t : public joshu::btnctx_t<segsum_t> {
   public:
     segsum_t() = delete;
-    segsum_t(int const len) : length_(len), modify_(0), sum_(0) { }
+    segsum_t(int const len, int const sum = 0) : length_(len),
+                                                 modify_(0),
+                                                 sum_(sum) { }
 
     segsum_t(segsum_t const&) = delete;
     segsum_t(segsum_t&&) = delete;
@@ -331,17 +333,13 @@ protected:
     segsum_t& operator=(segsum_t const&) = delete;
     segsum_t& operator=(segsum_t&&) = delete;
 
-    void aggregate(joshu::btnctx_t const* const lhs,
-                   joshu::btnctx_t const* const rhs) override {
-      segsum_t const* const lhc = static_cast<segsum_t const* const>(lhs);
-      segsum_t const* const rhc = static_cast<segsum_t const* const>(rhs);
-      sum_ = lhc->calc() + rhc->calc();
+    void aggregate(segsum_t const* const lhs,
+                   segsum_t const* const rhs) override {
+      sum_ = lhs->calc() + rhs->calc();
     }
-    void flush(joshu::btnctx_t* lhs, joshu::btnctx_t* rhs) override {
-      segsum_t* lhc = static_cast<segsum_t*>(lhs);
-      segsum_t* rhc = static_cast<segsum_t*>(rhs);
-      lhc->modify_ += modify_;
-      rhc->modify_ += modify_;
+    void flush(segsum_t* lhs, segsum_t* rhs) override {
+      lhs->modify_ += modify_;
+      rhs->modify_ += modify_;
       sum_ += modify_ * length_;
       modify_ = 0;
     }
@@ -355,19 +353,13 @@ protected:
   };
 
   void TestBTNCtxT() {
-    segsum_t pnt(3), lhs(2), rhs(1);
-    lhs.sum_ = 3;
-    rhs.sum_ = 5;
-
-    joshu::btnctx_t* pntctx = static_cast<joshu::btnctx_t*>(&pnt);
-    joshu::btnctx_t* lhsctx = static_cast<joshu::btnctx_t*>(&lhs);
-    joshu::btnctx_t* rhsctx = static_cast<joshu::btnctx_t*>(&rhs);
+    segsum_t pnt(3), lhs(2, 3), rhs(1, 5);
 
     CPPUNIT_ASSERT_EQUAL(0, pnt.calc());
     CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
 
-    pntctx->aggregate(lhsctx, rhsctx);
+    pnt.aggregate(&lhs, &rhs);
     CPPUNIT_ASSERT_EQUAL(8, pnt.calc());
 
     pnt.modify_ = 1;
@@ -375,7 +367,7 @@ protected:
     CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
 
-    pntctx->flush(lhsctx, rhsctx);
+    pnt.flush(&lhs, &rhs);
     CPPUNIT_ASSERT_EQUAL(11, pnt.calc());
     CPPUNIT_ASSERT_EQUAL(5, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(6, rhs.calc());

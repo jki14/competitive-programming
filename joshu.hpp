@@ -394,10 +394,11 @@ private:
   std::vector<entry_t> foo_;
 };
 
+template<typename T>
 class btnctx_t {
 public:
-  virtual void aggregate(btnctx_t const* const lhs, btnctx_t const* const rhs) = 0;
-  virtual void flush(btnctx_t* lhs, btnctx_t* rhs) = 0;
+  virtual void aggregate(T const* const lhs, T const* const rhs) = 0;
+  virtual void flush(T* lhs, T* rhs) = 0;
 };
 }
 
