@@ -397,8 +397,8 @@ private:
 template<typename T>
 class btnctx_t {
 public:
-  virtual void aggregate(T const* const lhs, T const* const rhs) = 0;
-  virtual void flush(T* lhs, T* rhs) = 0;
+  virtual void aggregate(T const& lhs, T const& rhs) = 0;
+  virtual void flush(T& lhs, T& rhs) = 0;
 };
 }
 

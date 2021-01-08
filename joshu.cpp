@@ -333,13 +333,13 @@ protected:
     segsum_t& operator=(segsum_t const&) = delete;
     segsum_t& operator=(segsum_t&&) = delete;
 
-    void aggregate(segsum_t const* const lhs,
-                   segsum_t const* const rhs) override {
-      sum_ = lhs->calc() + rhs->calc();
+    void aggregate(segsum_t const& lhs,
+                   segsum_t const& rhs) override {
+      sum_ = lhs.calc() + rhs.calc();
     }
-    void flush(segsum_t* lhs, segsum_t* rhs) override {
-      lhs->modify_ += modify_;
-      rhs->modify_ += modify_;
+    void flush(segsum_t& lhs, segsum_t& rhs) override {
+      lhs.modify_ += modify_;
+      rhs.modify_ += modify_;
       sum_ += modify_ * length_;
       modify_ = 0;
     }
@@ -359,7 +359,7 @@ protected:
     CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
 
-    pnt.aggregate(&lhs, &rhs);
+    pnt.aggregate(lhs, rhs);
     CPPUNIT_ASSERT_EQUAL(8, pnt.calc());
 
     pnt.modify_ = 1;
@@ -367,7 +367,7 @@ protected:
     CPPUNIT_ASSERT_EQUAL(3, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(5, rhs.calc());
 
-    pnt.flush(&lhs, &rhs);
+    pnt.flush(lhs, rhs);
     CPPUNIT_ASSERT_EQUAL(11, pnt.calc());
     CPPUNIT_ASSERT_EQUAL(5, lhs.calc());
     CPPUNIT_ASSERT_EQUAL(6, rhs.calc());
