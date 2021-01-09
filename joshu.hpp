@@ -394,11 +394,131 @@ private:
   std::vector<entry_t> foo_;
 };
 
-template<typename T>
+template<typename Ctx>
 class btnctx_t {
 public:
-  virtual void aggregate(T const& lhs, T const& rhs) = 0;
-  virtual void flush(T& lhs, T& rhs) = 0;
+  virtual void aggregate(Ctx const& lhs, Ctx const& rhs) = 0;
+  virtual void flush(Ctx& lhs, Ctx& rhs) = 0;
+};
+
+template<typename Int, typename Ctx, typename std::enable_if<
+    std::is_base_of<btnctx_t<Ctx>, Ctx>::value>::type* = nullptr>
+class segtree_t {
+public:
+  struct node_t {
+    node_t* chd[2];
+    Int lef, rig;
+    Ctx ctx;
+  };
+
+  using ctx_handler_t = std::function<Ctx(node_t const&)>;
+
+  segtree_t() = default;
+  segtree_t(size_t const capacity) {
+    node_pool_.resize(capacity << 1);
+  }
+
+  segtree_t(segtree_t const&) = delete;
+  segtree_t(segtree_t&&) = delete;
+
+  segtree_t& operator=(segtree_t const&) = delete;
+  segtree_t& operator=(segtree_t&&) = delete;
+
+  void build(Int const lef, Int const rig, ctx_handler_t const& initializer) {
+    clear();
+    build(&root_, lef, std::max(lef, rig), initializer);
+  }
+
+  void update(Int const pos, ctx_handler_t const& updater) {
+    update(pos, pos, updater);
+  }
+
+  void update(Int const lef, Int const rig, ctx_handler_t const& updater) {
+    if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
+      update(*root_, lef, rig, updater);
+    }
+  }
+
+  Ctx query(Int const pos, ctx_handler_t const& querier) {
+    return query(pos, pos, querier);
+  }
+
+  Ctx query(Int const lef, Int const rig, ctx_handler_t const& querier) {
+    if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
+      return query(*root_, lef, rig, querier);
+    } else {
+      return { };
+    }
+  }
+
+private:
+  void build(node_t **hook, Int const lef, Int const rig,
+             ctx_handler_t const& initializer) {
+    *hook = new_node();
+    node_t& node = **hook;
+    node.lef = lef;
+    node.rig = rig;
+    node.ctx = initializer(node);
+    if (lef == rig) {
+      node.chd[0] = nullptr;
+      node.chd[1] = nullptr;
+    } else {
+      Int const mid = (lef + rig) >> 1;
+      build(&node.chd[0], lef, mid, initializer);
+      build(&node.chd[1], mid + 1, rig, initializer);
+      node.ctx.aggregate(node.chd[0]->ctx, node.chd[1]->ctx);
+    }
+  }
+
+  void update(node_t &node, Int const lef, Int const rig,
+              ctx_handler_t const& updater) {
+    if (lef <= node.lef && node.rig <= rig) {
+      node.ctx = updater(node);
+    } else {
+      node.ctx.flush(node.chd[0]->ctx, node.chd[1]->ctx);
+      if (lef <= node.chd[0]->rig) {
+        update(*node.chd[0], lef, rig, updater);
+      }
+      if (rig >= node.chd[1]->lef) {
+        update(*node.chd[1], lef, rig, updater);
+      }
+      node.ctx.aggregate(node.chd[0]->ctx, node.chd[1]->ctx);
+    }
+  }
+
+  Ctx query(node_t &node, Int const lef, Int const rig,
+            ctx_handler_t const& querier) {
+    if (lef <= node.lef && node.rig <= rig) {
+      return querier(node);
+    } else {
+      Ctx lhs, rhs;
+      if (lef <= node.chd[0]->rig) {
+        lhs = query(*node.chd[0], lef, rig, querier);
+      }
+      if (rig >= node.chd[1]->lef) {
+        rhs = query(*node.chd[1], lef, rig, querier);
+      }
+      Ctx foo = querier(node);
+      foo.aggregate(lhs, rhs);
+      return foo;
+    }
+  }
+
+  void clear() {
+    root_ = nullptr;
+    num_ = 0;
+  }
+
+  node_t* new_node() {
+    while (node_pool_.size() <= num_) {
+      node_pool_.emplace_back();
+    }
+    return &node_pool_[num_++];
+  }
+
+  std::vector<node_t> node_pool_;
+  node_t* root_ = nullptr;
+  size_t num_ = 0;
 };
 }
 

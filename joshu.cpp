@@ -16,6 +16,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestBinarySearch);
   CPPUNIT_TEST(TestHeapT);
   CPPUNIT_TEST(TestBTNCtxT);
+  CPPUNIT_TEST(TestSegTreeT);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST_SUITE_END();
 
@@ -322,16 +323,16 @@ protected:
 
   class segsum_t : public joshu::btnctx_t<segsum_t> {
   public:
-    segsum_t() = delete;
+    segsum_t() = default;
     segsum_t(int const len, int const sum = 0) : length_(len),
                                                  modify_(0),
                                                  sum_(sum) { }
 
-    segsum_t(segsum_t const&) = delete;
-    segsum_t(segsum_t&&) = delete;
+    segsum_t(segsum_t const&) = default;
+    segsum_t(segsum_t&&) = default;
 
-    segsum_t& operator=(segsum_t const&) = delete;
-    segsum_t& operator=(segsum_t&&) = delete;
+    segsum_t& operator=(segsum_t const&) = default;
+    segsum_t& operator=(segsum_t&&) = default;
 
     void aggregate(segsum_t const& lhs,
                    segsum_t const& rhs) override {
@@ -348,8 +349,8 @@ protected:
       return sum_ + modify_ * length_;
     }
 
-    int const length_;
-    int modify_, sum_;
+    int length_ = 0;
+    int modify_ = 0, sum_ = 0;
   };
 
   void TestBTNCtxT() {
@@ -374,6 +375,108 @@ protected:
     CPPUNIT_ASSERT_EQUAL(0, pnt.modify_);
     CPPUNIT_ASSERT_EQUAL(1, lhs.modify_);
     CPPUNIT_ASSERT_EQUAL(1, rhs.modify_);
+  }
+
+  void TestSegTreeT() {
+    joshu::segtree_t<int, segsum_t> segtree(5);
+    segsum_t ctx;
+
+    std::vector<int> init{1, 2, 3, 4, 5};
+    int delta;
+    auto const initializer = [&init](
+        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
+        if (node.lef == node.rig) {
+          return {1, init[node.lef - 1]};
+        } else {
+          return {0, 0};
+        }
+    };
+    auto const updater = [&delta](
+        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
+        auto bar = node.ctx;
+        bar.modify_ += delta;
+        return bar;
+    };
+    auto const querier = [](
+        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
+        return node.ctx;
+    };
+
+    segtree.build(1, 5, initializer);
+    // [1, 2, 3, 4, 5]
+    ctx = segtree.query(1, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, querier);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(3, querier);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(4, querier);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(5, querier);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
+
+    delta = 2;
+    segtree.update(2, updater);
+    // [1, 4, 3, 4, 5]
+    ctx = segtree.query(1, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, querier);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(3, querier);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(4, querier);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(5, querier);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
+
+    delta = -3;
+    segtree.update(2, 4, updater);
+    // [1, 1, 0, 1, 5]
+    ctx = segtree.query(1, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(3, querier);
+    CPPUNIT_ASSERT_EQUAL(0, ctx.calc());
+    ctx = segtree.query(4, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(5, querier);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
+
+    ctx = segtree.query(1, 1, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(1, 2, querier);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(1, 3, querier);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(1, 4, querier);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(1, 5, querier);
+    CPPUNIT_ASSERT_EQUAL(8, ctx.calc());
+
+    ctx = segtree.query(2, 2, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, 3, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, 4, querier);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(2, 5, querier);
+    CPPUNIT_ASSERT_EQUAL(7, ctx.calc());
+
+    ctx = segtree.query(3, 3, querier);
+    CPPUNIT_ASSERT_EQUAL(0, ctx.calc());
+    ctx = segtree.query(3, 4, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(3, 5, querier);
+    CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
+
+    ctx = segtree.query(4, 4, querier);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(4, 5, querier);
+    CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
+
+    ctx = segtree.query(5, 5, querier);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
   }
 
   void TestImodT() {
