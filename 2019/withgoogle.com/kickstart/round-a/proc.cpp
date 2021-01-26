@@ -393,138 +393,74 @@ int const inf = 0x3f3f3f3f;
 
 struct seg_t {
   int x, y;
-};
-
-struct node_t {
-  int lef, rig;
-  int cover, shallow, stacked;
-  node_t* chd[2];
+  seg_t(int const x_, int const y_) {
+    x = x_;
+    y = y_;
+  }
+  bool operator<(seg_t const& rhs) {
+    return (x != rhs.x) ? (x < rhs.x) : (y > rhs.y);
+  }
 };
 
 int n, m;
 list<seg_t> foo;
+unordered_set<int> bar;
+vector<int> scores;
 int ans;
 
-node_t pool[2100000], *root, *tail;
-
-void build(node_t** hook, int const lef, int const rig) {
-  node_t* node = *hook = tail++;
-
-  node->lef = lef;
-  node->rig = rig;
-
-  node->cover = 0;
-  node->shallow = 0;
-  node->stacked = 0;
-
-  if (lef != rig) {
-    int const mid = (lef + rig) >> 1;
-    build(&node->chd[0], lef, mid);
-    build(&node->chd[1], mid + 1, rig);
-  } else {
-    node->chd[0] = nullptr;
-    node->chd[1] = nullptr;
-  }
-}
-
-void update(node_t* node) {
-  if (node->chd[0] == nullptr) {
-    node->shallow = (node->cover == 1) ? 1: 0;
-    node->stacked = (node->cover == 0) ? 0: 1;
-    return;
-  }
-  if (node->cover == 0) {
-    node->shallow = node->chd[0]->shallow + node->chd[1]->shallow;
-    node->stacked = node->chd[0]->stacked + node->chd[1]->stacked;
-  } else if (node->cover == 1) {
-    int const range = node->rig - node->lef + 1;
-    node->shallow = range - node->chd[0]->stacked - node->chd[1]->stacked;
-    node->stacked = range;
-  } else {
-    int const range = node->rig - node->lef + 1;
-    node->shallow = 0;
-    node->stacked = range;
-  }
-}
-
-void cover(node_t* node, int const lef, int const rig, int const d) {
-  if (lef <= node->lef && node->rig <= rig) {
-    node->cover += d;
-  } else {
-    if (lef <= node->chd[0]->rig) {
-      cover(node->chd[0], lef, rig, d);
-    }
-    if (rig >= node->chd[1]->lef) {
-      cover(node->chd[1], lef, rig, d);
-    }
-  }
-  update(node);
-}
-
-pair<int, int>
-query(node_t* node, int const lef, int const rig) {
-  if (lef <= node->lef && node->rig <= rig) {
-    return {node->shallow, node->stacked};
-  } else {
-    int range0 = max(
-        min(node->chd[0]->rig, rig) - max(node->chd[0]->lef, lef) + 1,
-        0);
-    int shallow0 = 0, stacked0 = 0;
-    int range1 = max(
-        min(node->chd[1]->rig, rig) - max(node->chd[1]->lef, lef) + 1,
-        0);
-    int shallow1 = 0, stacked1 = 0;
-    if (range0) {
-      auto const tmp = query(node->chd[0], lef, rig);
-      shallow0 = tmp.first;
-      stacked0 = tmp.second;
-    }
-    if (range1) {
-      auto const tmp = query(node->chd[1], lef, rig);
-      shallow1 = tmp.first;
-      stacked1 = tmp.second;
-    }
-    int const range = range0 + range1;
-    int shallow, stacked;
-    if (node->cover == 0) {
-      shallow = shallow0 + shallow1;
-      stacked = stacked0 + stacked1;
-    } else if (node->cover == 1) {
-      shallow = range - stacked0 - stacked1;
-      stacked = range;
-    } else {
-      shallow = 0;
-      stacked = range;
-    }
-    return {shallow, stacked};
-  }
+void mysort(list<seg_t>& foo) {
+  vector<seg_t> bar(foo.begin(), foo.end());
+  sort(bar.begin(), bar.end());
+  foo = list<seg_t>(bar.begin(), bar.end());
 }
 
 int handler() {
   ans = inf;
   scanf("%d%d", &m, &n);
   foo.clear();
-  tail = pool;
-  build(&root, 1, m);
   for (int i = 0; i < n; ++i) {
-    static seg_t bar;
-    scanf("%d%d", &bar.x, &bar.y);
-    foo.push_back(bar);
-    cover(root, bar.x, bar.y, 1);
+    int x, y;
+    scanf("%d%d", &x, &y);
+    foo.emplace_back(x, i + 1);
+    foo.emplace_back(y + 1, -i - 1);
   }
-  while(!foo.empty()) {
-    decltype(foo.begin()) cursor;
-    int wht = -inf; 
+  mysort(foo);
+  scores.resize(n);
+  while (!foo.empty()) {
+    bar.clear();
+    for (int i = 0; i < n; ++i) scores[i] = 0;
     for (auto it = foo.begin(); it != foo.end(); ++it) {
-      int const score = query(root, it->x, it->y).first;
-      if (score > wht) {
-        cursor = it;
-        wht = score;
+      //fprintf(stderr, "<%d, %d>\n", it->x, it->y);
+      if (it->y > 0) {
+        //fprintf(stderr, "+%d\n", it->y - 1);
+        bar.insert(it->y - 1);
+      } else {
+        //fprintf(stderr, "-%d\n", -it->y - 1);
+        bar.erase(-it->y - 1);
+      }
+      auto const nt = std::next(it);
+      if (bar.size() == 1 && it->x != nt->x) {
+        scores[*bar.begin()] += nt->x - it->x;
       }
     }
-    cover(root, cursor->x, cursor->y, -1);
-    foo.erase(cursor);
-    ans = min(ans, wht);
+    assert(bar.empty());
+    int p = -1;
+    for (int i = 0; i < n; ++i) {
+      if (p == -1 || scores[p] < scores[i]) {
+        p = i;
+      }
+    }
+    //fprintf(stderr, "scores[%d] = %d\n", p, scores[p]);
+    for (auto it = foo.begin(); it != foo.end(); ) {
+      if (abs(it->y) == p + 1) {
+        it = foo.erase(it);
+      } else {
+        //fprintf(stderr, "%d %d\n", it->x, it->y);
+        ++it;
+      }
+    }
+    ans = min(ans, scores[p]);
+    if (ans == 0) break;
   }
   return ans;
 }

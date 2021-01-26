@@ -1,0 +1,34 @@
+-- Example 0
+4
+WORD
+ORDW
+RDWO
+DWOR
+WORD
+
+2
+-- Example 1
+4
+ABCDE
+FGHIJ
+KLMNO
+PQRST
+XYZ
+
+0
+-- Example 2
+3
+ABA
+BAB
+ABA
+AB
+
+6
+-- Example 3
+3
+AAA
+AAA
+AAA
+AA
+
+12
