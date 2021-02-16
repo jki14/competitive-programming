@@ -719,10 +719,10 @@ using imod_t = joshu::imod_t<1000000007>;
 
 using namespace std;
 
-using lld = long long;
+using llu = unsigned long long;
 
 int n;
-lld c[1024][8];
+llu c[1024][8];
 vector<int> foo;
 
 class MaximumPenalty {
@@ -741,43 +741,39 @@ class MaximumPenalty {
       foo[i] = i;
     }
 
-    static auto cost = [=](int const k, lld const t) -> lld {
+    static auto cost = [=](int const k, llu const t) -> llu {
       return c[k][0] + c[k][1] * t + c[k][2] * t * t + c[k][3] * t * t * t;
     };
 
+    /*
     while (true) {
       int flag = 1;
-      lld p = 0;
-      for (int i = 0; i < n; ++i) {
-        lld q = p + w[foo[i]];
-        for (int j = i + 1; j < n; ++j) {
-          if (cost(foo[i], p + w[foo[i]]) + cost(foo[j], q + w[foo[j]]) >
-              cost(foo[i], q + w[foo[j]]) + cost(foo[j], p + w[foo[j]])) {
-            q -= w[foo[i]];
+      llu p = 0;
+      for (int i = 0; i + 1 < n; ++i) {
+        int const j = i + 1;
+        if (max(cost(foo[i], p + w[foo[i]]),
+                cost(foo[j], p + w[foo[i]] + w[foo[j]])) >
+            max(cost(foo[i], p + w[foo[j]] + w[foo[i]]),
+                cost(foo[j], p + w[foo[j]]))) {
             swap(foo[i], foo[j]);
-            q += w[foo[i]];
             flag = 0;
-          }
-          q += w[foo[j]];
         }
         p += w[foo[i]];
       }
       if (flag) break;
     }
-
-    /*
-    for (int i = 0; i < n; ++i) {
-      lld q = p + w[foo[i]];
-      for (int j = i + 1; j < n; ++j) {
-        if (cost(foo[i], p + w[foo[i]]) + cost(foo[j], q + w[foo[j]]) >
-            cost(foo[i], q + w[foo[j]]) + cost(foo[j], p + w[foo[j]])) {
-            assert(false);
-        }
-        q += w[foo[j]];
-      }
-      p += w[foo[i]];
-    }
     */
+
+    llu t = 0;
+    for (int i = 0; i < n; ++i) t += w[i];
+    for (int i = n - 1; i > 0; --i) {
+      for (int j = 0; j < i; ++j) {
+        if (cost(foo[i], t) > cost(foo[j], t)) {
+          swap(foo[i], foo[j]);
+        }
+      }
+      t -= w[foo[i]];
+    }
 
     return foo;
   }
