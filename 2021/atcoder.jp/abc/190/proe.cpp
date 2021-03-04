@@ -721,29 +721,24 @@ using imod_t = joshu::imod_t<1000000007>;
 #include "bits/stdc++.h"
 using namespace std;
 
-int n, m;
+static int constexpr inf = 0x3f3f3f3f;
+
+int n, m, q;
+int c[20];
+
 int nbs[110000], nxt[210000], dst[210000], num;
 int vst[110000];
 
+int f[110000], g[140000][20];
+int dis[20][20];
+
 int foo;
+
+queue<int> que;
 
 void add_edge(int const u, int const v) {
   nxt[num] = nbs[u]; dst[num] = v; nbs[u] = num++;
   nxt[num] = nbs[v]; dst[num] = u; nbs[v] = num++;
-}
-
-int dfs(int const u) {
-  vst[u] = 1;
-  int bar = 0;
-  int cnt = 1;
-  for (int i = nbs[u]; ~i; i = nxt[i]) {
-    int const v = dst[i];
-    if (vst[v]) continue;
-    cnt += dfs(v);
-    ++bar;
-  }
-  foo += max(bar - 1, 0);
-  return cnt;
 }
 
 int main() {
@@ -757,15 +752,68 @@ int main() {
       scanf("%d%d", &u, &v);
       add_edge(u - 1, v - 1);
     }
-    for (int i = 0; i < n; ++i) {
-      vst[i] = 0;
+    scanf("%d", &q);
+    for (int i = 0; i < q; ++i) {
+      scanf("%d", &c[i]);
+      --c[i];
     }
-    foo = 0;
-    if (dfs(0) < n) {
+    for (int k = 0; k < q; ++k) {
+      for (int j = 0; j < n; ++j) {
+        f[j] = inf;
+      }
+      f[c[k]] = 0;
+      que.push(c[k]);
+      for (; !que.empty(); que.pop()) {
+        int const u = que.front();
+        for (int i = nbs[u]; ~i; i = nxt[i]) {
+          int const v = dst[i];
+          if (f[v] > f[u] + 1) {
+            f[v] = f[u] + 1;
+            que.push(v);
+          }
+        }
+      }
+      for (int i = 0; i < q; ++i) {
+        dis[k][i] = f[c[i]];
+      }
+    }
+    int const cap = 1 << q;
+    for (int i = 0; i < cap; ++i) {
+      for (int j = 0; j < q; ++j) {
+        g[i][j] = inf;
+      }
+    }
+    for (int j = 0; j < q; ++j) {
+      g[1 << j][j] = 1;
+      // fprintf(stderr, "g[%d][%d] = %d\n", 1 << j, j, g[1 << j][j]);
+    }
+    static auto constexpr getnext = [](int const x) -> int {
+      int const lb = joshu::lowbit(x);
+      int fund = x + lb;
+      int sup = ((fund ^ x) >> 2) / lb;
+      return fund | sup;
+    };
+    for (int l = 1; l < q; ++l) {
+      for (int i = (1 << l) - 1; i < cap; i = getnext(i)) {
+        for (int j = 0; j < q; ++j) {
+          if (!((i >> j) & 1)) continue;
+          // fprintf(stderr, "g[%d][%d] = %d\n", i, j, g[i][j]);
+          for (int k = 0; k < q; ++k) {
+            if ((i >> k) & 1) continue;
+            int& bar = g[i | (1 << k)][k];
+            bar = min(g[i][j] + dis[j][k], bar);
+          }
+        }
+      }
+    }
+    int foo = inf;
+    for (int i = 0; i < q; ++i) foo = min(g[cap - 1][i], foo);
+    if (foo == inf) {
       printf("-1\n");
     } else {
       printf("%d\n", foo);
     }
+    // fprintf(stderr, "n = %d, m = %d, q = %d\n", n, m, q);
   }
   return 0;
 }
