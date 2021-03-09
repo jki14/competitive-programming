@@ -413,7 +413,7 @@ public:
 
   using ctx_handler_t = std::function<Ctx(node_t const&)>;
 
-  segtree_t() = default;
+  segtree_t() = delete;
   segtree_t(size_t const capacity) {
     node_pool_.resize(capacity << 1);
   }
@@ -510,9 +510,6 @@ private:
   }
 
   node_t* new_node() {
-    while (node_pool_.size() <= num_) {
-      node_pool_.emplace_back();
-    }
     return &node_pool_[num_++];
   }
 
