@@ -250,7 +250,7 @@ Int binary_search(Int lef, Int rig, Lambda check) {
 
 /* Data Structures */
 inline namespace {
-template<typename T, size_t C = 1048576>
+template<typename T>
 class heap_t {
 public:
   class entry_t;
@@ -332,9 +332,11 @@ public:
     heap_t* heap_ = nullptr;
   };
 
-  heap_t() {
-    foo_.reserve(C);
+  heap_t() = delete;
+  heap_t(size_t const capacity) {
+    foo_.reserve(capacity);
   }
+
   heap_t(heap_t const&) = delete;
   heap_t(heap_t&&) = default;
 
@@ -344,9 +346,6 @@ public:
   std::vector<iter_t*>
   load(std::vector<T> values) {
     size_t const inc = values.size();
-    if (foo_.size() + inc > foo_.capacity()) {
-      return { };
-    }
     std::vector<iter_t*> bar;
     bar.reserve(inc);
     if (foo_.empty()) {
@@ -364,9 +363,6 @@ public:
   }
 
   iter_t* push(T value) {
-    if (foo_.size() + 1 > foo_.capacity()) {
-      return nullptr;
-    }
     foo_.emplace_back(std::move(value), foo_.end(), *this);
     auto const bar = foo_.back().iter_pointer();
     std::push_heap(foo_.begin(), foo_.end());
