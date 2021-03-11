@@ -213,7 +213,7 @@ protected:
   }
 
   void TestHeapT() {
-    joshu::heap_t<int> foo;
+    joshu::heap_t<int> foo(1048576);
     std::vector<int> bar = {3, 1, 4, 1, 5, 9};
     auto entries = foo.load(bar);
     CPPUNIT_ASSERT_EQUAL(6lu, foo.size());
