@@ -49,26 +49,47 @@ struct super_integral_t {
 };
 template<typename Int>
 struct is_unsigned_int {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned int>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 template<typename Int>
 struct is_unsigned_long {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     !is_unsigned_int<Int>::value &&
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned long>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 template<typename Int>
 struct is_unsigned_long_long {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     !is_unsigned_int<Int>::value && !is_unsigned_long<Int>::value &&
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned long long>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 }
 
