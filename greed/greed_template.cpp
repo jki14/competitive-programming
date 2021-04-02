@@ -49,26 +49,47 @@ struct super_integral_t {
 };
 template<typename Int>
 struct is_unsigned_int {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned int>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 template<typename Int>
 struct is_unsigned_long {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     !is_unsigned_int<Int>::value &&
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned long>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 template<typename Int>
 struct is_unsigned_long_long {
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
   static constexpr bool value =
     !is_unsigned_int<Int>::value && !is_unsigned_long<Int>::value &&
     std::is_integral<Int>::value && std::is_unsigned<Int>::value &&
     std::numeric_limits<Int>::max() <=
     std::numeric_limits<unsigned long long>::max();
+#if defined(__GNUC__) && (__GNUC__ == 9)
+#pragma GCC diagnostic pop
+#endif
 };
 }
 
@@ -250,7 +271,7 @@ Int binary_search(Int lef, Int rig, Lambda check) {
 
 /* Data Structures */
 inline namespace {
-template<typename T, size_t C = 1048576>
+template<typename T>
 class heap_t {
 public:
   class entry_t;
@@ -332,9 +353,11 @@ public:
     heap_t* heap_ = nullptr;
   };
 
-  heap_t() {
-    foo_.reserve(C);
+  heap_t() = delete;
+  heap_t(size_t const capacity) {
+    foo_.reserve(capacity);
   }
+
   heap_t(heap_t const&) = delete;
   heap_t(heap_t&&) = default;
 
@@ -344,9 +367,6 @@ public:
   std::vector<iter_t*>
   load(std::vector<T> values) {
     size_t const inc = values.size();
-    if (foo_.size() + inc > foo_.capacity()) {
-      return { };
-    }
     std::vector<iter_t*> bar;
     bar.reserve(inc);
     if (foo_.empty()) {
@@ -364,9 +384,6 @@ public:
   }
 
   iter_t* push(T value) {
-    if (foo_.size() + 1 > foo_.capacity()) {
-      return nullptr;
-    }
     foo_.emplace_back(std::move(value), foo_.end(), *this);
     auto const bar = foo_.back().iter_pointer();
     std::push_heap(foo_.begin(), foo_.end());
@@ -413,7 +430,7 @@ public:
 
   using ctx_handler_t = std::function<Ctx(node_t const&)>;
 
-  segtree_t() = default;
+  segtree_t() = delete;
   segtree_t(size_t const capacity) {
     node_pool_.resize(capacity << 1);
   }
@@ -510,9 +527,6 @@ private:
   }
 
   node_t* new_node() {
-    while (node_pool_.size() <= num_) {
-      node_pool_.emplace_back();
-    }
     return &node_pool_[num_++];
   }
 
