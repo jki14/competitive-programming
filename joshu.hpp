@@ -137,8 +137,11 @@ Int bitlen(Int bar) {
 /* Random */
 inline namespace {
 template<typename Initializer = std::random_device,
-         typename Generator = std::mt19937_64>
-typename Generator::result_type randint() {
+         typename Generator = std::mt19937_64,
+         typename std::enable_if<
+            std::is_same<typename Generator::result_type,
+                         uint64_t>::value>::type* = nullptr>
+uint64_t randllu() {
   static Initializer init;
   static Generator gen(init());
   return gen();
