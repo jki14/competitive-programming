@@ -60,21 +60,21 @@ protected:
     CPPUNIT_ASSERT_EQUAL(64lu, joshu::popcount(uint64_t(-1)));
 
     for (int i = 0; i < 65536; ++i) {
-      int8_t const foo8 = static_cast<int8_t>(joshu::randint());
+      int8_t const foo8 = static_cast<int8_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo8), joshu::popcount(foo8));
-      auto const foo8u = static_cast<uint8_t>(joshu::randint());
+      auto const foo8u = static_cast<uint8_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo8u), joshu::popcount(foo8u));
-      auto const foo16 = static_cast<int16_t>(joshu::randint());
+      auto const foo16 = static_cast<int16_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo16), joshu::popcount(foo16));
-      auto const foo16u = static_cast<uint16_t>(joshu::randint());
+      auto const foo16u = static_cast<uint16_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo16u), joshu::popcount(foo16u));
-      auto const foo32 = static_cast<int32_t>(joshu::randint());
+      auto const foo32 = static_cast<int32_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo32), joshu::popcount(foo32));
-      auto const foo32u = static_cast<uint32_t>(joshu::randint());
+      auto const foo32u = static_cast<uint32_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo32u), joshu::popcount(foo32u));
-      auto const foo64 = static_cast<int64_t>(joshu::randint());
+      auto const foo64 = static_cast<int64_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo64), joshu::popcount(foo64));
-      auto const foo64u = static_cast<uint64_t>(joshu::randint());
+      auto const foo64u = static_cast<uint64_t>(joshu::randllu());
       CPPUNIT_ASSERT_EQUAL(linear_count(foo64u), joshu::popcount(foo64u));
     }
   }
@@ -85,7 +85,7 @@ protected:
     CPPUNIT_ASSERT_EQUAL(2, joshu::lowbit(2));
     CPPUNIT_ASSERT_EQUAL(2147483648u, joshu::lowbit(2147483648u));
     for (int i = 0; i < 65536; ++i) {
-      auto const foo = joshu::randint();
+      auto const foo = joshu::randllu();
       auto const bar = joshu::lowbit(foo);
       CPPUNIT_ASSERT_EQUAL(1lu, joshu::popcount(bar));
       CPPUNIT_ASSERT_EQUAL(bar, foo & bar);
@@ -101,7 +101,7 @@ protected:
     CPPUNIT_ASSERT_EQUAL(2, joshu::bitlen(2));
     CPPUNIT_ASSERT_EQUAL(32u, joshu::bitlen(2147483648u));
     for (int i = 0; i < 65536; ++i) {
-      auto const bar = joshu::randint();
+      auto const bar = joshu::randllu();
       auto const foo = joshu::bitlen(bar);
       auto const low = static_cast<__int128>(1) << foo >> 1;
       auto const hig = static_cast<__int128>(1) << foo;
@@ -182,7 +182,7 @@ protected:
 
   void TestBinarySearch() {
     for (int i = 0; i < 65536; ++i) {
-      int64_t const bar = joshu::randint() % 4611686014132420608LL + 1LL;
+      int64_t const bar = joshu::randllu() % 4611686014132420608LL + 1LL;
       auto const square_gt = [bar](int64_t const i) {
         return i * i > bar;
       };
