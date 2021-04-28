@@ -95,33 +95,6 @@
 #include "cppunit/ui/text/TestRunner.h"
 #endif
 
-/**            Workaround for TopCoder C++ Compliler (gcc@3.1)             **/
-#ifndef _GLIBCXX14_CONSTEXPR
-# if __cplusplus >= 201402L
-#  define _GLIBCXX14_CONSTEXPR constexpr
-# else
-#  define _GLIBCXX14_CONSTEXPR
-# endif
-#endif
-
-#ifndef _GLIBCXX_PREDEFINED_OPS_H
-#define _GLIBCXX_PREDEFINED_OPS_H	1
-namespace __gnu_cxx
-{
-namespace __ops
-{
-  struct _Iter_less_iter
-  {
-    template<typename _Iterator1, typename _Iterator2>
-      _GLIBCXX14_CONSTEXPR
-      bool
-      operator()(_Iterator1 __it1, _Iterator2 __it2) const
-      { return *__it1 < *__it2; }
-  };
-} // namespace __ops
-} // namespace __gnu_cxx
-#endif
-/****************************************************************************/
 
 namespace joshu {
 /* Utils */
@@ -426,11 +399,33 @@ public:
         std::push_heap(heap_->foo_.begin(), std::next(*iter_));
       } else {
         value_ = std::move(new_value);
-        static __gnu_cxx::__ops::_Iter_less_iter __comp;
-        auto __first = heap_->foo_.begin();
-        auto const __pos = *iter_ - __first;
-        auto const __len = heap_->foo_.end() - __first;
-        std::__adjust_heap(__first, __pos, __len, std::move(**iter_), __comp);
+        auto first = heap_->foo_.begin();
+        auto pos = std::distance(first, *iter_);
+        auto len = std::distance(first, heap_->foo_.end());
+        auto value = std::move(**iter_);
+        auto cursor = pos;
+        while (cursor < (len - 1) / 2) {
+          cursor = 2 * (cursor + 1);
+          if (*(first + cursor) < *(first + (cursor - 1))) {
+            --cursor;
+          }
+          if (*(first + cursor) <= value) {
+            *(first + pos) = std::move(value);
+            return;
+          }
+          *(first + pos) = std::move(*(first + cursor));
+          pos = cursor;
+        }
+        if ((len & 1) == 0 && cursor == (len - 2) / 2) {
+          cursor = 2 * (cursor + 1) - 1;
+          if (*(first + cursor) <= value) {
+            *(first + pos) = std::move(value);
+            return;
+          }
+          *(first + pos) = std::move(*(first + cursor));
+          pos = cursor;
+        }
+        *(first + pos) = std::move(value);
       }
     }
 
