@@ -1,37 +1,100 @@
+#ifndef __clang__
 #include "bits/stdc++.h"
+#else
+#include <algorithm>
+#include <any>
+#include <array>
+#include <atomic>
+#include <bit>
+#include <bitset>
+#include <cassert>
+#include <ccomplex>
+#include <cctype>
+#include <cerrno>
+#include <cfenv>
+#include <cfloat>
+#include <charconv>
+#include <chrono>
+#include <cinttypes>
+#include <ciso646>
+#include <climits>
+#include <clocale>
+#include <cmath>
+#include <codecvt>
+#include <compare>
+#include <complex>
+#include <condition_variable>
+#include <csetjmp>
+#include <csignal>
+#include <cstdarg>
+#include <cstdbool>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctgmath>
+#include <ctime>
+#include <cwchar>
+#include <cwctype>
+#include <deque>
+#include <exception>
+#include <filesystem>
+#include <forward_list>
+#include <fstream>
+#include <functional>
+#include <future>
+#include <initializer_list>
+#include <iomanip>
+#include <ios>
+#include <iosfwd>
+#include <iostream>
+#include <istream>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <new>
+#include <numeric>
+#include <optional>
+#include <ostream>
+#include <queue>
+#include <random>
+#include <ratio>
+#include <regex>
+#include <scoped_allocator>
+#include <set>
+#include <shared_mutex>
+#include <span>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <streambuf>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <thread>
+#include <tuple>
+#include <type_traits>
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <valarray>
+#include <variant>
+#include <vector>
+#include <version>
+#endif
 
 #ifdef UNITTEST
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 #endif
 
-/**            Workaround for TopCoder C++ Compliler (gcc@3.1)             **/
-#ifndef _GLIBCXX14_CONSTEXPR
-# if __cplusplus >= 201402L
-#  define _GLIBCXX14_CONSTEXPR constexpr
-# else
-#  define _GLIBCXX14_CONSTEXPR
-# endif
-#endif
-
-#ifndef _GLIBCXX_PREDEFINED_OPS_H
-#define _GLIBCXX_PREDEFINED_OPS_H	1
-namespace __gnu_cxx
-{
-namespace __ops
-{
-  struct _Iter_less_iter
-  {
-    template<typename _Iterator1, typename _Iterator2>
-      _GLIBCXX14_CONSTEXPR
-      bool
-      operator()(_Iterator1 __it1, _Iterator2 __it2) const
-      { return *__it1 < *__it2; }
-  };
-} // namespace __ops
-} // namespace __gnu_cxx
-#endif
-/****************************************************************************/
 
 namespace joshu {
 /* Utils */
@@ -137,8 +200,11 @@ Int bitlen(Int bar) {
 /* Random */
 inline namespace {
 template<typename Initializer = std::random_device,
-         typename Generator = std::mt19937_64>
-typename Generator::result_type randint() {
+         typename Generator = std::mt19937_64,
+         typename std::enable_if<
+            std::is_same<typename Generator::result_type,
+                         uint64_t>::value>::type* = nullptr>
+uint64_t randllu() {
   static Initializer init;
   static Generator gen(init());
   return gen();
@@ -333,11 +399,33 @@ public:
         std::push_heap(heap_->foo_.begin(), std::next(*iter_));
       } else {
         value_ = std::move(new_value);
-        static __gnu_cxx::__ops::_Iter_less_iter __comp;
-        auto __first = heap_->foo_.begin();
-        auto const __pos = *iter_ - __first;
-        auto const __len = heap_->foo_.end() - __first;
-        std::__adjust_heap(__first, __pos, __len, std::move(**iter_), __comp);
+        auto first = heap_->foo_.begin();
+        auto pos = std::distance(first, *iter_);
+        auto len = std::distance(first, heap_->foo_.end());
+        auto value = std::move(**iter_);
+        auto cursor = pos;
+        while (cursor < (len - 1) / 2) {
+          cursor = 2 * (cursor + 1);
+          if (*(first + cursor) < *(first + (cursor - 1))) {
+            --cursor;
+          }
+          if (*(first + cursor) <= value) {
+            *(first + pos) = std::move(value);
+            return;
+          }
+          *(first + pos) = std::move(*(first + cursor));
+          pos = cursor;
+        }
+        if ((len & 1) == 0 && cursor == (len - 2) / 2) {
+          cursor = 2 * (cursor + 1) - 1;
+          if (*(first + cursor) <= value) {
+            *(first + pos) = std::move(value);
+            return;
+          }
+          *(first + pos) = std::move(*(first + cursor));
+          pos = cursor;
+        }
+        *(first + pos) = std::move(value);
       }
     }
 
