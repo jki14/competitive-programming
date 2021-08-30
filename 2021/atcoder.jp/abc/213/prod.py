@@ -1,4 +1,5 @@
 from sys import stdout
+from sys import setrecursionlimit
 
 
 def dfs(u, neighbors, prev, p, seq):
@@ -37,4 +38,5 @@ def main():
 
 
 if __name__ == '__main__':
+    setrecursionlimit(1048576)
     main()
