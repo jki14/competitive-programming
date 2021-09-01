@@ -812,6 +812,41 @@ private:
   }
 };
 }
+
+/* Class matrix_t */
+inline namespace {
+template<typename Type>
+class matrix_t{
+public:
+  matrix_t() = default;
+  matrix_t(matrix_t const&) = default;
+  matrix_t(matrix_t&&) = default;
+
+  matrix_t(size_t const r, size_t const c)
+    : foo_(r, std::vector<Type>(c, 0)) { }
+
+  matrix_t(std::vector<std::vector<Type>>&& bar)
+    : foo_(bar) {
+    size_t width = 0;
+    for (auto const& row : foo_) {
+      width = std::max(row.size(), width);
+    }
+    for (auto& row: foo_) {
+      row.resize(width, 0);
+    }
+  }
+
+  matrix_t& operator=(matrix_t const&) = default;
+  matrix_t& operator=(matrix_t&&) = default;
+
+  std::vector<std::vector<Type>> const& data() const{
+    return foo_;
+  }
+
+private:
+  std::vector<std::vector<Type>> foo_;
+};
+}
 }
 
 inline namespace {

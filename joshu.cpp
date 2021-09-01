@@ -5,6 +5,18 @@
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 
+template<typename Type>
+static std::ostream& operator<<(std::ostream& ost,
+                                std::vector<Type> const& rhs) {
+  ost << "[";
+  for (size_t i = 0; i < rhs.size(); ++i) {
+    if (i) ost <<", ";
+    ost << rhs[i];
+  }
+  ost << "]";
+  return ost;
+}
+
 class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
   CPPUNIT_TEST(TestPopcount);
@@ -18,6 +30,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestBTNCtxT);
   CPPUNIT_TEST(TestSegTreeT);
   CPPUNIT_TEST(TestImodT);
+  CPPUNIT_TEST(TestMatrixT);
   CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -497,6 +510,20 @@ protected:
     imod_t bar = 65535;
     foo += bar;
     CPPUNIT_ASSERT_EQUAL(65534LL, foo.lld());
+  }
+
+  void TestMatrixT() {
+    // test constructors
+    joshu::matrix_t<int> const matrix_empty;
+    CPPUNIT_ASSERT_EQUAL(std::vector<std::vector<int>>(), matrix_empty.data());
+
+    joshu::matrix_t<int> const matrix_zero23(2, 3);
+    std::vector<std::vector<int>> const raw_zero23{{0, 0, 0}, {0, 0, 0}};
+    CPPUNIT_ASSERT_EQUAL(raw_zero23, matrix_zero23.data());
+
+    joshu::matrix_t<int> const matrix_fib23({{1, 1}, {2, 3, 5}});
+    std::vector<std::vector<int>> const raw_fib23{{1, 1, 0}, {2, 3, 5}};
+    CPPUNIT_ASSERT_EQUAL(raw_fib23, matrix_fib23.data());
   }
 
 public:
