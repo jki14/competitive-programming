@@ -524,6 +524,25 @@ protected:
     joshu::matrix_t<int> const matrix_fib23({{1, 1}, {2, 3, 5}});
     std::vector<std::vector<int>> const raw_fib23{{1, 1, 0}, {2, 3, 5}};
     CPPUNIT_ASSERT_EQUAL(raw_fib23, matrix_fib23.data());
+
+    // test size
+    CPPUNIT_ASSERT_EQUAL(0lu, matrix_empty.height());
+    CPPUNIT_ASSERT_EQUAL(0lu, matrix_empty.width());
+    CPPUNIT_ASSERT_EQUAL(2lu, matrix_zero23.height());
+    CPPUNIT_ASSERT_EQUAL(3lu, matrix_zero23.width());
+
+    // test access
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(0, 3));
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(2, 0));
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(2, 3));
+    CPPUNIT_ASSERT_EQUAL(5, matrix_fib23.at(1, 2));
+    CPPUNIT_ASSERT_EQUAL(3, matrix_fib23[1][1]);
+
+    joshu::matrix_t<int> matrix_odd23({{1, 3, 5}, {7, 9, 11}});
+    CPPUNIT_ASSERT_EQUAL(11, matrix_odd23[1][2]);
+    matrix_odd23[1][2] = -1;
+    CPPUNIT_ASSERT_EQUAL(-1, matrix_odd23[1][2]);
+    CPPUNIT_ASSERT_EQUAL(-1, matrix_odd23.at(1, 2));
   }
 
 public:

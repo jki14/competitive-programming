@@ -839,6 +839,29 @@ public:
   matrix_t& operator=(matrix_t const&) = default;
   matrix_t& operator=(matrix_t&&) = default;
 
+  size_t height() const {
+    return foo_.size();
+  }
+
+  size_t width() const {
+    return foo_.empty() ? 0 : foo_.front().size();
+  }
+
+  Type at(size_t const r, size_t const c) const {
+    if (r >= height() || c >= width()) {
+      return 0;
+    }
+    return foo_[r][c];
+  }
+
+  std::vector<Type>& operator[](size_t const r) {
+    return foo_[r];
+  }
+
+  std::vector<Type> const& operator[](size_t const r) const {
+    return foo_[r];
+  }
+
   std::vector<std::vector<Type>> const& data() const{
     return foo_;
   }
