@@ -854,6 +854,88 @@ public:
     return foo_[r][c];
   }
 
+  static matrix_t one(size_t const r, size_t const c) {
+    matrix_t ret(r, c);
+    auto const d = std::min(r, c);
+    for (size_t i = 0; i < d; ++i) {
+      ret[i][i] = 1;
+    }
+    return ret;
+  }
+
+  matrix_t operator+(matrix_t const& rhs) const {
+    auto const h = std::max(height(), rhs.height());
+    auto const w = std::max(width(), rhs.width());
+    matrix_t ret(h, w);
+    for (size_t r = 0; r < h; ++r) {
+      for (size_t c = 0; c < w; ++c) {
+        ret[r][c] = at(r, c) + rhs.at(r, c);
+      }
+    }
+    return ret;
+  }
+
+  matrix_t operator-(matrix_t const& rhs) const {
+    auto const h = std::max(height(), rhs.height());
+    auto const w = std::max(width(), rhs.width());
+    matrix_t ret(h, w);
+    for (size_t r = 0; r < h; ++r) {
+      for (size_t c = 0; c < w; ++c) {
+        ret[r][c] = at(r, c) - rhs.at(r, c);
+      }
+    }
+    return ret;
+  }
+
+  matrix_t operator*(matrix_t const& rhs) const {
+    auto const h = height();
+    auto const w = rhs.width();
+    auto const d = std::min(width(), rhs.height());
+    matrix_t ret(h, w);
+    for (size_t r = 0; r < h; ++r) {
+      for (size_t c = 0; c < w; ++c) {
+        for (size_t i = 0; i < d; ++i) {
+          ret[r][c] += at(r, i) * rhs.at(i, c);
+        }
+      }
+    }
+    return ret;
+  }
+
+  matrix_t& operator+=(matrix_t const& rhs) {
+    *this = *this + rhs;
+    return *this;
+  }
+
+  matrix_t& operator-=(matrix_t const& rhs) {
+    *this = *this - rhs;
+    return *this;
+  }
+
+  matrix_t& operator*=(matrix_t const& rhs) {
+    *this = *this * rhs;
+    return *this;
+  }
+
+  template<typename Int, typename std::enable_if<
+      std::is_integral<Int>::value>::type* = nullptr>
+  matrix_t pow(Int const p) const {
+    matrix_t ret{matrix_t::one(height(), width())};
+    matrix_t cur(*this);
+    if (p > 0) {
+      for (Int i = 1; ; i <<= 1) {
+        if (p & i) {
+          ret *= cur;
+        }
+        cur *= cur;
+        if (i > (p >> 1)) {
+          break;
+        }
+      }
+    }
+    return ret;
+  }
+
   std::vector<Type>& operator[](size_t const r) {
     return foo_[r];
   }
