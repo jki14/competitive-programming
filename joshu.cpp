@@ -5,6 +5,18 @@
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 
+template<typename Type>
+static std::ostream& operator<<(std::ostream& ost,
+                                std::vector<Type> const& rhs) {
+  ost << "[";
+  for (size_t i = 0; i < rhs.size(); ++i) {
+    if (i) ost <<", ";
+    ost << rhs[i];
+  }
+  ost << "]";
+  return ost;
+}
+
 class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
   CPPUNIT_TEST(TestPopcount);
@@ -18,6 +30,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestBTNCtxT);
   CPPUNIT_TEST(TestSegTreeT);
   CPPUNIT_TEST(TestImodT);
+  CPPUNIT_TEST(TestMatrixT);
   CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -497,6 +510,90 @@ protected:
     imod_t bar = 65535;
     foo += bar;
     CPPUNIT_ASSERT_EQUAL(65534LL, foo.lld());
+  }
+
+  void TestMatrixT() {
+    // test constructors
+    joshu::matrix_t<int> const matrix_empty;
+    CPPUNIT_ASSERT_EQUAL(std::vector<std::vector<int>>(), matrix_empty.data());
+
+    joshu::matrix_t<int> const matrix_zero23(2, 3);
+    std::vector<std::vector<int>> const raw_zero23{{0, 0, 0}, {0, 0, 0}};
+    CPPUNIT_ASSERT_EQUAL(raw_zero23, matrix_zero23.data());
+
+    joshu::matrix_t<int> const matrix_fib23({{1, 1}, {2, 3, 5}});
+    std::vector<std::vector<int>> const raw_fib23{{1, 1, 0}, {2, 3, 5}};
+    CPPUNIT_ASSERT_EQUAL(raw_fib23, matrix_fib23.data());
+
+    // test size
+    CPPUNIT_ASSERT_EQUAL(0lu, matrix_empty.height());
+    CPPUNIT_ASSERT_EQUAL(0lu, matrix_empty.width());
+    CPPUNIT_ASSERT_EQUAL(2lu, matrix_zero23.height());
+    CPPUNIT_ASSERT_EQUAL(3lu, matrix_zero23.width());
+
+    // test access
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(0, 3));
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(2, 0));
+    CPPUNIT_ASSERT_EQUAL(0, matrix_fib23.at(2, 3));
+    CPPUNIT_ASSERT_EQUAL(5, matrix_fib23.at(1, 2));
+    CPPUNIT_ASSERT_EQUAL(3, matrix_fib23[1][1]);
+
+    joshu::matrix_t<int> matrix_odd23({{1, 3, 5}, {7, 9, 11}});
+    CPPUNIT_ASSERT_EQUAL(11, matrix_odd23[1][2]);
+    matrix_odd23[1][2] = -1;
+    CPPUNIT_ASSERT_EQUAL(-1, matrix_odd23[1][2]);
+    CPPUNIT_ASSERT_EQUAL(-1, matrix_odd23.at(1, 2));
+
+    // test static one
+    std::vector<std::vector<int>> const raw_one23{{1, 0, 0}, {0, 1, 0}};
+    CPPUNIT_ASSERT_EQUAL(raw_one23, joshu::matrix_t<int>::one(2, 3).data());
+
+    // test arithmetic
+    joshu::matrix_t<int> const matrix_fib32({{1, 1}, {2, 3}, {5, 8}});
+
+    std::vector<std::vector<int>> const expected_add{
+      {2, 2, 0},
+      {4, 6, 5},
+      {5, 8, 0}
+    };
+    CPPUNIT_ASSERT_EQUAL(expected_add, (matrix_fib32 + matrix_fib23).data());
+    auto actual_add = matrix_fib32;
+    actual_add += matrix_fib23;
+    CPPUNIT_ASSERT_EQUAL(expected_add, actual_add.data());
+
+    std::vector<std::vector<int>> const expected_sub{
+      {0, 0, 0},
+      {0, 0, -5},
+      {5, 8, 0}
+    };
+    CPPUNIT_ASSERT_EQUAL(expected_sub, (matrix_fib32 - matrix_fib23).data());
+    auto actual_sub = matrix_fib32;
+    actual_sub -= matrix_fib23;
+    CPPUNIT_ASSERT_EQUAL(expected_sub, actual_sub.data());
+
+    std::vector<std::vector<int>> const expected_mul{
+      {3, 4, 5},
+      {8, 11, 15},
+      {21, 29, 40}
+    };
+    CPPUNIT_ASSERT_EQUAL(expected_mul, (matrix_fib32 * matrix_fib23).data());
+    auto actual_mul = matrix_fib32;
+    actual_mul *= matrix_fib23;
+    CPPUNIT_ASSERT_EQUAL(expected_mul, actual_mul.data());
+
+    // test pow
+    joshu::matrix_t<int> const fib_lhs({{1, 0}});
+    joshu::matrix_t<int> const fib_rhs({{1, 1}, {1, 0}});
+    CPPUNIT_ASSERT_EQUAL(1, (fib_lhs * fib_rhs.pow(0)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(1, (fib_lhs * fib_rhs.pow(1)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(2, (fib_lhs * fib_rhs.pow(2)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(3, (fib_lhs * fib_rhs.pow(3)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(5, (fib_lhs * fib_rhs.pow(4)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(8, (fib_lhs * fib_rhs.pow(5)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(13, (fib_lhs * fib_rhs.pow(6)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(21, (fib_lhs * fib_rhs.pow(7)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(34, (fib_lhs * fib_rhs.pow(8)).at(0, 0));
+    CPPUNIT_ASSERT_EQUAL(55, (fib_lhs * fib_rhs.pow(9)).at(0, 0));
   }
 
 public:
