@@ -770,6 +770,7 @@ int main() {
       ++cnt;
       g = f;
       for (int i = 0; i < h; ++i) {
+        /*
         for (int j = 0; j < w; ++j) {
           if (g[i][j]) {
             static row_t row;
@@ -788,6 +789,20 @@ int main() {
             f[i] |= row;
           }
         }
+        */
+        auto row = g[i];
+
+        row |= (g[i] << 1) | (g[i] >> 1);
+        row.reset(w);
+        if (i - 2 >= 0) f[i - 2] |= row;
+        if (i + 2 < h) f[i + 2] |= row;
+
+        row |= (g[i] << 2) | (g[i] >> 2);
+        row.reset(w);
+        row.reset(w + 1);
+        if (i - 1 >= 0) f[i - 1] |= row;
+        if (i + 1 < h) f[i + 1] |= row;
+        f[i] |= row;
       }
       for (int i = 0; i < h; ++i) {
         for (int j = 0; j < w; ++j) {
