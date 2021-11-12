@@ -1021,22 +1021,36 @@ int main() {
   };
 
   while (scanf("%d%d", &l, &q) != EOF) {
-    ds_t ds(l - 1);
-    ds.build(1, l - 1, initializer);
+    vector<int> c(q, 0);
+    vector<int> x(q, 0);
+    map<int, int> xm;
+
+    xm[0] = 0;
+    xm[l] = 0;
+    for (int i = 0; i < q; ++i) {
+      scanf("%d%d", &c[i], &x[i]);
+      xm[x[i]] = 0;
+    }
+
+    int m = 0;
+    for (auto it = xm.begin(); it != xm.end(); ++it) {
+      it->second = ++m;
+    }
+
+    ds_t ds(m - 1);
+    ds.build(1, m - 1, initializer);
 
     for (int i = 0; i < q; ++i) {
-      int c, x;
-      scanf("%d%d", &c, &x);
-      if (c == 1) {
-        auto const ctx = ds.query(x, querier);
+      if (c[i] == 1) {
+        auto const ctx = ds.query(xm[x[i]], querier);
         lhs = ctx.minimum_;
-        rhs = x;
-        ds.update(ctx.minimum_, x, updater);
-        lhs = x;
+        rhs = x[i];
+        ds.update(xm[ctx.minimum_], xm[x[i]], updater);
+        lhs = x[i];
         rhs = ctx.maximum_;
-        ds.update(x, ctx.maximum_, updater);
+        ds.update(xm[x[i]], xm[ctx.maximum_], updater);
       } else {
-        auto const ctx = ds.query(x, querier);
+        auto const ctx = ds.query(xm[x[i]], querier);
         // fprintf(stderr, "%d<->%d\n", ctx.minimum_, ctx.maximum_);
         printf("%d\n", ctx.calc());
       }
