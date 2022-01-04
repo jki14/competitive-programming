@@ -962,53 +962,51 @@ using imod_t = joshu::imod_t<998244353>;
 using namespace std;
 
 int n, m;
-int x[210000], y[210000];
-int d[210000];
+int nbs[210000], nxt[410000], dst[410000], eid;
 int f[210000];
 
-inline int find(int const u) {
-  if (f[u] != u) f[u] = find(f[u]);
-  return f[u];
+void add_edge(int const u, int const v) {
+  nxt[eid] = nbs[u]; dst[eid] = v; nbs[u] = eid++;
+  nxt[eid] = nbs[v]; dst[eid] = u; nbs[v] = eid++;
 }
 
-int simple() {
-  for (int i = 0; i < n; ++i) {
-    if (d[i] != 2) return 0;
+int dfs(int const u, int const p) {
+  int cnt = 0;
+  f[u] = 1;
+  for (int i = nbs[u]; ~i; i = nxt[i]) {
+    int const v = dst[i];
+    if (v == p) continue;
+    if (!f[v]) {
+      cnt += dfs(v, u);
+    } else {
+      ++cnt;
+    }
   }
-  return 1;
+  if (~p) {
+    return cnt;
+  }
+  return (cnt == 2) ? 2 : 0;
 }
 
 int main() {
   while (scanf("%d%d", &n, &m) != EOF) {
     for (int i = 0; i < n; ++i) {
-      d[i] = 0;
+      f[i] = 0;
+      nbs[i] = -1;
     }
+    eid = 0;
     for (int i = 0; i < m; ++i) {
-      scanf("%d%d", &x[i], &y[i]);
-      --x[i];
-      --y[i];
-      ++d[x[i]];
-      ++d[y[i]];
+      int u, v;
+      scanf("%d%d", &u, &v);
+      add_edge(u - 1, v - 1);
     }
-    if (simple()) {
-      imod_t foo = 1;
-      for (int i = 0; i < n; ++i) {
-        f[i] = i;
+    imod_t bar = 1;
+    for (int u = 0; u < n; ++u) {
+      if (!f[u]) {
+        bar *= dfs(u, -1);
       }
-      for (int i = 0; i < m; ++i) {
-        int const lhs = find(x[i]);
-        int const rhs = find(y[i]);
-        f[lhs] = rhs;
-      }
-      for (int i = 0; i < n; ++i) {
-        if (find(i) == i) {
-          foo *= 2;
-        }
-      }
-      printf("%lld\n", foo.lld());
-    } else {
-      printf("%d\n", 0);
     }
+    printf("%lld\n", bar.lld());
   }
   return 0;
 }
