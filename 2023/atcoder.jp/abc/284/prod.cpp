@@ -965,13 +965,6 @@ using lld = long long;
 
 lld x;
 
-inline bool is_prime(lld const x) {
-    for (lld p = 2LL; p * p <= x; ++p) {
-      if (x % p == 0) return false;
-    }
-    return x >= 2LL;
-}
-
 int main() {
   int m;
   scanf("%d", &m);
@@ -985,16 +978,10 @@ int main() {
       if (x % lhs2) {
         lld const rhs2 = x / lhs;
         lld const rhs = static_cast<lld>(round(sqrt(static_cast<long double>(rhs2))));
-        if (rhs * rhs == rhs2 && is_prime(rhs)) {
-            printf("%lld %lld\n", rhs, lhs);
-            break;
-        }
+        printf("%lld %lld\n", rhs, lhs);
       } else {
         lld const rhs = x / lhs2;
-        if (is_prime(rhs)) {
-          printf("%lld %lld\n", lhs, rhs);
-          break;
-        }
+        printf("%lld %lld\n", lhs, rhs);
       }
       break;
     }
