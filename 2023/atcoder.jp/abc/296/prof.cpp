@@ -960,63 +960,81 @@ using imod_t = joshu::imod_t<1000000007>;
 }
 
 using namespace std;
+using pii = pair<int, int>;
 
-int n;
+int n, m;
+map<int, int> s;
 int a[210000], b[210000];
+pii lhs[210000];
+int rhs[210000];
+int c[210000];
 
-set<int> pos[210000];
+int count(int const x) {
+  int foo = 0;
+  for (int i = x; i > 0; i -= joshu::lowbit(i)) {
+    foo += c[i];
+  }
+  return foo;
+}
+
+void addone(int const x) {
+  for (int i = x; i <= n; i += joshu::lowbit(i)) {
+    ++c[i];
+  }
+}
 
 int main() {
   std::ios_base::sync_with_stdio(false);
   while (cin >> n) {
+    m = 0;
+    s.clear();
     for (int i = 0; i < n; ++i) {
       cin >> a[i];
-      --a[i];
+      if (!s.count(a[i])) {
+        s.emplace(a[i], ++m);
+      }
+    }
+    for (int i = 0; i < n; ++i) {
+      a[i] = s[a[i]];
     }
     for (int i = 0; i < n; ++i) {
       cin >> b[i];
-      --b[i];
-    }
-    // index
-    for (int i = 0; i < n; ++i) {
-      pos[i].clear();
+      b[i] = s[b[i]];
     }
     for (int i = 0; i < n; ++i) {
-      pos[a[i]].insert(i);
+      lhs[i].first = a[i];
+      lhs[i].second = b[i];
+      rhs[i] = b[i];
     }
-    // core
-    int foo = 1;
+    sort(lhs, lhs + n);
+    sort(rhs, rhs + n);
+    int flag = 1, free = 0;
     for (int i = 0; i < n; ++i) {
-      if (a[i] != b[i]) {
-        auto const it = pos[a[i]].begin();
-        if (it == pos[a[i]].end()) {
-          foo = 0;
-          break;
-        }
-        int const x = *it;
-        int const y = (x == i + 1) ? (i + 2) : i;
-        int const z = (x == i + 1) ? i : (i + 1);
-        if (y >= n || z >= n) {
-          foo = 0;
-          break;
-        }
-        pos[a[x]].erase(x);
-        pos[a[y]].erase(y);
-        pos[a[z]].erase(z);
-        int const x_ = a[x];
-        int const y_ = a[y];
-        int const z_ = a[z];
-        a[min(min(x, y), z)] = x_;
-        a[max(max(x, y), z)] = z_;
-        a[x + y + z - min(min(x, y), z) - max(max(x, y), z)] = y_;
-        pos[a[x]].insert(x);
-        pos[a[y]].insert(y);
-        pos[a[z]].insert(z);
-      } else {
-        pos[a[i]].erase(i);
+      if (lhs[i].first != rhs[i]) {
+        flag = 0;
+        break;
       }
     }
-    if (foo) {
+    if (flag) {
+      for (int i = 0; i <= n; ++i) {
+        c[i] = 0;
+      }
+      for (int i = 0; i < n; ++i) {
+        b[i] = lhs[i].second;
+        // cerr << b[i] << " ";
+      }
+      // cerr << endl;
+      for (int i = 0; i < n; ++i) {
+        int const k = i - count(b[i]);
+        if (count(b[i]) - count(b[i] - 1)) {
+          free = 1;
+          break;
+        }
+        flag ^= k & 1;
+        addone(b[i]);
+      }
+    }
+    if (flag || free) {
       cout << "Yes\n";
     } else {
       cout << "No\n";
