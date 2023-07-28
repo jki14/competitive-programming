@@ -1,4 +1,4 @@
-from sys import stdout
+from sys import stdout, stderr
 
 
 def solution(s):
@@ -8,8 +8,10 @@ def solution(s):
         foo += m
     for i in range(len(s)):
         foo += m * (ord(s[i]) - ord('A'))
-        m /= 26
+        stderr.write('m = %d (%c)\n' % (m, s[i]))
+        m //= 26
     stdout.write('%d\n' % (foo + 1))
+
 
 def main():
     while True:
