@@ -5,12 +5,11 @@
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 
-template<typename Type>
-static std::ostream& operator<<(std::ostream& ost,
-                                std::vector<Type> const& rhs) {
+template <typename Type> static std::ostream &operator<<(std::ostream &ost, std::vector<Type> const &rhs) {
   ost << "[";
   for (size_t i = 0; i < rhs.size(); ++i) {
-    if (i) ost <<", ";
+    if (i)
+      ost << ", ";
     ost << rhs[i];
   }
   ost << "]";
@@ -34,14 +33,10 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE_END();
 
 private:
-  template<typename Int, typename std::enable_if<
-    std::is_unsigned<Int>::value>::type* = nullptr>
-  size_t linear_count(Int const i) const {
+  template <typename Int, typename std::enable_if<std::is_unsigned<Int>::value>::type * = nullptr> size_t linear_count(Int const i) const {
     return (i == 0) ? 0 : (1 + linear_count(i & (i - 1)));
   }
-  template<typename Int, typename std::enable_if<
-    std::is_signed<Int>::value>::type* = nullptr>
-  size_t linear_count(Int const i) const {
+  template <typename Int, typename std::enable_if<std::is_signed<Int>::value>::type * = nullptr> size_t linear_count(Int const i) const {
     auto const u = static_cast<typename std::make_unsigned<Int>::type>(i);
     return linear_count(u);
   }
@@ -137,9 +132,11 @@ protected:
 
   void TestPrimetable() {
     auto const pure_prime_check = [](int const x) -> bool {
-      if (x < 2) return false;
+      if (x < 2)
+        return false;
       for (int i = 2; i <= x / i; ++i) {
-        if (x % i == 0) return false;
+        if (x % i == 0)
+          return false;
       }
       return true;
     };
@@ -153,7 +150,8 @@ protected:
     for (auto iter = table.begin(); iter != table.end(); ++iter) {
       CPPUNIT_ASSERT(pure_prime_check(*iter));
       auto next = std::next(iter);
-      if (next == table.end()) break;
+      if (next == table.end())
+        break;
       CPPUNIT_ASSERT(*iter < *next);
       for (int i = *iter + 1; i < *next; ++i) {
         CPPUNIT_ASSERT(!pure_prime_check(i));
@@ -163,9 +161,11 @@ protected:
 
   void TestPrimes() {
     auto const pure_prime_check = [](int const x) -> bool {
-      if (x < 2) return false;
+      if (x < 2)
+        return false;
       for (int i = 2; i <= x / i; ++i) {
-        if (x % i == 0) return false;
+        if (x % i == 0)
+          return false;
       }
       return true;
     };
@@ -179,13 +179,14 @@ protected:
     }
     joshu::primes(1024);
     joshu::primes(512);
-    auto const& table = joshu::primes(65536);
+    auto const &table = joshu::primes(65536);
     CPPUNIT_ASSERT_EQUAL(2, table.front());
 
     for (auto iter = table.begin(); iter != table.end(); ++iter) {
       CPPUNIT_ASSERT(pure_prime_check(*iter));
       auto next = std::next(iter);
-      if (next == table.end()) break;
+      if (next == table.end())
+        break;
       CPPUNIT_ASSERT(*iter < *next);
       for (int i = *iter + 1; i < *next; ++i) {
         CPPUNIT_ASSERT(!pure_prime_check(i));
@@ -196,33 +197,17 @@ protected:
   void TestBinarySearch() {
     for (int i = 0; i < 65536; ++i) {
       int64_t const bar = joshu::randllu() % 4611686014132420608LL + 1LL;
-      auto const square_gt = [bar](int64_t const i) {
-        return i * i > bar;
-      };
+      auto const square_gt = [bar](int64_t const i) { return i * i > bar; };
       auto const foo = joshu::binary_search(1LL, 2147483647LL, square_gt);
       CPPUNIT_ASSERT(foo * foo > bar);
       CPPUNIT_ASSERT((foo - 1) * (foo - 1) <= bar);
     }
-    auto const gt_zero = [](int64_t const i) {
-      return i * i > 0;
-    };
+    auto const gt_zero = [](int64_t const i) { return i * i > 0; };
     CPPUNIT_ASSERT_EQUAL(1LL, joshu::binary_search(1LL, 65535LL, gt_zero));
-    auto const gt_maxi32_sequare_minus_one = [](int64_t const i) {
-      return i * i >  4611686014132420608LL;
-    };
-    CPPUNIT_ASSERT_EQUAL(2147483647LL,
-                         joshu::binary_search(1LL,
-                                              2147483647LL,
-                                              gt_maxi32_sequare_minus_one)
-    );
-    auto const gt_maxi32_sequare = [](int64_t const i) {
-      return i * i >  4611686014132420609LL;
-    };
-    CPPUNIT_ASSERT_EQUAL(-1LL,
-                         joshu::binary_search(1LL,
-                                              2147483647LL,
-                                              gt_maxi32_sequare)
-    );
+    auto const gt_maxi32_sequare_minus_one = [](int64_t const i) { return i * i > 4611686014132420608LL; };
+    CPPUNIT_ASSERT_EQUAL(2147483647LL, joshu::binary_search(1LL, 2147483647LL, gt_maxi32_sequare_minus_one));
+    auto const gt_maxi32_sequare = [](int64_t const i) { return i * i > 4611686014132420609LL; };
+    CPPUNIT_ASSERT_EQUAL(-1LL, joshu::binary_search(1LL, 2147483647LL, gt_maxi32_sequare));
   }
 
   void TestHeapT() {
@@ -337,30 +322,23 @@ protected:
   class segsum_t : public joshu::btnctx_t<segsum_t> {
   public:
     segsum_t() = default;
-    segsum_t(int const len, int const sum = 0) : length_(len),
-                                                 modify_(0),
-                                                 sum_(sum) { }
+    segsum_t(int const len, int const sum = 0) : length_(len), modify_(0), sum_(sum) {}
 
-    segsum_t(segsum_t const&) = default;
-    segsum_t(segsum_t&&) = default;
+    segsum_t(segsum_t const &) = default;
+    segsum_t(segsum_t &&) = default;
 
-    segsum_t& operator=(segsum_t const&) = default;
-    segsum_t& operator=(segsum_t&&) = default;
+    segsum_t &operator=(segsum_t const &) = default;
+    segsum_t &operator=(segsum_t &&) = default;
 
-    void aggregate(segsum_t const& lhs,
-                   segsum_t const& rhs) override {
-      sum_ = lhs.calc() + rhs.calc();
-    }
-    void flush(segsum_t& lhs, segsum_t& rhs) override {
+    void aggregate(segsum_t const &lhs, segsum_t const &rhs) override { sum_ = lhs.calc() + rhs.calc(); }
+    void flush(segsum_t &lhs, segsum_t &rhs) override {
       lhs.modify_ += modify_;
       rhs.modify_ += modify_;
       sum_ += modify_ * length_;
       modify_ = 0;
     }
 
-    int calc() const {
-      return sum_ + modify_ * length_;
-    }
+    int calc() const { return sum_ + modify_ * length_; }
 
     int length_ = 0;
     int modify_ = 0, sum_ = 0;
@@ -396,24 +374,19 @@ protected:
 
     std::vector<int> init{1, 2, 3, 4, 5};
     int delta;
-    auto const initializer = [&init](
-        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
-        if (node.lef == node.rig) {
-          return {1, init[node.lef - 1]};
-        } else {
-          return {0, 0};
-        }
+    auto const initializer = [&init](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t {
+      if (node.lef == node.rig) {
+        return {1, init[node.lef - 1]};
+      } else {
+        return {0, 0};
+      }
     };
-    auto const updater = [&delta](
-        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
-        auto bar = node.ctx;
-        bar.modify_ += delta;
-        return bar;
+    auto const updater = [&delta](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t {
+      auto bar = node.ctx;
+      bar.modify_ += delta;
+      return bar;
     };
-    auto const querier = [](
-        joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
-        return node.ctx;
-    };
+    auto const querier = [](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t { return node.ctx; };
 
     segtree.build(1, 5, initializer);
     // [1, 2, 3, 4, 5]
@@ -551,31 +524,19 @@ protected:
     // test arithmetic
     joshu::matrix_t<int> const matrix_fib32({{1, 1}, {2, 3}, {5, 8}});
 
-    std::vector<std::vector<int>> const expected_add{
-      {2, 2, 0},
-      {4, 6, 5},
-      {5, 8, 0}
-    };
+    std::vector<std::vector<int>> const expected_add{{2, 2, 0}, {4, 6, 5}, {5, 8, 0}};
     CPPUNIT_ASSERT_EQUAL(expected_add, (matrix_fib32 + matrix_fib23).data());
     auto actual_add = matrix_fib32;
     actual_add += matrix_fib23;
     CPPUNIT_ASSERT_EQUAL(expected_add, actual_add.data());
 
-    std::vector<std::vector<int>> const expected_sub{
-      {0, 0, 0},
-      {0, 0, -5},
-      {5, 8, 0}
-    };
+    std::vector<std::vector<int>> const expected_sub{{0, 0, 0}, {0, 0, -5}, {5, 8, 0}};
     CPPUNIT_ASSERT_EQUAL(expected_sub, (matrix_fib32 - matrix_fib23).data());
     auto actual_sub = matrix_fib32;
     actual_sub -= matrix_fib23;
     CPPUNIT_ASSERT_EQUAL(expected_sub, actual_sub.data());
 
-    std::vector<std::vector<int>> const expected_mul{
-      {3, 4, 5},
-      {8, 11, 15},
-      {21, 29, 40}
-    };
+    std::vector<std::vector<int>> const expected_mul{{3, 4, 5}, {8, 11, 15}, {21, 29, 40}};
     CPPUNIT_ASSERT_EQUAL(expected_mul, (matrix_fib32 * matrix_fib23).data());
     auto actual_mul = matrix_fib32;
     actual_mul *= matrix_fib23;
@@ -598,8 +559,8 @@ protected:
 
 public:
   ~TestJoshu() = default;
-  void setUp() override { }
-  void tearDown() override { }
+  void setUp() override {}
+  void tearDown() override {}
 };
 
 int main() {
