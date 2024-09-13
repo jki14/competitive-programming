@@ -91,6 +91,17 @@
 #endif
 
 #ifdef UNITTEST
+template <typename T> static std::ostream& operator<<(std::ostream& ost, std::vector<T> const& rhs) {
+  ost << "[";
+  for (size_t i = 0; i < rhs.size(); ++i) {
+    if (i)
+      ost << ", ";
+    ost << rhs[i];
+  }
+  ost << "]";
+  return ost;
+}
+
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 #endif

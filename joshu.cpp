@@ -5,17 +5,6 @@
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 
-template <typename Type> static std::ostream& operator<<(std::ostream& ost, std::vector<Type> const& rhs) {
-  ost << "[";
-  for (size_t i = 0; i < rhs.size(); ++i) {
-    if (i)
-      ost << ", ";
-    ost << rhs[i];
-  }
-  ost << "]";
-  return ost;
-}
-
 class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
   CPPUNIT_TEST(TestPopcount);
