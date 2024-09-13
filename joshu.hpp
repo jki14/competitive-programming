@@ -100,7 +100,7 @@ namespace joshu {
 inline namespace {
 template <typename Lhs, typename Rhs,
           typename std::enable_if<std::is_integral<Lhs>::value && std::is_signed<Lhs>::value && std::is_integral<Rhs>::value &&
-                                  std::is_signed<Rhs>::value>::type * = nullptr>
+                                  std::is_signed<Rhs>::value>::type* = nullptr>
 struct super_integral_t {
   typedef typename std::conditional<std::numeric_limits<Lhs>::max() >= std::numeric_limits<Rhs>::max(), Lhs, Rhs>::type type;
 };
@@ -142,25 +142,23 @@ template <typename Int> struct is_unsigned_long_long {
 
 /* Binary */
 inline namespace {
-template <typename Int, typename std::enable_if<is_unsigned_int<Int>::value>::type * = nullptr> size_t popcount(Int const i) {
+template <typename Int, typename std::enable_if<is_unsigned_int<Int>::value>::type* = nullptr> size_t popcount(Int const i) {
   return __builtin_popcount(i);
 }
-template <typename Int, typename std::enable_if<is_unsigned_long<Int>::value>::type * = nullptr> size_t popcount(Int const i) {
+template <typename Int, typename std::enable_if<is_unsigned_long<Int>::value>::type* = nullptr> size_t popcount(Int const i) {
   return __builtin_popcountl(i);
 }
-template <typename Int, typename std::enable_if<is_unsigned_long_long<Int>::value>::type * = nullptr> size_t popcount(Int const i) {
+template <typename Int, typename std::enable_if<is_unsigned_long_long<Int>::value>::type* = nullptr> size_t popcount(Int const i) {
   return __builtin_popcountll(i);
 }
-template <typename Int, typename std::enable_if<std::is_signed<Int>::value>::type * = nullptr> size_t popcount(Int const i) {
+template <typename Int, typename std::enable_if<std::is_signed<Int>::value>::type* = nullptr> size_t popcount(Int const i) {
   auto const u = static_cast<typename std::make_unsigned<Int>::type>(i);
   return popcount(u);
 }
 
-template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> Int lowbit(Int const i) {
-  return i & (-i);
-}
+template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> Int lowbit(Int const i) { return i & (-i); }
 
-template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> Int bitlen(Int bar) {
+template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> Int bitlen(Int bar) {
   Int foo = 0;
   for (; bar != 0; bar >>= 1) {
     ++foo;
@@ -172,7 +170,7 @@ template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::t
 /* Random */
 inline namespace {
 template <typename Initializer = std::random_device, typename Generator = std::mt19937_64,
-          typename std::enable_if<std::is_same<typename Generator::result_type, uint64_t>::value>::type * = nullptr>
+          typename std::enable_if<std::is_same<typename Generator::result_type, uint64_t>::value>::type* = nullptr>
 uint64_t randllu() {
   static Initializer init;
   static Generator gen(init());
@@ -194,7 +192,7 @@ template <typename Lhs, typename Rhs, typename Int = typename super_integral_t<L
 
 template <typename Lhs, typename Rhs, typename Int = typename super_integral_t<Lhs, Rhs>::type>
 std::tuple<Int, Int, Int> extended_euclidean(Lhs const a, Rhs const b) {
-  static std::function<Int(Int const, Int const, Int &, Int &)> const recursive = [](Int const a, Int const b, Int &x, Int &y) {
+  static std::function<Int(Int const, Int const, Int&, Int&)> const recursive = [](Int const a, Int const b, Int& x, Int& y) {
     if (b == 0) {
       x = 1;
       y = 0;
@@ -241,7 +239,7 @@ template <typename Int = int> std::vector<Int> primetable(Int const maximum) {
   table.resize(cnt);
   return table;
 }
-template <typename Int = int> std::vector<Int> const &primes(Int const maximum) {
+template <typename Int = int> std::vector<Int> const& primes(Int const maximum) {
   static std::vector<Int> lsprime;
   static std::list<std::pair<Int, size_t>> cursors;
   static Int start = 2;
@@ -254,7 +252,7 @@ template <typename Int = int> std::vector<Int> const &primes(Int const maximum) 
       Int const i = iter->first;
       if (i >= start && isprime[i - start])
         lsprime.push_back(i);
-      for (size_t &p = iter->second;; ++p) {
+      for (size_t& p = iter->second;; ++p) {
         if (p >= lsprime.size() || lsprime[p] > i) {
           iter = cursors.erase(iter);
           break;
@@ -282,7 +280,7 @@ template <typename Int = int> std::vector<Int> const &primes(Int const maximum) 
 
 /* Algorithms */
 inline namespace {
-template <typename Int, typename Lambda, typename std::enable_if<std::is_signed<Int>::value>::type * = nullptr>
+template <typename Int, typename Lambda, typename std::enable_if<std::is_signed<Int>::value>::type* = nullptr>
 Int binary_search(Int lef, Int rig, Lambda check) {
   if (!check(rig))
     return -1;
@@ -307,29 +305,29 @@ public:
   class entry_t {
   public:
     entry_t() = delete;
-    entry_t(entry_t const &) = delete;
+    entry_t(entry_t const&) = delete;
 
-    entry_t &operator=(entry_t const &) = delete;
+    entry_t& operator=(entry_t const&) = delete;
 
-    bool operator==(entry_t const &rhs) const { return value_ == rhs.value_; }
-    bool operator!=(entry_t const &rhs) const { return value_ != rhs.value_; }
-    bool operator<(entry_t const &rhs) const { return value_ < rhs.value_; }
-    bool operator>(entry_t const &rhs) const { return value_ > rhs.value_; }
-    bool operator<=(entry_t const &rhs) const { return value_ <= rhs.value_; }
-    bool operator>=(entry_t const &rhs) const { return value_ >= rhs.value_; }
+    bool operator==(entry_t const& rhs) const { return value_ == rhs.value_; }
+    bool operator!=(entry_t const& rhs) const { return value_ != rhs.value_; }
+    bool operator<(entry_t const& rhs) const { return value_ < rhs.value_; }
+    bool operator>(entry_t const& rhs) const { return value_ > rhs.value_; }
+    bool operator<=(entry_t const& rhs) const { return value_ <= rhs.value_; }
+    bool operator>=(entry_t const& rhs) const { return value_ >= rhs.value_; }
 
-    entry_t(T value, iter_t const &iter, heap_t &heap) : value_(std::move(value)), self_(iter), meta_(iter), iter_(&meta_), heap_(&heap) {}
+    entry_t(T value, iter_t const& iter, heap_t& heap) : value_(std::move(value)), self_(iter), meta_(iter), iter_(&meta_), heap_(&heap) {}
 
-    entry_t(entry_t &&rhs) : value_(std::move(rhs.value_)), self_(), meta_(), iter_(rhs.iter_) {}
+    entry_t(entry_t&& rhs) : value_(std::move(rhs.value_)), self_(), meta_(), iter_(rhs.iter_) {}
 
-    entry_t &operator=(entry_t &&rhs) {
+    entry_t& operator=(entry_t&& rhs) {
       value_ = std::move(rhs.value_);
       iter_ = rhs.iter_;
       *iter_ = self_;
       return *this;
     }
 
-    T const &get() const { return value_; }
+    T const& get() const { return value_; }
 
     void set(T new_value) {
       if (new_value == value_)
@@ -369,44 +367,44 @@ public:
       }
     }
 
-    iter_t *iter_pointer() { return iter_; }
+    iter_t* iter_pointer() { return iter_; }
 
   private:
     T value_;
     iter_t const self_;
     iter_t meta_;
-    iter_t *iter_;
-    heap_t *heap_ = nullptr;
+    iter_t* iter_;
+    heap_t* heap_ = nullptr;
   };
 
   heap_t() = delete;
   heap_t(size_t const capacity) { foo_.reserve(capacity); }
 
-  heap_t(heap_t const &) = delete;
-  heap_t(heap_t &&) = default;
+  heap_t(heap_t const&) = delete;
+  heap_t(heap_t&&) = default;
 
-  heap_t &operator=(heap_t const &) = delete;
-  heap_t &operator=(heap_t &&) = delete;
+  heap_t& operator=(heap_t const&) = delete;
+  heap_t& operator=(heap_t&&) = delete;
 
-  std::vector<iter_t *> load(std::vector<T> values) {
+  std::vector<iter_t*> load(std::vector<T> values) {
     size_t const inc = values.size();
-    std::vector<iter_t *> bar;
+    std::vector<iter_t*> bar;
     bar.reserve(inc);
     if (foo_.empty()) {
-      for (auto &&val : values) {
+      for (auto&& val : values) {
         foo_.emplace_back(std::move(val), foo_.end(), *this);
         bar.emplace_back(foo_.back().iter_pointer());
       }
       std::make_heap(foo_.begin(), foo_.end());
     } else {
-      for (auto &&val : values) {
+      for (auto&& val : values) {
         bar.emplace_back(push(std::move(val)));
       }
     }
     return bar;
   }
 
-  iter_t *push(T value) {
+  iter_t* push(T value) {
     foo_.emplace_back(std::move(value), foo_.end(), *this);
     auto const bar = foo_.back().iter_pointer();
     std::push_heap(foo_.begin(), foo_.end());
@@ -417,7 +415,7 @@ public:
 
   bool empty() const { return foo_.empty(); }
 
-  T const &top() const { return foo_.front().get(); }
+  T const& top() const { return foo_.front().get(); }
 
   void pop() {
     std::pop_heap(foo_.begin(), foo_.end());
@@ -430,46 +428,46 @@ private:
 
 template <typename Ctx> class btnctx_t {
 public:
-  virtual void aggregate(Ctx const &lhs, Ctx const &rhs) = 0;
-  virtual void flush(Ctx &lhs, Ctx &rhs) = 0;
+  virtual void aggregate(Ctx const& lhs, Ctx const& rhs) = 0;
+  virtual void flush(Ctx& lhs, Ctx& rhs) = 0;
 };
 
-template <typename Int, typename Ctx, typename std::enable_if<std::is_base_of<btnctx_t<Ctx>, Ctx>::value>::type * = nullptr>
+template <typename Int, typename Ctx, typename std::enable_if<std::is_base_of<btnctx_t<Ctx>, Ctx>::value>::type* = nullptr>
 class segtree_t {
 public:
   struct node_t {
-    node_t *chd[2];
+    node_t* chd[2];
     Int lef, rig;
     Ctx ctx;
   };
 
-  using ctx_handler_t = std::function<Ctx(node_t const &)>;
+  using ctx_handler_t = std::function<Ctx(node_t const&)>;
 
   segtree_t() = delete;
   segtree_t(size_t const capacity) { node_pool_.resize(capacity << 1); }
 
-  segtree_t(segtree_t const &) = delete;
-  segtree_t(segtree_t &&) = delete;
+  segtree_t(segtree_t const&) = delete;
+  segtree_t(segtree_t&&) = delete;
 
-  segtree_t &operator=(segtree_t const &) = delete;
-  segtree_t &operator=(segtree_t &&) = delete;
+  segtree_t& operator=(segtree_t const&) = delete;
+  segtree_t& operator=(segtree_t&&) = delete;
 
-  void build(Int const lef, Int const rig, ctx_handler_t const &initializer) {
+  void build(Int const lef, Int const rig, ctx_handler_t const& initializer) {
     clear();
     build(&root_, lef, std::max(lef, rig), initializer);
   }
 
-  void update(Int const pos, ctx_handler_t const &updater) { update(pos, pos, updater); }
+  void update(Int const pos, ctx_handler_t const& updater) { update(pos, pos, updater); }
 
-  void update(Int const lef, Int const rig, ctx_handler_t const &updater) {
+  void update(Int const lef, Int const rig, ctx_handler_t const& updater) {
     if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
       update(*root_, lef, rig, updater);
     }
   }
 
-  Ctx query(Int const pos, ctx_handler_t const &querier) { return query(pos, pos, querier); }
+  Ctx query(Int const pos, ctx_handler_t const& querier) { return query(pos, pos, querier); }
 
-  Ctx query(Int const lef, Int const rig, ctx_handler_t const &querier) {
+  Ctx query(Int const lef, Int const rig, ctx_handler_t const& querier) {
     if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
       return query(*root_, lef, rig, querier);
     } else {
@@ -478,9 +476,9 @@ public:
   }
 
 private:
-  void build(node_t **hook, Int const lef, Int const rig, ctx_handler_t const &initializer) {
+  void build(node_t** hook, Int const lef, Int const rig, ctx_handler_t const& initializer) {
     *hook = new_node();
-    node_t &node = **hook;
+    node_t& node = **hook;
     node.lef = lef;
     node.rig = rig;
     node.ctx = initializer(node);
@@ -495,7 +493,7 @@ private:
     }
   }
 
-  void update(node_t &node, Int const lef, Int const rig, ctx_handler_t const &updater) {
+  void update(node_t& node, Int const lef, Int const rig, ctx_handler_t const& updater) {
     if (lef <= node.lef && node.rig <= rig) {
       node.ctx = updater(node);
     } else {
@@ -510,7 +508,7 @@ private:
     }
   }
 
-  Ctx query(node_t &node, Int const lef, Int const rig, ctx_handler_t const &querier) {
+  Ctx query(node_t& node, Int const lef, Int const rig, ctx_handler_t const& querier) {
     if (lef <= node.lef && node.rig <= rig) {
       return querier(node);
     } else {
@@ -532,10 +530,10 @@ private:
     num_ = 0;
   }
 
-  node_t *new_node() { return &node_pool_[num_++]; }
+  node_t* new_node() { return &node_pool_[num_++]; }
 
   std::vector<node_t> node_pool_;
-  node_t *root_ = nullptr;
+  node_t* root_ = nullptr;
   size_t num_ = 0;
 };
 } // namespace
@@ -563,86 +561,86 @@ template <int_fast64_t token> class imod_t {
 
 public:
   imod_t() = default;
-  imod_t(imod_t const &) = default;
-  imod_t(imod_t &&) = default;
+  imod_t(imod_t const&) = default;
+  imod_t(imod_t&&) = default;
 
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr>
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr>
   imod_t(Int const rhs) : foo_(rhs % token) {}
 
-  imod_t &operator=(imod_t const &) = default;
-  imod_t &operator=(imod_t &&) = default;
+  imod_t& operator=(imod_t const&) = default;
+  imod_t& operator=(imod_t&&) = default;
 
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t &operator=(Int const rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t& operator=(Int const rhs) {
     foo_ = rhs % token;
     return *this;
   }
 
   explicit operator bool() const noexcept { return foo_ != 0; }
 
-  imod_t operator+(imod_t const &rhs) const {
+  imod_t operator+(imod_t const& rhs) const {
     imod_t bar(*this);
     bar += rhs;
     return bar;
   }
-  template <typename std::enable_if<add_safe<token, foo_t>::value>::type * = nullptr> imod_t &operator+=(imod_t const &rhs) {
+  template <typename std::enable_if<add_safe<token, foo_t>::value>::type* = nullptr> imod_t& operator+=(imod_t const& rhs) {
     foo_ = (foo_ + rhs.foo_) % token;
     return *this;
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t operator+(Int const rhs) const {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t operator+(Int const rhs) const {
     return *this + imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t &operator+=(Int const rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t& operator+=(Int const rhs) {
     return *this += imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr>
-  friend imod_t operator+(Int const lhs, imod_t const &rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator+(Int const lhs, imod_t const& rhs) {
     return rhs + lhs;
   }
 
-  imod_t operator-(imod_t const &rhs) const {
+  imod_t operator-(imod_t const& rhs) const {
     imod_t bar(*this);
     bar -= rhs;
     return bar;
   }
-  template <typename std::enable_if<sub_safe<token, foo_t>::value>::type * = nullptr> imod_t &operator-=(imod_t const &rhs) {
+  template <typename std::enable_if<sub_safe<token, foo_t>::value>::type* = nullptr> imod_t& operator-=(imod_t const& rhs) {
     foo_ = (foo_ - rhs.foo_) % token;
     return *this;
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t operator-(Int const rhs) const {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t operator-(Int const rhs) const {
     return *this - imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t &operator-=(Int const rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t& operator-=(Int const rhs) {
     return *this -= imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr>
-  friend imod_t operator-(Int const lhs, imod_t const &rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator-(Int const lhs, imod_t const& rhs) {
     return imod_t(lhs) - rhs;
   }
 
-  imod_t operator*(imod_t const &rhs) const {
+  imod_t operator*(imod_t const& rhs) const {
     imod_t bar(*this);
     bar *= rhs;
     return bar;
   }
-  template <typename std::enable_if<mul_safe<token, foo_t>::value>::type * = nullptr> imod_t &operator*=(imod_t const &rhs) {
+  template <typename std::enable_if<mul_safe<token, foo_t>::value>::type* = nullptr> imod_t& operator*=(imod_t const& rhs) {
     foo_ = (foo_ * rhs.foo_) % token;
     return *this;
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t operator*(Int const rhs) const {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t operator*(Int const rhs) const {
     return *this * imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t &operator*=(Int const rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t& operator*=(Int const rhs) {
     return *this *= imod_t(rhs);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr>
-  friend imod_t operator*(Int const lhs, imod_t const &rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr>
+  friend imod_t operator*(Int const lhs, imod_t const& rhs) {
     return rhs * lhs;
   }
 
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t operator/(Int const rhs) const {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t operator/(Int const rhs) const {
     return *this * inverse(rhs, token);
   }
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> imod_t &operator/=(Int const rhs) {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> imod_t& operator/=(Int const rhs) {
     return *this *= imod_t(inverse(rhs, token));
   }
 
@@ -660,7 +658,7 @@ public:
     return foo;
   }
 
-  imod_t &operator++() {
+  imod_t& operator++() {
     *this += identity();
     return *this;
   }
@@ -670,7 +668,7 @@ public:
     return foo;
   }
 
-  imod_t &operator--() {
+  imod_t& operator--() {
     *this -= identity();
     return *this;
   }
@@ -684,7 +682,7 @@ public:
 
 private:
   foo_t foo_ = 0;
-  static imod_t const &identity() {
+  static imod_t const& identity() {
     static imod_t const foo(1);
     return foo;
   }
@@ -696,23 +694,23 @@ inline namespace {
 template <typename Type> class matrix_t {
 public:
   matrix_t() = default;
-  matrix_t(matrix_t const &) = default;
-  matrix_t(matrix_t &&) = default;
+  matrix_t(matrix_t const&) = default;
+  matrix_t(matrix_t&&) = default;
 
   matrix_t(size_t const r, size_t const c) : foo_(r, std::vector<Type>(c, 0)) {}
 
-  matrix_t(std::vector<std::vector<Type>> &&bar) : foo_(bar) {
+  matrix_t(std::vector<std::vector<Type>>&& bar) : foo_(bar) {
     size_t width = 0;
-    for (auto const &row : foo_) {
+    for (auto const& row : foo_) {
       width = std::max(row.size(), width);
     }
-    for (auto &row : foo_) {
+    for (auto& row : foo_) {
       row.resize(width, 0);
     }
   }
 
-  matrix_t &operator=(matrix_t const &) = default;
-  matrix_t &operator=(matrix_t &&) = default;
+  matrix_t& operator=(matrix_t const&) = default;
+  matrix_t& operator=(matrix_t&&) = default;
 
   size_t height() const { return foo_.size(); }
 
@@ -734,7 +732,7 @@ public:
     return ret;
   }
 
-  matrix_t operator+(matrix_t const &rhs) const {
+  matrix_t operator+(matrix_t const& rhs) const {
     auto const h = std::max(height(), rhs.height());
     auto const w = std::max(width(), rhs.width());
     matrix_t ret(h, w);
@@ -746,7 +744,7 @@ public:
     return ret;
   }
 
-  matrix_t operator-(matrix_t const &rhs) const {
+  matrix_t operator-(matrix_t const& rhs) const {
     auto const h = std::max(height(), rhs.height());
     auto const w = std::max(width(), rhs.width());
     matrix_t ret(h, w);
@@ -758,7 +756,7 @@ public:
     return ret;
   }
 
-  matrix_t operator*(matrix_t const &rhs) const {
+  matrix_t operator*(matrix_t const& rhs) const {
     auto const h = height();
     auto const w = rhs.width();
     auto const d = std::min(width(), rhs.height());
@@ -773,22 +771,22 @@ public:
     return ret;
   }
 
-  matrix_t &operator+=(matrix_t const &rhs) {
+  matrix_t& operator+=(matrix_t const& rhs) {
     *this = *this + rhs;
     return *this;
   }
 
-  matrix_t &operator-=(matrix_t const &rhs) {
+  matrix_t& operator-=(matrix_t const& rhs) {
     *this = *this - rhs;
     return *this;
   }
 
-  matrix_t &operator*=(matrix_t const &rhs) {
+  matrix_t& operator*=(matrix_t const& rhs) {
     *this = *this * rhs;
     return *this;
   }
 
-  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type * = nullptr> matrix_t pow(Int const p) const {
+  template <typename Int, typename std::enable_if<std::is_integral<Int>::value>::type* = nullptr> matrix_t pow(Int const p) const {
     matrix_t ret{matrix_t::one(height(), width())};
     matrix_t cur(*this);
     if (p > 0) {
@@ -805,11 +803,11 @@ public:
     return ret;
   }
 
-  std::vector<Type> &operator[](size_t const r) { return foo_[r]; }
+  std::vector<Type>& operator[](size_t const r) { return foo_[r]; }
 
-  std::vector<Type> const &operator[](size_t const r) const { return foo_[r]; }
+  std::vector<Type> const& operator[](size_t const r) const { return foo_[r]; }
 
-  std::vector<std::vector<Type>> const &data() const { return foo_; }
+  std::vector<std::vector<Type>> const& data() const { return foo_; }
 
 private:
   std::vector<std::vector<Type>> foo_;

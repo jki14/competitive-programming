@@ -5,7 +5,7 @@
 #include "cppunit/extensions/HelperMacros.h"
 #include "cppunit/ui/text/TestRunner.h"
 
-template <typename Type> static std::ostream &operator<<(std::ostream &ost, std::vector<Type> const &rhs) {
+template <typename Type> static std::ostream& operator<<(std::ostream& ost, std::vector<Type> const& rhs) {
   ost << "[";
   for (size_t i = 0; i < rhs.size(); ++i) {
     if (i)
@@ -33,10 +33,10 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE_END();
 
 private:
-  template <typename Int, typename std::enable_if<std::is_unsigned<Int>::value>::type * = nullptr> size_t linear_count(Int const i) const {
+  template <typename Int, typename std::enable_if<std::is_unsigned<Int>::value>::type* = nullptr> size_t linear_count(Int const i) const {
     return (i == 0) ? 0 : (1 + linear_count(i & (i - 1)));
   }
-  template <typename Int, typename std::enable_if<std::is_signed<Int>::value>::type * = nullptr> size_t linear_count(Int const i) const {
+  template <typename Int, typename std::enable_if<std::is_signed<Int>::value>::type* = nullptr> size_t linear_count(Int const i) const {
     auto const u = static_cast<typename std::make_unsigned<Int>::type>(i);
     return linear_count(u);
   }
@@ -179,7 +179,7 @@ protected:
     }
     joshu::primes(1024);
     joshu::primes(512);
-    auto const &table = joshu::primes(65536);
+    auto const& table = joshu::primes(65536);
     CPPUNIT_ASSERT_EQUAL(2, table.front());
 
     for (auto iter = table.begin(); iter != table.end(); ++iter) {
@@ -324,14 +324,14 @@ protected:
     segsum_t() = default;
     segsum_t(int const len, int const sum = 0) : length_(len), modify_(0), sum_(sum) {}
 
-    segsum_t(segsum_t const &) = default;
-    segsum_t(segsum_t &&) = default;
+    segsum_t(segsum_t const&) = default;
+    segsum_t(segsum_t&&) = default;
 
-    segsum_t &operator=(segsum_t const &) = default;
-    segsum_t &operator=(segsum_t &&) = default;
+    segsum_t& operator=(segsum_t const&) = default;
+    segsum_t& operator=(segsum_t&&) = default;
 
-    void aggregate(segsum_t const &lhs, segsum_t const &rhs) override { sum_ = lhs.calc() + rhs.calc(); }
-    void flush(segsum_t &lhs, segsum_t &rhs) override {
+    void aggregate(segsum_t const& lhs, segsum_t const& rhs) override { sum_ = lhs.calc() + rhs.calc(); }
+    void flush(segsum_t& lhs, segsum_t& rhs) override {
       lhs.modify_ += modify_;
       rhs.modify_ += modify_;
       sum_ += modify_ * length_;
@@ -374,19 +374,19 @@ protected:
 
     std::vector<int> init{1, 2, 3, 4, 5};
     int delta;
-    auto const initializer = [&init](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t {
+    auto const initializer = [&init](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
       if (node.lef == node.rig) {
         return {1, init[node.lef - 1]};
       } else {
         return {0, 0};
       }
     };
-    auto const updater = [&delta](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t {
+    auto const updater = [&delta](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
       auto bar = node.ctx;
       bar.modify_ += delta;
       return bar;
     };
-    auto const querier = [](joshu::segtree_t<int, segsum_t>::node_t const &node) -> segsum_t { return node.ctx; };
+    auto const querier = [](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t { return node.ctx; };
 
     segtree.build(1, 5, initializer);
     // [1, 2, 3, 4, 5]
