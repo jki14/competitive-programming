@@ -363,22 +363,32 @@ protected:
 
     std::vector<int> init{1, 2, 3, 4, 5};
     int delta;
-    auto const initializer = [&init](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
+    auto const initializer = [&init](joshu::segtree_t<int, segsum_t>::node_t& node) -> void {
       if (node.lef == node.rig) {
-        return {1, init[node.lef - 1]};
+        node.ctx.length_ = 1;
+        node.ctx.modify_ = 0;
+        node.ctx.sum_ = init[node.lef - 1];
       } else {
-        return {0, 0};
+        node.ctx.length_ = 1;
+        node.ctx.modify_ = 0;
+        node.ctx.sum_ = init[node.lef - 1];
       }
     };
-    auto const updater = [&delta](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t {
-      auto bar = node.ctx;
-      bar.modify_ += delta;
-      return bar;
-    };
+    auto const updater = [&delta](joshu::segtree_t<int, segsum_t>::node_t& node) -> void { node.ctx.modify_ += delta; };
     auto const querier = [](joshu::segtree_t<int, segsum_t>::node_t const& node) -> segsum_t { return node.ctx; };
 
     segtree.build(1, 5, initializer);
     // [1, 2, 3, 4, 5]
+    ctx = segtree.query(1);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(3);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(4);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(5);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
     ctx = segtree.query(1, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(2, querier);
@@ -393,6 +403,16 @@ protected:
     delta = 2;
     segtree.update(2, updater);
     // [1, 4, 3, 4, 5]
+    ctx = segtree.query(1);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(3);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(4);
+    CPPUNIT_ASSERT_EQUAL(4, ctx.calc());
+    ctx = segtree.query(5);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
     ctx = segtree.query(1, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(2, querier);
@@ -407,6 +427,16 @@ protected:
     delta = -3;
     segtree.update(2, 4, updater);
     // [1, 1, 0, 1, 5]
+    ctx = segtree.query(1);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(3);
+    CPPUNIT_ASSERT_EQUAL(0, ctx.calc());
+    ctx = segtree.query(4);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(5);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
     ctx = segtree.query(1, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(2, querier);
@@ -418,6 +448,16 @@ protected:
     ctx = segtree.query(5, querier);
     CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
 
+    ctx = segtree.query(1, 1);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(1, 2);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(1, 3);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(1, 4);
+    CPPUNIT_ASSERT_EQUAL(3, ctx.calc());
+    ctx = segtree.query(1, 5);
+    CPPUNIT_ASSERT_EQUAL(8, ctx.calc());
     ctx = segtree.query(1, 1, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(1, 2, querier);
@@ -429,6 +469,14 @@ protected:
     ctx = segtree.query(1, 5, querier);
     CPPUNIT_ASSERT_EQUAL(8, ctx.calc());
 
+    ctx = segtree.query(2, 2);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, 3);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(2, 4);
+    CPPUNIT_ASSERT_EQUAL(2, ctx.calc());
+    ctx = segtree.query(2, 5);
+    CPPUNIT_ASSERT_EQUAL(7, ctx.calc());
     ctx = segtree.query(2, 2, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(2, 3, querier);
@@ -438,6 +486,12 @@ protected:
     ctx = segtree.query(2, 5, querier);
     CPPUNIT_ASSERT_EQUAL(7, ctx.calc());
 
+    ctx = segtree.query(3, 3);
+    CPPUNIT_ASSERT_EQUAL(0, ctx.calc());
+    ctx = segtree.query(3, 4);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(3, 5);
+    CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
     ctx = segtree.query(3, 3, querier);
     CPPUNIT_ASSERT_EQUAL(0, ctx.calc());
     ctx = segtree.query(3, 4, querier);
@@ -445,11 +499,17 @@ protected:
     ctx = segtree.query(3, 5, querier);
     CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
 
+    ctx = segtree.query(4, 4);
+    CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
+    ctx = segtree.query(4, 5);
+    CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
     ctx = segtree.query(4, 4, querier);
     CPPUNIT_ASSERT_EQUAL(1, ctx.calc());
     ctx = segtree.query(4, 5, querier);
     CPPUNIT_ASSERT_EQUAL(6, ctx.calc());
 
+    ctx = segtree.query(5, 5);
+    CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
     ctx = segtree.query(5, 5, querier);
     CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
   }

@@ -452,7 +452,8 @@ public:
     Ctx ctx;
   };
 
-  using ctx_handler_t = std::function<Ctx(node_t const&)>;
+  using ctx_modifier_t = std::function<void(node_t&)>;
+  using ctx_collector_t = std::function<Ctx(node_t const&)>;
 
   segtree_t() = delete;
   segtree_t(size_t const capacity) { node_pool_.resize(capacity << 1); }
@@ -463,22 +464,22 @@ public:
   segtree_t& operator=(segtree_t const&) = delete;
   segtree_t& operator=(segtree_t&&) = delete;
 
-  void build(Int const lef, Int const rig, ctx_handler_t const& initializer) {
+  void build(Int const lef, Int const rig, ctx_modifier_t const& initializer) {
     clear();
     build(&root_, lef, std::max(lef, rig), initializer);
   }
 
-  void update(Int const pos, ctx_handler_t const& updater) { update(pos, pos, updater); }
+  void update(Int const pos, ctx_modifier_t const& updater) { update(pos, pos, updater); }
 
-  void update(Int const lef, Int const rig, ctx_handler_t const& updater) {
+  void update(Int const lef, Int const rig, ctx_modifier_t const& updater) {
     if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
       update(*root_, lef, rig, updater);
     }
   }
 
-  Ctx query(Int const pos, ctx_handler_t const& querier) { return query(pos, pos, querier); }
+  Ctx query(Int const pos, ctx_collector_t const& querier = default_collector()) { return query(pos, pos, querier); }
 
-  Ctx query(Int const lef, Int const rig, ctx_handler_t const& querier) {
+  Ctx query(Int const lef, Int const rig, ctx_collector_t const& querier = default_collector()) {
     if (lef <= rig && lef <= root_->rig && rig >= root_->lef) {
       return query(*root_, lef, rig, querier);
     } else {
@@ -487,12 +488,12 @@ public:
   }
 
 private:
-  void build(node_t** hook, Int const lef, Int const rig, ctx_handler_t const& initializer) {
+  void build(node_t** hook, Int const lef, Int const rig, ctx_modifier_t const& initializer) {
     *hook = new_node();
     node_t& node = **hook;
     node.lef = lef;
     node.rig = rig;
-    node.ctx = initializer(node);
+    initializer(node);
     if (lef == rig) {
       node.chd[0] = nullptr;
       node.chd[1] = nullptr;
@@ -504,9 +505,9 @@ private:
     }
   }
 
-  void update(node_t& node, Int const lef, Int const rig, ctx_handler_t const& updater) {
+  void update(node_t& node, Int const lef, Int const rig, ctx_modifier_t const& updater) {
     if (lef <= node.lef && node.rig <= rig) {
-      node.ctx = updater(node);
+      updater(node);
     } else {
       node.ctx.flush(node.chd[0]->ctx, node.chd[1]->ctx);
       if (lef <= node.chd[0]->rig) {
@@ -519,7 +520,7 @@ private:
     }
   }
 
-  Ctx query(node_t& node, Int const lef, Int const rig, ctx_handler_t const& querier) {
+  Ctx query(node_t& node, Int const lef, Int const rig, ctx_collector_t const& querier) {
     if (lef <= node.lef && node.rig <= rig) {
       return querier(node);
     } else {
@@ -542,6 +543,11 @@ private:
   }
 
   node_t* new_node() { return &node_pool_[num_++]; }
+
+  static ctx_collector_t const& default_collector() {
+    static ctx_collector_t collector = [](node_t const& node) -> Ctx { return node.ctx; };
+    return collector;
+  }
 
   std::vector<node_t> node_pool_;
   node_t* root_ = nullptr;
