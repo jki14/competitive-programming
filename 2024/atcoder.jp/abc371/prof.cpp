@@ -525,7 +525,6 @@ private:
       return querier(node);
     } else {
       node.ctx.flush(node.chd[0]->ctx, node.chd[1]->ctx);
-      node.ctx.aggregate(node.chd[0]->ctx, node.chd[1]->ctx);
       Ctx lhs, rhs;
       if (lef <= node.chd[0]->rig) {
         lhs = query(*node.chd[0], lef, rig, querier);
@@ -533,6 +532,7 @@ private:
       if (rig >= node.chd[1]->lef) {
         rhs = query(*node.chd[1], lef, rig, querier);
       }
+      node.ctx.aggregate(node.chd[0]->ctx, node.chd[1]->ctx);
       Ctx foo = querier(node);
       foo.aggregate(lhs, rhs);
       return foo;
@@ -857,13 +857,13 @@ public:
 
   void aggregate(segsum_t const& lhs, segsum_t const& rhs) override {
     if (wht == inf) {
-      sum = lhs.calc() + rhs.calc(); 
+      sum = lhs.calc() + rhs.calc();
     }
   }
   void flush(segsum_t& lhs, segsum_t& rhs) override {
     if (wht != inf) {
       lhs.wht = wht;
-      rhs.wht = wht + mid - lef + 1;
+      rhs.wht = wht - lef + mid + 1;
       wht = inf;
     }
   }
@@ -880,9 +880,7 @@ int n, m;
 lld ans, x[210000];
 
 void update(int const lef, int const rig, lld const wht) {
-  static auto const updater = [&](joshu::segtree_t<int, segsum_t>::node_t& node) -> void { 
-    node.ctx.wht = wht + node.ctx.lef - lef;
-  };
+  static auto const updater = [&](joshu::segtree_t<int, segsum_t>::node_t& node) -> void { node.ctx.wht = wht - lef + node.ctx.lef; };
   segtree.update(lef, rig, updater);
 }
 
@@ -892,7 +890,7 @@ int main() {
       scanf("%lld", &x[i]);
     }
 
-    static auto const initializer = [&](joshu::segtree_t<int, segsum_t>::node_t& node) -> void { 
+    static auto const initializer = [&](joshu::segtree_t<int, segsum_t>::node_t& node) -> void {
       node.ctx.lef = node.lef;
       node.ctx.rig = node.rig;
       node.ctx.mid = (node.lef + node.rig) >> 1;
@@ -915,15 +913,13 @@ int main() {
       if (cur < g) {
         static auto const pushrig = [&](int const i_) -> bool {
           int const i = -i_;
-          return segtree.query(i).calc() < g + t - i;
+          return segtree.query(i).calc() < g - t + i;
         };
         auto const rig = -joshu::binary_search(-n, -t, pushrig);
-        ans += ((g + g + rig - t) * (rig - t + 1LL) >> 1) - segtree.query(t, rig).calc();
+        ans += ((g + g - t + rig) * (rig - t + 1LL) >> 1) - segtree.query(t, rig).calc();
         update(t, rig, g);
       } else if (cur > g) {
-        static auto const pushlef = [&](int const i) -> bool {
-          return segtree.query(i).calc() > g - t + i;
-        };
+        static auto const pushlef = [&](int const i) -> bool { return segtree.query(i).calc() > g - t + i; };
         auto const lef = joshu::binary_search(1, t, pushlef);
         ans += segtree.query(lef, t).calc() - ((g + g - t + lef) * (t - lef + 1LL) >> 1);
         update(lef, t, g - t + lef);
