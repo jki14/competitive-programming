@@ -864,7 +864,7 @@ public:
   int mod = 0, top = 0;
 };
 
-std::vector<fast_segtree_node_t> fsn_pool{16820000};
+std::vector<fast_segtree_node_t> fsn_pool;
 // fast_segtree_node_t fsn_pool[16820000];
 fast_segtree_node_t* root[410000];
 fast_segtree_node_t* tail;
@@ -946,6 +946,7 @@ int query(fast_segtree_node_t const& node, int const lef, int const rig) {
 }
 
 int main() {
+  fsn_pool.reserve(16820000);
 
   static auto const cando = [&](lld const x_) -> bool {
     lld const x = -x_;
