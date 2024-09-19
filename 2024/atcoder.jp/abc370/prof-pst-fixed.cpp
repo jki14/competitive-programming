@@ -458,7 +458,7 @@ public:
   segtree_t() = delete;
   segtree_t(size_t const capacity, size_t const indexes) {
     root_.resize(indexes);
-    node_pool_.reserve((capacity << 1) + static_cast<size_t>(std::ceil(std::log2(capacity))) * indexes * 3);
+    node_pool_.reserve((capacity << 1) + static_cast<size_t>(std::ceil(std::log2(capacity) + 1) * 2 + 2) * indexes);
   }
 
   segtree_t(segtree_t const&) = delete;
@@ -471,16 +471,14 @@ public:
     build(&root_[index], lef, std::max(lef, rig), initializer);
   }
 
-  void follow(size_t const index, size_t const index_base) {
-    root_[index] = root_[index_base];
-  }
+  void follow(size_t const index, size_t const index_base) { root_[index] = root_[index_base]; }
 
   void update(size_t const index, size_t const index_base, Int const pos, ctx_modifier_t const& updater) {
     update(&root_[index], *root_[index_base], pos, pos, updater);
   }
 
   void update(size_t const index, size_t const index_base, Int const lef, Int const rig, ctx_modifier_t const& updater) {
-    node_t *root_base = root_[index_base];
+    node_t* root_base = root_[index_base];
     if (lef <= rig && lef <= root_base->rig && rig >= root_base->lef) {
       update(&root_[index], *root_base, lef, rig, updater);
     }
@@ -491,7 +489,7 @@ public:
   }
 
   Ctx query(size_t const index, Int const lef, Int const rig, ctx_collector_t const& querier = default_collector()) {
-    node_t *root = root_[index];
+    node_t* root = root_[index];
     if (lef <= rig && lef <= root->rig && rig >= root->lef) {
       return query(*root, lef, rig, querier);
     } else {
@@ -499,17 +497,11 @@ public:
     }
   }
 
-  void clear() {
-    node_pool_.clear();
-  }
+  void clear() { node_pool_.clear(); }
 
-  void save() {
-    size_ = node_pool_.size();
-  }
+  void save() { size_ = node_pool_.size(); }
 
-  void load() {
-    node_pool_.resize(size_);
-  }
+  void load() { node_pool_.resize(size_); }
 
 private:
   void build(node_t** hook, Int const lef, Int const rig, ctx_modifier_t const& initializer) {
@@ -885,40 +877,39 @@ lld a[210000], s[410000];
 
 unordered_map<lld, int> ymap;
 
-joshu::segtree_t<int, segmax_t> segtree{410000, 410000};
-
+joshu::segtree_t<int, segmax_t> segtree{210000, 410000};
 
 int main() {
 
-static auto const cando = [&](lld const x_) -> bool {
-  lld const x = -x_;
-  static auto const addone = [](joshu::segtree_t<int, segmax_t>::node_t& node) -> void {
-    node.ctx.modify_ += 1;
-  };
-  segtree.load();
-  // fprintf(stderr, ">>> %lld\n", x);
-  int p = -1, k = 0;
-  for (int i = 1; i < n + n; ++i) {
-    while (p + 1 < i && s[i] - s[p + 1] >= x) ++p;
-    int const l = max(1, i - n + 1);
-    if (p >= 0) {
-      segtree.update(i, p, l, p + 1, addone);
-      // fprintf(stderr, "  + (%d, %d) @ %d (%d)\n", l, p + 1, i, p);
-      if (i >= n) {
-        auto const r = segtree.query(i, l, p + 1);
-        // fprintf(stderr, "  ? (%d, %d) @ %d = %d\n", l, p + 1, i, r.calc());
-        if (r.calc() >= m) ++k;
+  static auto const cando = [&](lld const x_) -> bool {
+    lld const x = -x_;
+    static auto const addone = [](joshu::segtree_t<int, segmax_t>::node_t& node) -> void { node.ctx.modify_ += 1; };
+    segtree.load();
+    // fprintf(stderr, ">>> %lld\n", x);
+    int p = -1, k = 0;
+    for (int i = 1; i < n + n; ++i) {
+      while (p + 1 < i && s[i] - s[p + 1] >= x)
+        ++p;
+      int const l = max(1, i - n + 1);
+      if (p >= 0) {
+        segtree.update(i, p, l, p + 1, addone);
+        // fprintf(stderr, "  + (%d, %d) @ %d (%d)\n", l, p + 1, i, p);
+        if (i >= n) {
+          auto const r = segtree.query(i, l, p + 1);
+          // fprintf(stderr, "  ? (%d, %d) @ %d = %d\n", l, p + 1, i, r.calc());
+          if (r.calc() >= m)
+            ++k;
+        }
+      } else {
+        segtree.follow(i, 0);
       }
-    } else {
-      segtree.follow(i, 0);
     }
-  }
-  if (k > 0) {
-    ymap[x] = n - k;
-    return true;
-  }
-  return false;
-};
+    if (k > 0) {
+      ymap[x] = n - k;
+      return true;
+    }
+    return false;
+  };
 
   while (scanf("%d%d", &n, &m) != EOF) {
     s[0] = 0LL;
@@ -929,14 +920,14 @@ static auto const cando = [&](lld const x_) -> bool {
     for (int i = 0; i < n; ++i) {
       s[i + n + 1] = s[i + n] + a[i];
     }
-  static auto const zero = [](joshu::segtree_t<int, segmax_t>::node_t& node) -> void {
-    node.ctx.modify_ = 0;
-    node.ctx.max_ = 0;
-  };
+    static auto const zero = [](joshu::segtree_t<int, segmax_t>::node_t& node) -> void {
+      node.ctx.modify_ = 0;
+      node.ctx.max_ = 0;
+    };
     segtree.clear();
-    segtree.build_index(0, 1, n + n, zero);
+    segtree.build_index(0, 1, n, zero);
     segtree.save();
-    lld const x = -joshu::binary_search(-s[n], -1LL, cando);
+    lld const x = -joshu::binary_search(-s[n] / m, -1LL, cando);
     int const y = ymap[x];
     printf("%lld %d\n", x, y);
   }
