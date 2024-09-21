@@ -1,4 +1,4 @@
-from math import gcd
+from math import gcd, log2
 from sys import stderr, stdout
 
 
@@ -16,6 +16,7 @@ def solution(n, p, a):
             s[m] = a[j]
             m += 1
             j = p[j]
+        # stderr.write('..m = ' + str(m) + '\n')
         if m > 1:
             b = [False for i in range(m)]
             j = gd % m
@@ -30,6 +31,10 @@ def solution(n, p, a):
             while gd % m != d:
                 gd += gm
             gm = gm // gcd(m, gm) * m
+    # stderr.write('gd = ' + str(gd) + '\n')
+    # stderr.write('gm = ' + str(gm) + '\n')
+    # stderr.write('log2(gd) = %.2f\n' % log2(gd))
+    # stderr.write('log2(gm) = %.2f\n' % log2(gm))
     stdout.write(' '.join([str(i) for i in a]))
     stdout.write('\n')
 
