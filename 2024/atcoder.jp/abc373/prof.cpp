@@ -853,6 +853,10 @@ lld res;
 
 inline lld sqr(lld const x) { return x * x; }
 
+inline lld diff(lld const x) {
+  return sqr(x) - sqr(x + 1LL);
+}
+
 int main() {
   while (scanf("%d%d", &n, &m) != EOF) {
     for (int i = 0; i <= m; ++i) {
@@ -862,7 +866,8 @@ int main() {
 
     for (int i = 0; i < n; ++i) {
       scanf("%d%lld", &c[i], &w[i]);
-      q[c[i]].emplace(w[i] - 1LL, -1LL);
+      if (w[i] > 1LL)
+        q[c[i]].emplace(w[i] - 1LL, -1LL);
     }
 
     for (int i = m; i; --i) {
@@ -879,7 +884,7 @@ int main() {
         }
 
         pq.pop();
-        pair<lld, lld> const bar{foo.first + sqr(foo.second) - sqr(foo.second - 1LL), foo.second - 1LL};
+        pair<lld, lld> const bar{foo.first + diff(foo.second) - diff(foo.second - 1LL), foo.second - 1LL};
         if (bar.first > 0LL)
           pq.emplace(bar);
         if (!flag)
