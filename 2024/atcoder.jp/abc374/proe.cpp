@@ -876,15 +876,15 @@ lld resolve(lld const y, int const k) {
 */
 
 lld resolve(lld const y, lld const i, lld const* a, lld const* b, lld const* p, lld const* q) {
-  lld const lhs = (y + a[i] - 1LL) / a[i] * p[i];
-  lld const rhs = (y + b[i] - 1LL) / b[i] * q[i];
+  // lld const lhs = (y + a[i] - 1LL) / a[i] * p[i];
+  // lld const rhs = (y + b[i] - 1LL) / b[i] * q[i];
   // if (lhs > rhs) return resolve(y, i, b, a, q, p);
   lld res = inf;
-  for (lld l = max(lhs - 2500000, 0LL); l <= lhs; ++l) {
+  for (lld l = 0LL; l <= b[i]; ++l) {
     lld const r = max((y - l * a[i] + b[i] - 1LL) / b[i], 0LL);
     res = min(l * p[i] + r * q[i] , res);
   }
-  for (lld r = max(rhs - 2500000, 0LL); r <= rhs; ++r) {
+  for (lld r = 0LL; r <= a[i]; ++r) {
     lld const l = max((y - r * b[i] + a[i] - 1LL) / a[i], 0LL);
     res = min(l * p[i] + r * q[i] , res);
   }
