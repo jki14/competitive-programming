@@ -7,6 +7,8 @@
 
 class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
+  CPPUNIT_TEST(TestSetmax);
+  CPPUNIT_TEST(TestSetmin);
   CPPUNIT_TEST(TestPopcount);
   CPPUNIT_TEST(TestLowbit);
   CPPUNIT_TEST(TestBitlen);
@@ -31,6 +33,42 @@ private:
   }
 
 protected:
+  void TestSetmax() {
+    int a = 5, b = 10;
+    joshu::setmax(b, a);
+    CPPUNIT_ASSERT_EQUAL(5, a);
+    CPPUNIT_ASSERT_EQUAL(10, b);
+    joshu::setmax(a, b);
+    CPPUNIT_ASSERT_EQUAL(10, a);
+    CPPUNIT_ASSERT_EQUAL(10, b);
+
+    double x = 3.14, y = 2.71;
+    joshu::setmax(x, y);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.14, x, 1e-9);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, y, 1e-9);
+    joshu::setmax(y, x);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.14, x, 1e-9);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.14, y, 1e-9);
+  }
+
+  void TestSetmin() {
+    int a = 5, b = 10;
+    joshu::setmin(a, b);
+    CPPUNIT_ASSERT_EQUAL(5, a);
+    CPPUNIT_ASSERT_EQUAL(10, b);
+    joshu::setmin(b, a);
+    CPPUNIT_ASSERT_EQUAL(5, a);
+    CPPUNIT_ASSERT_EQUAL(5, b);
+
+    double x = 3.14, y = 2.71;
+    joshu::setmin(y, x);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.14, x, 1e-9);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, y, 1e-9);
+    joshu::setmin(x, y);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, x, 1e-9);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, y, 1e-9);
+  }
+
   void TestPopcount() {
     CPPUNIT_ASSERT_EQUAL(3lu, linear_count(42));
     CPPUNIT_ASSERT_EQUAL(3lu, joshu::popcount(42));

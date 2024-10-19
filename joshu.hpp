@@ -149,6 +149,9 @@ template <typename Int> struct is_unsigned_long_long {
 #pragma GCC diagnostic pop
 #endif
 };
+
+template <typename T> void setmax(T& foo, T const& bar) { foo = std::max(foo, bar); }
+template <typename T> void setmin(T& foo, T const& bar) { foo = std::min(foo, bar); }
 } // namespace
 
 /* Binary */
