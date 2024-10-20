@@ -9,6 +9,8 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST_SUITE(TestJoshu);
   CPPUNIT_TEST(TestSetmax);
   CPPUNIT_TEST(TestSetmin);
+  CPPUNIT_TEST(TestTuple2d);
+  CPPUNIT_TEST(TestTuple3d);
   CPPUNIT_TEST(TestPopcount);
   CPPUNIT_TEST(TestLowbit);
   CPPUNIT_TEST(TestBitlen);
@@ -67,6 +69,117 @@ protected:
     joshu::setmin(x, y);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, x, 1e-9);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(2.71, y, 1e-9);
+  }
+
+  void TestTuple2d() {
+    joshu::tuple2d_t<int, double> const a{5, 3.14};
+    joshu::tuple2d_t<int, double> const b{5, 2.71};
+    joshu::tuple2d_t<int, double> const c{10, 3.14};
+    joshu::tuple2d_t<int, double> const d{10, 2.71};
+
+    {
+      std::set<joshu::tuple2d_t<int, double>> s;
+      s.insert(d);
+      s.insert(b);
+      s.emplace(a.x, a.y);
+      s.insert(c);
+      s.emplace(b.x, b.y);
+
+      CPPUNIT_ASSERT_EQUAL(4lu, s.size());
+      auto it = s.begin();
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(b, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(a, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(d, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(c, *it++);
+      CPPUNIT_ASSERT(it == s.end());
+    }
+
+    {
+      std::unordered_set<joshu::tuple2d_t<int, double>> s;
+      s.emplace(a.x, a.y);
+      s.insert(b);
+      s.insert(c);
+      s.insert(d);
+      s.emplace(b.x, b.y);
+
+      CPPUNIT_ASSERT_EQUAL(4lu, s.size());
+      CPPUNIT_ASSERT(s.contains(a));
+      CPPUNIT_ASSERT(s.contains(b));
+      CPPUNIT_ASSERT(s.contains(c));
+      CPPUNIT_ASSERT(s.contains(d));
+    }
+  }
+
+  void TestTuple3d() {
+    joshu::tuple3d_t<int, double, bool> const a{5, 2.71, false};
+    joshu::tuple3d_t<int, double, bool> const b{5, 2.71, true};
+    joshu::tuple3d_t<int, double, bool> const c{5, 3.14, false};
+    joshu::tuple3d_t<int, double, bool> const d{5, 3.14, true};
+    joshu::tuple3d_t<int, double, bool> const e{10, 2.71, false};
+    joshu::tuple3d_t<int, double, bool> const f{10, 2.71, true};
+    joshu::tuple3d_t<int, double, bool> const g{10, 3.14, false};
+    joshu::tuple3d_t<int, double, bool> const h{10, 3.14, true};
+
+    {
+      std::set<joshu::tuple3d_t<int, double, bool>> s;
+      s.insert(g);
+      s.insert(d);
+      s.insert(b);
+      s.insert(f);
+      s.emplace(a.x, a.y, a.z);
+      s.insert(c);
+      s.emplace(b.x, b.y, b.z);
+      s.insert(e);
+      s.insert(h);
+
+      CPPUNIT_ASSERT_EQUAL(8lu, s.size());
+      auto it = s.begin();
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(a, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(b, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(c, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(d, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(e, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(f, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(g, *it++);
+      CPPUNIT_ASSERT(it != s.end());
+      CPPUNIT_ASSERT_EQUAL(h, *it++);
+      CPPUNIT_ASSERT(it == s.end());
+    }
+
+    {
+      std::unordered_set<joshu::tuple3d_t<int, double, bool>> s;
+      s.emplace(a.x, a.y, a.z);
+      s.emplace(f.x, f.y, f.z);
+      s.insert(b);
+      s.insert(c);
+      s.insert(d);
+      s.insert(e);
+      s.insert(f);
+      s.insert(g);
+      s.insert(h);
+      s.emplace(b.x, b.y, b.z);
+
+      CPPUNIT_ASSERT_EQUAL(8lu, s.size());
+      CPPUNIT_ASSERT(s.contains(a));
+      CPPUNIT_ASSERT(s.contains(b));
+      CPPUNIT_ASSERT(s.contains(c));
+      CPPUNIT_ASSERT(s.contains(d));
+      CPPUNIT_ASSERT(s.contains(e));
+      CPPUNIT_ASSERT(s.contains(f));
+      CPPUNIT_ASSERT(s.contains(g));
+      CPPUNIT_ASSERT(s.contains(h));
+    }
   }
 
   void TestPopcount() {

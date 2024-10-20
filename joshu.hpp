@@ -312,6 +312,31 @@ Int binary_search(Int lef, Int rig, Lambda check) {
 
 /* Data Structures */
 inline namespace {
+template <typename TX, typename TY> struct tuple2d_t {
+  TX x;
+  TY y;
+
+  bool operator==(tuple2d_t const& rhs) const { return x == rhs.x && y == rhs.y; }
+  bool operator<(tuple2d_t const& rhs) const { return x < rhs.x || (!(rhs.x < x) && y < rhs.y); }
+};
+template <typename TX, typename TY> static std::ostream& operator<<(std::ostream& ost, tuple2d_t<TX, TY> const& t) {
+  return ost << "(" << t.x << ", " << t.y << ")";
+}
+
+template <typename TX, typename TY, typename TZ> struct tuple3d_t {
+  TX x;
+  TY y;
+  TZ z;
+
+  bool operator==(tuple3d_t const& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
+  bool operator<(tuple3d_t const& rhs) const {
+    return (x < rhs.x) || (!(rhs.x < x) && (y < rhs.y)) || (!(rhs.x < x) && !(rhs.y < y) && (z < rhs.z));
+  }
+};
+template <typename TX, typename TY, typename TZ> static std::ostream& operator<<(std::ostream& ost, tuple3d_t<TX, TY, TZ> const& t) {
+  return ost << "(" << t.x << ", " << t.y << ", " << t.z << ")";
+}
+
 template <typename T> class heap_t {
 public:
   class entry_t;
@@ -834,6 +859,24 @@ private:
 };
 } // namespace
 } // namespace joshu
+
+namespace std {
+template <typename TX, typename TY> struct hash<joshu::tuple2d_t<TX, TY>> {
+  size_t operator()(joshu::tuple2d_t<TX, TY> const& c) const {
+    size_t const lhs = hash<TX>{}(c.x);
+    size_t const rhs = hash<TY>{}(c.y);
+    return lhs ^ (rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2));
+  }
+};
+template <typename TX, typename TY, typename TZ> struct hash<joshu::tuple3d_t<TX, TY, TZ>> {
+  size_t operator()(joshu::tuple3d_t<TX, TY, TZ> const& c) const {
+    size_t const hx = hash<TX>{}(c.x);
+    size_t const hy = hash<TY>{}(c.y);
+    size_t const hz = hash<TZ>{}(c.z);
+    return hx ^ (hy + 0x9e3779b9 + (hx << 6) + (hx >> 2)) ^ (hz + 0x9e3779b9 + (hy << 6) + (hy >> 2));
+  }
+};
+} // namespace std
 
 inline namespace {
 // typedefs
