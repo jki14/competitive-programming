@@ -880,5 +880,10 @@ template <typename TX, typename TY, typename TZ> struct hash<joshu::tuple3d_t<TX
 
 inline namespace {
 // typedefs
+using lld = long long;
+using pii = joshu::tuple2d_t<int, int>;
+using pil = joshu::tuple2d_t<int, lld>;
+using pli = joshu::tuple2d_t<lld, int>;
+using pll = joshu::tuple2d_t<lld, lld>;
 using imod_t = joshu::imod_t<1000000007>;
 } // namespace
