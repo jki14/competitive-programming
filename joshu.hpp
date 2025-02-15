@@ -622,6 +622,10 @@ public:
 
   explicit operator bool() const noexcept { return foo_ != 0; }
 
+  static int_fast64_t mod() {
+    return token;
+  }
+
   imod_t operator+(imod_t const& rhs) const {
     imod_t bar(*this);
     bar += rhs;
