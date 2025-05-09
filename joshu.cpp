@@ -338,16 +338,30 @@ protected:
     for (int i = 0; i < 65536; ++i) {
       int64_t const bar = joshu::randllu() % 4611686014132420608LL + 1LL;
       auto const square_gt = [bar](int64_t const i) { return i * i > bar; };
-      auto const foo = joshu::binary_search(1LL, 2147483647LL, square_gt);
+      auto const foo = joshu::bsearch_first_pass(1LL, 2147483647LL, square_gt);
       CPPUNIT_ASSERT(foo * foo > bar);
       CPPUNIT_ASSERT((foo - 1) * (foo - 1) <= bar);
     }
     auto const gt_zero = [](int64_t const i) { return i * i > 0; };
-    CPPUNIT_ASSERT_EQUAL(1LL, joshu::binary_search(1LL, 65535LL, gt_zero));
+    CPPUNIT_ASSERT_EQUAL(1LL, joshu::bsearch_first_pass(1LL, 65535LL, gt_zero));
     auto const gt_maxi32_sequare_minus_one = [](int64_t const i) { return i * i > 4611686014132420608LL; };
-    CPPUNIT_ASSERT_EQUAL(2147483647LL, joshu::binary_search(1LL, 2147483647LL, gt_maxi32_sequare_minus_one));
+    CPPUNIT_ASSERT_EQUAL(2147483647LL, joshu::bsearch_first_pass(1LL, 2147483647LL, gt_maxi32_sequare_minus_one));
     auto const gt_maxi32_sequare = [](int64_t const i) { return i * i > 4611686014132420609LL; };
-    CPPUNIT_ASSERT_EQUAL(-1LL, joshu::binary_search(1LL, 2147483647LL, gt_maxi32_sequare));
+    CPPUNIT_ASSERT_EQUAL(2147483648LL, joshu::bsearch_first_pass(1LL, 2147483647LL, gt_maxi32_sequare));
+
+    for (int i = 0; i < 65536; ++i) {
+      int64_t const bar = joshu::randllu() % 4611686014132420608LL + 2LL;
+      auto const square_lt = [bar](int64_t const i) { return i * i < bar; };
+      auto const foo = joshu::bsearch_last_pass(1LL, 2147483647LL, square_lt);
+      CPPUNIT_ASSERT(foo * foo < bar);
+      CPPUNIT_ASSERT((foo + 1) * (foo + 1) >= bar);
+    }
+    auto const lt_zero = [](int64_t const i) { return i * i < 0; };
+    CPPUNIT_ASSERT_EQUAL(0LL, joshu::bsearch_last_pass(1LL, 65535LL, lt_zero));
+    auto const lt_maxi32_sequare_plus_one = [](int64_t const i) { return i * i < 4611686014132420610LL; };
+    CPPUNIT_ASSERT_EQUAL(2147483647LL, joshu::bsearch_last_pass(1LL, 2147483647LL, lt_maxi32_sequare_plus_one));
+    auto const lt_maxi32_sequare = [](int64_t const i) { return i * i < 4611686014132420609LL; };
+    CPPUNIT_ASSERT_EQUAL(2147483646LL, joshu::bsearch_last_pass(1LL, 2147483647LL, lt_maxi32_sequare));
   }
 
   void TestHeapT() {

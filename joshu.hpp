@@ -295,9 +295,9 @@ template <typename Int = int> std::vector<Int> const& primes(Int const maximum) 
 /* Algorithms */
 inline namespace {
 template <typename Int, typename Lambda, typename std::enable_if<std::is_signed<Int>::value>::type* = nullptr>
-Int binary_search(Int lef, Int rig, Lambda check) {
+Int constexpr bsearch_first_pass(Int lef, Int rig, Lambda check) noexcept {
   if (!check(rig))
-    return -1;
+    return rig + 1;
   while (lef < rig) {
     Int const mid = (lef + rig) >> 1;
     if (check(mid)) {
@@ -307,6 +307,11 @@ Int binary_search(Int lef, Int rig, Lambda check) {
     }
   }
   return rig;
+}
+
+template <typename Int, typename Lambda, typename std::enable_if<std::is_signed<Int>::value>::type* = nullptr>
+Int constexpr bsearch_last_pass(Int lef, Int rig, Lambda check) noexcept {
+  return -bsearch_first_pass(-rig, -lef, check);
 }
 } // namespace
 
