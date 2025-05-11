@@ -735,6 +735,18 @@ protected:
     for (int u = 0; u < 512; ++u) {
       size_t idx = (u + 1LL) * 255;
       size_t len = 0;
+      for (auto [v, w] : gw[u]) {
+        CPPUNIT_ASSERT_EQUAL(idx, v);
+        CPPUNIT_ASSERT_EQUAL((255 - len) | 1, static_cast<size_t>(w));
+        idx -= u + 1;
+        w ^= 1;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u < 256 ? 256lu : 0lu, len);
+    }
+    for (int u = 0; u < 512; ++u) {
+      size_t idx = (u + 1LL) * 255;
+      size_t len = 0;
       for (auto& [v, w] : gw[u]) {
         CPPUNIT_ASSERT_EQUAL(idx, v);
         CPPUNIT_ASSERT_EQUAL((255 - len) | 1, static_cast<size_t>(w));
