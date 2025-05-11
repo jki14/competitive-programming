@@ -770,7 +770,7 @@ protected:
   }
 
   void TestImodT() {
-    auto foo = 65535 + 65535 * imod_t(65535) + 65535 - (imod_t(65535) + 65535) * 65535;
+    auto foo = 65535 + 65535 * mod_t(65535) + 65535 - (mod_t(65535) + 65535) * 65535;
     CPPUNIT_ASSERT_EQUAL(1000000007LL, decltype(foo)::mod());
     CPPUNIT_ASSERT_EQUAL(705294880LL, foo.lld());
     foo /= 65535;
@@ -785,7 +785,7 @@ protected:
     foo -= 71832005;
     CPPUNIT_ASSERT(!foo);
     foo = -1;
-    imod_t bar = 65535;
+    mod_t bar = 65535;
     foo += bar;
     CPPUNIT_ASSERT_EQUAL(65534LL, foo.lld());
   }

@@ -153,7 +153,7 @@ template <typename Int> struct is_unsigned_long_long {
 template <typename T> void setmax(T& foo, T const& bar) { foo = std::max(foo, bar); }
 template <typename T> void setmin(T& foo, T const& bar) { foo = std::min(foo, bar); }
 
-struct placeholder_t {
+[[maybe_unused]] struct placeholder_t {
 } placeholder;
 } // namespace
 
@@ -1037,9 +1037,23 @@ struct tuple_element<1, joshu::edge_t<TypeW, TypeU> const> {
 inline namespace {
 // typedefs
 using lld = long long;
+using i80 = __int128_t;
+using llf = long double;
 using pii = joshu::tuple2d_t<int, int>;
 using pil = joshu::tuple2d_t<int, lld>;
 using pli = joshu::tuple2d_t<lld, int>;
 using pll = joshu::tuple2d_t<lld, lld>;
-using imod_t = joshu::imod_t<1000000007>;
+using mod_t = joshu::imod_t<1000000007>;
 } // namespace
+
+#ifndef UNITTEST
+using namespace std;
+using namespace joshu;
+
+int main() {
+  std::ios::sync_with_stdio(false);
+  std::cin.tie(0);
+
+  return 0;
+}
+#endif
