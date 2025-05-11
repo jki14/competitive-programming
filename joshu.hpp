@@ -152,6 +152,9 @@ template <typename Int> struct is_unsigned_long_long {
 
 template <typename T> void setmax(T& foo, T const& bar) { foo = std::max(foo, bar); }
 template <typename T> void setmin(T& foo, T const& bar) { foo = std::min(foo, bar); }
+
+struct placeholder_t {
+} placeholder;
 } // namespace
 
 /* Binary */
@@ -588,6 +591,125 @@ private:
 };
 } // namespace
 
+/* Graph Algorithms */
+inline namespace {
+
+template <typename TypeW, typename TypeU = void> struct edge_t {
+  using vid_t = std::size_t;
+
+  vid_t v;
+  [[no_unique_address]] std::conditional_t<std::is_void_v<TypeW>, placeholder_t, TypeW> w;
+  [[no_unique_address]] std::conditional_t<std::is_void_v<TypeU>, placeholder_t, vid_t> u;
+  edge_t* next = nullptr;
+};
+
+template <std::size_t I, typename TypeW, typename TypeU> decltype(auto) get(edge_t<TypeW, TypeU>& e) {
+  if constexpr (I == 0)
+    return (e.v);
+  else if constexpr (I == 1 && !std::is_void_v<TypeW>)
+    return (e.w);
+  else
+    static_assert(I < 2, "edge_t only decomposes into [v] or [v, w]");
+}
+
+template <std::size_t I, typename TypeW, typename TypeU> decltype(auto) get(const edge_t<TypeW, TypeU>& e) {
+  if constexpr (I == 0)
+    return (e.v);
+  else if constexpr (I == 1 && !std::is_void_v<TypeW>)
+    return (e.w);
+  else
+    static_assert(I < 2, "edge_t only decomposes into [v] or [v, w]");
+}
+
+template <typename TypeW, typename TypeU = void> class adjlist_t {
+public:
+  using vid_t = std::size_t;
+  using edge_t = edge_t<TypeW, TypeU>;
+
+private:
+  std::vector<edge_t*> heads_;
+  std::vector<edge_t> pool_;
+  edge_t* tail_ = nullptr;
+
+public:
+  adjlist_t(std::size_t v_num, std::size_t e_num) : heads_(v_num, nullptr), pool_(e_num), tail_(pool_.data()) {}
+
+  void clear() noexcept {
+    std::fill(heads_.begin(), heads_.end(), nullptr);
+    tail_ = pool_.data();
+  }
+
+  template <typename T = TypeW> std::enable_if_t<!std::is_void_v<T>, void> add_edge(vid_t u, vid_t v, T w) noexcept {
+    *tail_ = edge_t{v, w, convert_u(u), heads_[u]};
+    heads_[u] = tail_++;
+  }
+
+  template <typename T = TypeW> std::enable_if_t<std::is_void_v<T>, void> add_edge(vid_t u, vid_t v) noexcept {
+    *tail_ = edge_t{v, placeholder, convert_u(u), heads_[u]};
+    heads_[u] = tail_++;
+  }
+
+private:
+  static constexpr auto convert_u(vid_t u) {
+    if constexpr (std::is_void_v<TypeU>)
+      return placeholder;
+    else
+      return u;
+  }
+
+  struct vid_iter {
+    edge_t* cur;
+
+    vid_t& operator*() const { return cur->v; }
+    vid_iter& operator++() {
+      cur = cur->next;
+      return *this;
+    }
+    bool operator!=(const vid_iter& o) const { return cur != o.cur; }
+  };
+
+  struct vid_range {
+    edge_t* head;
+    auto begin() const { return vid_iter{head}; }
+    auto end() const { return vid_iter{nullptr}; }
+  };
+
+  struct edge_iter {
+    edge_t* cur;
+
+    edge_t& operator*() const { return *cur; }
+    edge_iter& operator++() {
+      cur = cur->next;
+      return *this;
+    }
+    bool operator!=(const edge_iter& o) const { return cur != o.cur; }
+  };
+
+  struct edge_range {
+    edge_t* head;
+    auto begin() const { return edge_iter{head}; }
+    auto end() const { return edge_iter{nullptr}; }
+  };
+
+public:
+  auto operator[](vid_t u) const noexcept {
+    if constexpr (std::is_void_v<TypeW>) {
+      return vid_range{heads_[u]};
+    } else {
+      return edge_range{heads_[u]};
+    }
+  }
+
+  auto operator[](vid_t u) noexcept {
+    if constexpr (std::is_void_v<TypeW>) {
+      return vid_range{heads_[u]};
+    } else {
+      return edge_range{heads_[u]};
+    }
+  }
+};
+} // namespace
+
 /* Class imod_t */
 inline namespace {
 template <int_fast64_t token, typename Int> struct add_safe {
@@ -868,6 +990,7 @@ private:
 } // namespace joshu
 
 namespace std {
+// joshu::tuple2d_t
 template <typename TX, typename TY> struct hash<joshu::tuple2d_t<TX, TY>> {
   size_t operator()(joshu::tuple2d_t<TX, TY> const& c) const {
     size_t const lhs = hash<TX>{}(c.x);
@@ -875,6 +998,8 @@ template <typename TX, typename TY> struct hash<joshu::tuple2d_t<TX, TY>> {
     return lhs ^ (rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2));
   }
 };
+
+// joshu::tuple3d_t
 template <typename TX, typename TY, typename TZ> struct hash<joshu::tuple3d_t<TX, TY, TZ>> {
   size_t operator()(joshu::tuple3d_t<TX, TY, TZ> const& c) const {
     size_t const hx = hash<TX>{}(c.x);
@@ -882,6 +1007,26 @@ template <typename TX, typename TY, typename TZ> struct hash<joshu::tuple3d_t<TX
     size_t const hz = hash<TZ>{}(c.z);
     return hx ^ (hy + 0x9e3779b9 + (hx << 6) + (hx >> 2)) ^ (hz + 0x9e3779b9 + (hy << 6) + (hy >> 2));
   }
+};
+
+// joshu::edge_t
+template <typename TypeW, typename TypeU>
+struct tuple_size<joshu::edge_t<TypeW, TypeU>> : std::integral_constant<std::size_t, std::is_void_v<TypeW> ? 1 : 2> {};
+template <typename TypeW, typename TypeU> struct tuple_element<0, joshu::edge_t<TypeW, TypeU>> {
+  using type = std::size_t;
+};
+template <typename TypeW, typename TypeU>
+  requires(!std::is_void_v<TypeW>)
+struct tuple_element<1, joshu::edge_t<TypeW, TypeU>> {
+  using type = TypeW;
+};
+template <typename TypeW, typename TypeU> struct tuple_element<0, const joshu::edge_t<TypeW, TypeU>> {
+  using type = std::size_t const;
+};
+template <typename TypeW, typename TypeU>
+  requires(!std::is_void_v<TypeW>)
+struct tuple_element<1, const joshu::edge_t<TypeW, TypeU>> {
+  using type = TypeW const;
 };
 } // namespace std
 

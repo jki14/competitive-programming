@@ -21,6 +21,7 @@ class TestJoshu : public CppUnit::TestFixture {
   CPPUNIT_TEST(TestHeapT);
   CPPUNIT_TEST(TestBTNCtxT);
   CPPUNIT_TEST(TestSegTreeT);
+  CPPUNIT_TEST(TestAdjListT);
   CPPUNIT_TEST(TestImodT);
   CPPUNIT_TEST(TestMatrixT);
   CPPUNIT_TEST_SUITE_END();
@@ -677,6 +678,83 @@ protected:
     CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
     ctx = segtree.query(5, 5, querier);
     CPPUNIT_ASSERT_EQUAL(5, ctx.calc());
+  }
+
+  void TestAdjListT() {
+    joshu::adjlist_t<void> gv(512, 65536);
+    for (int u = 0; u < 256; ++u) {
+      for (int k = 0; k < 256; ++k) {
+        gv.add_edge(u, (u + 1) * k);
+      }
+    }
+    for (int u = 0; u < 512; ++u) {
+      size_t idx = (u + 1LL) * 255;
+      size_t len = 0;
+      for (auto const v : gv[u]) {
+        CPPUNIT_ASSERT_EQUAL(idx, v);
+        idx -= u + 1;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u < 256 ? 256lu : 0lu, len);
+    }
+    gv.clear();
+    gv.add_edge(4, 14);
+    for (int u = 0; u < 512; ++u) {
+      size_t len = 0;
+      for (auto v : gv[u]) {
+        CPPUNIT_ASSERT_EQUAL(14lu, v);
+        v = 13;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u == 4 ? 1lu : 0lu, len);
+    }
+    for (int u = 0; u < 512; ++u) {
+      size_t len = 0;
+      for (auto& v : gv[u]) {
+        CPPUNIT_ASSERT_EQUAL(14lu, v);
+        v = 13;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u == 4 ? 1lu : 0lu, len);
+    }
+    for (int u = 0; u < 512; ++u) {
+      size_t len = 0;
+      for (auto const v : gv[u]) {
+        CPPUNIT_ASSERT_EQUAL(13lu, v);
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u == 4 ? 1lu : 0lu, len);
+    }
+
+    joshu::adjlist_t<int> gw(512, 65536);
+    for (int u = 0; u < 256; ++u) {
+      for (int v = 0; v < 256; ++v) {
+        gw.add_edge(u, (u + 1) * v, v | 1);
+      }
+    }
+    for (int u = 0; u < 512; ++u) {
+      size_t idx = (u + 1LL) * 255;
+      size_t len = 0;
+      for (auto& [v, w] : gw[u]) {
+        CPPUNIT_ASSERT_EQUAL(idx, v);
+        CPPUNIT_ASSERT_EQUAL((255 - len) | 1, static_cast<size_t>(w));
+        idx -= u + 1;
+        w ^= 1;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u < 256 ? 256lu : 0lu, len);
+    }
+    for (int u = 0; u < 256; ++u) {
+      size_t idx = (u + 1LL) * 255;
+      size_t len = 0;
+      for (auto const [v, w] : gw[u]) {
+        CPPUNIT_ASSERT_EQUAL(idx, v);
+        CPPUNIT_ASSERT_EQUAL((255 - len) & ~1, static_cast<size_t>(w));
+        idx -= u + 1;
+        ++len;
+      }
+      CPPUNIT_ASSERT_EQUAL(u < 256 ? 256lu : 0lu, len);
+    }
   }
 
   void TestImodT() {
