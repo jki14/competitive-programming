@@ -612,11 +612,15 @@ template <std::size_t I, typename TypeW, typename TypeU> decltype(auto) get(edge
     static_assert(I < 2, "edge_t only decomposes into [v] or [v, w]");
 }
 
-template <std::size_t I, typename TypeW, typename TypeU> decltype(auto) get(const edge_t<TypeW, TypeU>& e) {
+template <std::size_t I, typename TypeW, typename TypeU> decltype(auto) get(edge_t<TypeW, TypeU> const& e) {
   if constexpr (I == 0)
-    return (e.v);
+    return e.v;
   else if constexpr (I == 1 && !std::is_void_v<TypeW>)
-    return (e.w);
+    if constexpr (sizeof(TypeW) <= sizeof(void*)) {
+      return e.w;
+    } else {
+      return (e.w);
+    }
   else
     static_assert(I < 2, "edge_t only decomposes into [v] or [v, w]");
 }
@@ -665,7 +669,7 @@ private:
       cur = cur->next;
       return *this;
     }
-    bool operator!=(const vid_iter& o) const { return cur != o.cur; }
+    bool operator!=(vid_iter const& o) const { return cur != o.cur; }
   };
 
   struct vid_range {
@@ -682,7 +686,7 @@ private:
       cur = cur->next;
       return *this;
     }
-    bool operator!=(const edge_iter& o) const { return cur != o.cur; }
+    bool operator!=(edge_iter const& o) const { return cur != o.cur; }
   };
 
   struct edge_range {
@@ -1020,12 +1024,12 @@ template <typename TypeW, typename TypeU>
 struct tuple_element<1, joshu::edge_t<TypeW, TypeU>> {
   using type = TypeW;
 };
-template <typename TypeW, typename TypeU> struct tuple_element<0, const joshu::edge_t<TypeW, TypeU>> {
+template <typename TypeW, typename TypeU> struct tuple_element<0, joshu::edge_t<TypeW, TypeU> const> {
   using type = std::size_t const;
 };
 template <typename TypeW, typename TypeU>
   requires(!std::is_void_v<TypeW>)
-struct tuple_element<1, const joshu::edge_t<TypeW, TypeU>> {
+struct tuple_element<1, joshu::edge_t<TypeW, TypeU> const> {
   using type = TypeW const;
 };
 } // namespace std
