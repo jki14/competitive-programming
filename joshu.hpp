@@ -1044,6 +1044,11 @@ using pil = joshu::tuple2d_t<int, lld>;
 using pli = joshu::tuple2d_t<lld, int>;
 using pll = joshu::tuple2d_t<lld, lld>;
 using mod_t = joshu::imod_t<1000000007>;
+// constant defs
+// int constexpr inf = 0x3f3f3f3f;
+// double constexpr inf = 1.3e154;
+lld constexpr inf = 0x3f3f3f3f3f3f3f3fLL;
+double constexpr eps = 1e-22;
 } // namespace
 
 #ifndef UNITTEST
@@ -1053,6 +1058,8 @@ using namespace joshu;
 int main() {
   std::ios::sync_with_stdio(false);
   std::cin.tie(0);
+  // std::cout << std::fixed;
+  std::cout << std::setprecision(14);
 
   return 0;
 }
