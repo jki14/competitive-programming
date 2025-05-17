@@ -1045,10 +1045,10 @@ using pli = joshu::tuple2d_t<lld, int>;
 using pll = joshu::tuple2d_t<lld, lld>;
 using mod_t = joshu::imod_t<1000000007>;
 // constant defs
-// int constexpr inf = 0x3f3f3f3f;
-// double constexpr inf = 1.3e154;
-lld constexpr inf = 0x3f3f3f3f3f3f3f3fLL;
-double constexpr eps = 1e-22;
+// [[maybe_unused]] int constexpr inf = 0x3f3f3f3f;
+// [[maybe_unused]] double constexpr inf = 1.3e154;
+[[maybe_unused]] lld constexpr inf = 0x3f3f3f3f3f3f3f3fLL;
+[[maybe_unused]] double constexpr eps = 1e-22;
 } // namespace
 
 #ifndef UNITTEST
