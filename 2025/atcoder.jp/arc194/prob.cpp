@@ -891,23 +891,41 @@ using imod_t = joshu::imod_t<998244353>;
 using namespace std;
 
 int n;
-lld a[210000], bar;
+int a[210000], c[210000];
+lld sum[210000];
 
-deque<lld> dq;
+void update(int p) {
+  for (; p <= n; p += joshu::lowbit(p)) {
+    ++c[p];
+  }
+}
+
+int query(int p) {
+  int res = 0;
+  for (; p > 0; p -= joshu::lowbit(p)) {
+    res += c[p];
+  }
+  return res;
+}
 
 int main() {
+  sum[0] = 0;
+  for (lld i = 1; i <= 200000; ++i) {
+    sum[i] = sum[i - 1] + i;
+  }
   while (scanf("%d", &n) != EOF) {
-    for (int i = 1; i <= n; ++i) {
-      scanf("%lld", &a[i]);
+    for (int i = 0; i < n; ++i) {
+      scanf("%d", &a[i]);
     }
-    bar = 0LL;
-    while (!dq.empty()) dq.pop_back();
-    for (int i = n; i >= 1; --i) {
-      while (!dq.empty() && dq.front() > a[i]) dq.pop_front();
-      bar += dq.size() * 1LL * i;
-      dq.emplace_front(a[i]);
+    for (int i = 0; i <= n; ++i) {
+      c[i] = 0;
     }
-    printf("%lld\n", bar);
+    lld res = 0;
+    for (int i = 0; i < n; ++i) {
+      res += sum[i] - sum[i - query(n) + query(a[i])];
+      update(a[i]);
+    }
+    printf("%lld\n", res);
   }
   return 0;
 }
